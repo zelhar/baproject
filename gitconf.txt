@@ -1,0 +1,20 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	editor = vim
+[user]
+	email = zelhar@gmail.com
+	name = Yiftach Kolb
+    user = zelhar
+[color]
+	ui = true
+[remote "origin"]
+	url = git@github.com:zelhar/my-dotfiles-git.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+    merge = refs/heads/master
+[credential]
+    helper = store

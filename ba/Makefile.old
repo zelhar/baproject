@@ -1,0 +1,6 @@
+fname=Notes_about_network_propagation
+Notes_about_network_propagation.pdf: Notes_about_network_propagation.tex mybib.bib
+	pdflatex $(fname).tex
+	bibtex $(fname).aux
+	pdflatex $(fname).tex
+	pdflatex $(fname).tex
