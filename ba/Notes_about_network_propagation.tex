@@ -440,9 +440,23 @@ the direct solution is:
 \pi = (1 - \alpha) (I - \alpha W)^{-1} p_0
 \]
 
-
-
 \end{remark}
+
+\section{Toying around with graph propagation}
+\subsection{Motivation}
+We work with random graphs genertated by one of the standard models (Erdos- \dots)
+because the real world graphs have similar topology.
+
+For a given category we expect only a small number of proteins play a direct role and hence should carry
+its annotation, some of them are already known. Ideally we want that with some choice of $\alpha$ (the restart factor),
+We get a stationary distribution that is fairly concentrated exactly on the proteins that belong to that category.
+Is it possible?
+
+Even stronger evidence: we start with $2$ or more mutally exclusive categories and partial annonations for each,
+and we want that the stationary distributions will reflect that- namely they should be concentrated on non-overlapping subsets
+of graph nodes.
+
+
 
 \section{The Markov Random Fields Methd}
 We use almost the same terminology of \textcite{deng2002prediction}
