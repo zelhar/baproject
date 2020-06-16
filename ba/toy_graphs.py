@@ -52,7 +52,7 @@ def powerIterate(A, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fals
     return x, W, t
 
 
-def biasedPropagate(A, p0, alpha=0.85, beta=0.999, epsilon=1e-7, maxiter=10 ** 7):
+def biasedPropagate(A, p1, alpha=0.85, beta=0.999, epsilon=1e-7, maxiter=10 ** 7):
     """The inputs: A: a non 2d array representing
     an adjacency matrix of a graph.
     p0: The biased restart distribution. 
@@ -99,12 +99,34 @@ def biasedPropagate(A, p0, alpha=0.85, beta=0.999, epsilon=1e-7, maxiter=10 ** 7
 # test
 A = np.random.randint(low=0, high=2, size=(7, 7))
 p0 = np.array([1 / 2, 1 / 2, 0, 0, 0, 0, 0])
-
 p, W, t = biasedPropagate(A, p0)
-
 p, W, t = powerIterate(A)
-
 q, T = powerIterate(A, directmethod=True)
+
+
+ba = nx.barabasi_albert_graph(n=25, m=3)
+nx.draw(ba, with_labels=True)
+plt.show()
+
+
+
+ws = nx.watts_strogatz_graph(n=25, k=4, p=0.3)
+nx.draw(ws, with_labels=True)
+plt.show()
+
+# I think it makes sense to experiement with small barbasi-albert type
+# graphs. As far as I can tell they are more similar to real PPIN than
+# either Erdos-Renyi (not connected, no hub preference, not small world)
+# or Watts-Strogatz (I think it has no hub preference but maybe it is
+# actually better)
+
+
+
+
+
+
+
+
 
 
 # generate random graphs
