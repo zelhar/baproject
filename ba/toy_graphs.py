@@ -52,33 +52,33 @@ def powerIterate(A, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fals
     return x, W, t
 
 
-def biasedPropagate(A, p1, alpha=0.85, beta=0.999, epsilon=1e-7, maxiter=10 ** 7):
+def biasedPropagate(A, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7):
     """The inputs: A: a non 2d array representing
     an adjacency matrix of a graph.
-    p0: The biased restart distribution. 
+    bias: The biased restart distribution. 
     alpha: the restart parameter, must be between 0 and 1.
         1-alpha is the restart probability
     epsilon: convergence accuracy requirement
     maxiter: additional stop condition for the loop,
     whichever reached first stops the loop.
     beta: pseudocount parameter to ensures regularity of the matrix.
-        1-beta is the restart probability
+        1-beta is the restart probability. If the graph is known to be
+        connected, than it regular (and only if, see notes doc).
     So the transitional matrix incorporates both the biased and the uniform
-    distribution."""
+    distribution.
+    """
     n = len(A)
     # normaliz A column-wise:
     d = A.sum(axis=0).reshape((1, n))
     d[d == 0] = 1  # avoid division by 0
     W = A / d
     # comnine A with the restart matrix
-    p0 = p0 / np.sum(p0)
-    B = p0.reshape((n, 1)) + np.zeros_like(A)  # make p0 a column vector
-    print(B)
+    bias = bias / np.sum(bias)
+    B = bias.reshape((n, 1)) + np.zeros_like(A)  # make bias a column vector
     W = (1 - alpha) * B + alpha * W  # the transition matrix with bias
-    E = np.ones((n, n)) / n  # the unbiased restart matrix
-    print(E)
-    W = (1 - beta) * E + beta * W  # the transition matrix with the unbiased
-    print(W)
+    if beta < 1 :
+        E = np.ones((n, n)) / n  # the unbiased restart matrix
+        W = (1 - beta) * E + beta * W  # the transition matrix with the unbiased
     # create a random state vector:
     # x = np.random.random((n, 1))
     # x = x / x.sum()
@@ -103,12 +103,13 @@ p, W, t = biasedPropagate(A, p0)
 p, W, t = powerIterate(A)
 q, T = powerIterate(A, directmethod=True)
 
+er = nx.erdos_renyi_graph(n=25, p=0.08, seed=42)
+nx.draw(er, with_labels=True)
+plt.show()
 
 ba = nx.barabasi_albert_graph(n=25, m=3)
 nx.draw(ba, with_labels=True)
 plt.show()
-
-
 
 ws = nx.watts_strogatz_graph(n=25, k=4, p=0.3)
 nx.draw(ws, with_labels=True)
@@ -119,6 +120,50 @@ plt.show()
 # either Erdos-Renyi (not connected, no hub preference, not small world)
 # or Watts-Strogatz (I think it has no hub preference but maybe it is
 # actually better)
+
+n = 35
+m = 3
+seed = 42
+
+ba = nx.barabasi_albert_graph(n=n, m=m, seed = seed)
+nx.draw(ba, with_labels=True)
+plt.show()
+
+bias = np.zeros(n)
+bias[27] = 1
+bias[21] = 1
+
+
+adj_ba = np.array(nx.adj_matrix(ba).todense())
+
+p,W,t = biasedPropagate(adj_ba, bias, alpha=0.75)
+
+p = p.flatten()
+x = np.arange(len(p))
+
+plt.bar(x,p)
+plt.show()
+
+(p > 0.07).sum()
+
+colors = [0 if i > 0.05 else 1 for i in p]
+
+nx.draw(ba, with_labels=True, node_color=colors)
+plt.show()
+
+
+def findKins(G, points, alpha=0.85):
+    """This function takes a graph G (assumed to be 
+    connected and bidirectional) and a starting point
+    and iteratively tries to find nodes that together increase their
+    average pagerank"""
+    n = len(G.nodes())
+    # The initial biased is concentrated on the starting point(s)
+    bias = np.zeros(n)
+    bias[points] = 1
+    edges = np.array(nx.adj_matrix(G).todense())
+    p,W,t = biasedPropagate(edges, bias, alpha=alpha)
+    avg_rank = p[points].mean()
 
 
 
