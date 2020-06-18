@@ -46,10 +46,10 @@ def powerIterate(A, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fals
         t[i] = np.linalg.norm((x.flatten() - y.flatten()), ord=1)
         # above, flatten so the norm will be for vectors, I think
         if t[i] < epsilon:
-            return y, W, t[: i + 1]
+            return y.flatten(), W, t[: i + 1]
         else:
             x = y
-    return x, W, t
+    return x.flatten(), W, t
 
 
 def biasedPropagate(A, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7):
@@ -90,10 +90,10 @@ def biasedPropagate(A, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7):
         t[i] = np.linalg.norm((x.flatten() - y.flatten()), ord=1)
         # above, flatten so the norm will be for vectors, I think
         if t[i] < epsilon:
-            return y, W, t[: i + 1]
+            return y.flatten(), W, t[: i + 1]
         else:
             x = y
-    return x, W, t
+    return x.flatten(), W, t
 
 
 # test
@@ -152,24 +152,56 @@ nx.draw(ba, with_labels=True, node_color=colors)
 plt.show()
 
 
-def findKins(G, points, alpha=0.85):
+def findKins(G, points=[0], alpha=0.85):
     """This function takes a graph G (assumed to be 
     connected and bidirectional) and a starting point
     and iteratively tries to find nodes that together increase their
     average pagerank"""
     n = len(G.nodes())
+    m = len(points)
+    print(n,m)
+    if m >= n:
+        return points
     # The initial biased is concentrated on the starting point(s)
     bias = np.zeros(n)
     bias[points] = 1
     edges = np.array(nx.adj_matrix(G).todense())
     p,W,t = biasedPropagate(edges, bias, alpha=alpha)
     avg_rank = p[points].mean()
+    print(points)
+    print(p[points])
+    print(avg_rank)
+    for i in range(m,n):
+        p,W,t = biasedPropagate(edges, bias, alpha=alpha)
+        new_points = np.argsort(-p)[0:i+1]
+        temp_avg = p[new_points].mean()
+        if temp_avg > avg_rank:
+            avg_rank = temp_avg
+            bias[:] = 0
+            bias[new_points] = 1
+            points = new_points
+            # probably the new points are the old points + one addtional
+            # point ...
+            print(points)
+            print(p[points])
+            print(avg_rank)
+        else:
+            return points
 
 
+points = findKins(G=ba, points=[27,21], alpha=0.89)
 
+points = findKins(G=ba, points=[1,11,13,5], alpha=0.85)
+colors = np.zeros_like(ba.nodes)
+colors[points]=1
+nx.draw(ba, with_labels=True, node_color=colors)
+plt.show()
 
-
-
+points=[13,11]
+p,W,t = biasedPropagate(adj_ba, bias, alpha=0.85)
+colors = [0 if x > 2/len(ba.nodes()) else 1 for x in p]
+nx.draw(ba, with_labels=True, node_color=colors)
+plt.show()
 
 
 
