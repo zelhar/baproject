@@ -6,8 +6,9 @@ import pandas as pd
 from scipy.stats import poisson
 from tqdm import tqdm
 
-# plt.ioff()
+# plt.ioff() #requires draw() show() etc. to show
 plt.ion()
+
 
 ########################## Assigment 4
 
@@ -113,6 +114,7 @@ plt.show()
 
 ws = nx.watts_strogatz_graph(n=25, k=4, p=0.3)
 nx.draw(ws, with_labels=True)
+
 plt.show()
 
 # I think it makes sense to experiement with small barbasi-albert type
@@ -127,6 +129,7 @@ seed = 42
 
 ba = nx.barabasi_albert_graph(n=n, m=m, seed = seed)
 nx.draw(ba, with_labels=True)
+
 plt.show()
 
 bias = np.zeros(n)
