@@ -312,7 +312,10 @@ petGraph.add_edge(3, 4)
 nx.draw(petGraph, with_labels=True)
 
 adj_m = np.array(nx.adj_matrix(petGraph).todense())
-p,W,t = powerIterate(adj_m, alpha=0.85)
+
+adj_m
+
+p,W,_ = powerIterate(adj_m, alpha=1.00)
 
 l.append(p)
 
@@ -372,7 +375,23 @@ p
 x = np.arange(len(p))
 plt.bar(x, p)
 
+G = nx.Graph()
 
+G.add_nodes_from([0,1,2])
+G.add_edge(0,1)
+G.add_edge(0,2)
+
+nx.draw(G)
+
+A = np.array(nx.adj_matrix(G).todense())
+
+B=A/[2,1,1]
+
+x = B
+x
+
+x = np.dot(x,B)
+x
 
 
 
