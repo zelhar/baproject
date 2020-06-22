@@ -288,33 +288,54 @@ want to use it for transitioning on columns as done above). It's possible to
 assign different edge weights rather than only $1$ and $0$. If the graph is
 undirected each edge would be counted in both directions and the matrix is
 symmetric.
+Relabeling the vertices of a graph yiedls an adjacency matrix that is similar by
+permutations ($PAP^{-1}$, where $P$ is a permutation matrix) and vice versa.
 
-Then to turn $A$ into a transition, normalize each column by dividing it with
+
+To turn $A$ into a transition, normalize each column by dividing it with
 its out going rank, so let $D_{i,i} = \text{outrank}(i)^{-1}$, $AD$ is the
 transition matrix of this graph (because right-multiplying by $D$ normalizes each
 column by its rank).
 
 A graph is strongly connected (meaning there is a directed path form any edge
 to any edge) iff the adjacency matrix is irreducible. A matrix is 
-Irreducible by definition if it is a
+Irreducible by definition if it is NOT
 similar by permutations matrices to a block upper triangular matrix.
+Equivalently, a matrix $A$ is irreducible iff for each $i,j$, there is some $m$,
+such that $A^m_{i,j} \gt 0$. So regularity is a stronger condition than
+irreucibility and also I think it is easy to that if $A$ is irreducible then
+$I+A$ is regular, because as we exponentiate it every positive entry remains
+positiv \dots. 
 
-If a graph has a reducible adjacency matrix it cannot be strongly connected.
-If we start with such matrix and replace all its non-zero entries
-by one (or any positive number), we could never fill up all the entries by
-exponentiating the matrix, whereas with any other non-negative matrix we could
-populated all the entries with positive numbers if we exponentiate sufficiently
-high.
+We first show that the two condidtions for irreducibility of a matrix are
+equivalent.
+If $A$ is similar to a block  upper triangular matrix, than clearly the bottom
+left $0$-block is going to stay all-$0$s in the similar matrix and the
+corresponding entries in the original matrix as well. 
+So there are $i,j$ such that $\forall m A^m_{i,j} = 0$ 
 
-Intuitively it is easy to see why
+On the other direction if $A$ has indices $i,j$ such that $\forall m A^m_{i,j} =
+0$ rename $i$ to $1$ and $j$ to $n$. Now consider the graph $G$ that $A$ is its
+adjacency matrix. Then rename the vertices so that then first $k$ vertices are
+all the vertices reachable from $1$, and the other are the vertices unreachable
+from $1$ (we know that $n$ is unreachable). Since there is no edge between
+vertice from $\{1 \dots k\}$ to any vertice of $\{k+1 \dots n\}$ the adjacency
+matrix is upper block-triangular $\qedsymbol$.
 
-If we know the graph is strongly connected, 
-if we take its transition matrix and exponent it, eventually all the entries
-will be non $0$ because of the strong connectivity, every node can be reached
-from every node, so such matrix cannot be
-similar to a triangular matrix, hence it is irreducible.
+Now we show that if $G$ is strongly connected then $A$ is irreducible:
+Let graph $G$ be strongly connected and $A$ ist adjacency matrix. 
+We want to show that it is irreducible.
+Let $G^n$ be the graph on the same vertices such that $i,j$ have an edge in
+$G^n$ iff there is a path of length $n$ in $G$ connecting them. Then its
+adjacency matrix is exactly $A^n$ converted to boolean (positive means true). It
+is relatively easy to show by induction but I won't show it reigorously. Just
+consider that if and only if there is a pathe $i$ to $k$ to $j$ then 
+$A_{i,k}A_{k,j} > 0$. So from here we see that if $G$ is strongly connected,
+then for any $i,j$ we can find some $m$ so that there is is an $m$-path
+connecting them and therefore $A^m_{i,j} >0$.
 
-Other direction: if the graph is not strongly connected we want to show its
+Finally we show the
+other direction: if the graph $G$ is not strongly connected we want to show its
 adjacency matrix is reducible. We take a node $i$ that has a minimal number of
 reachable nodes. If $i$ is a sink then we switch it's name to $0$. We assume by
 induction that the rest of the nodes have some permutations that results in a
@@ -326,10 +347,8 @@ block triangular matrix on the smaller graph (so induction hypothesis), then
 extend it again which should be easy because the removed nodes form a block that
 connects only to itself (columns with $1$ only between said indices, $0$
 otherwise) so we can put them as the first indices of the matrix $\dots$.
-This also confirms that irreducible matrix is equivalent to regular matrix
-as defined in the first section.
 
-It is possible to turn a reducible transition into an irreducible by way of
+It is possible to turn a reducible transition into a regular and therefore irreducible by way of
 random restart as explained in the article \textcite{cowen2017network}.
 
 If we start with the adjacency matrix and replace each $0$ with some small
