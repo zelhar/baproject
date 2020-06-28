@@ -82,7 +82,7 @@ def powerIterateG(G, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fal
         B = I - alpha * A
         B = np.linalg.inv(B)
         p = (1 - alpha) * np.dot(B, x)
-        return p, W
+        return p.flatten(), W
     t = np.zeros(maxiter)
     for i in tqdm(range(maxiter)):
         y = np.dot(W, x)
@@ -176,7 +176,7 @@ def biasedPropagateG(G, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7)
         t[i] = np.linalg.norm((x.flatten() - y.flatten()), ord=1)
         # above, flatten so the norm will be for vectors, I think
         if t[i] < epsilon:
-            return y.flatten(), W, t[: i + 1]
+            return y.flatten(), W
         else:
             x = y
     return x.flatten(), W
@@ -367,12 +367,53 @@ p[:]
 plt.bar(range(len(p)), p)
 
 
+def pageRanksConcentratedBiasG(G, alpha=0.85, epsilon=1e-7, maxiter=10**7):
+    """Input: graph G, restart parameter alpha, and stopping criterions.
+    output: Graph G with additional properties. For each vertex v, it adds 
+    property 'br_v' so that br_v[i] is the pagerank of node i when we use
+    restart distribution that is concentrated on v.
+    The nodes are assumed to be represented by integers.
+    """
+    n = len(G.nodes())
+    for vertex in tqdm(G.nodes()):
+        bias = np.zeros(n)
+        bias[vertex] = 1
+        p,_ = biasedPropagateG(G, bias, alpha, epsilon, maxiter)
+        for i in G.nodes():
+            G.nodes[i]["br_" + str(vertex)] = p[i]
+    return G
+
+H = pageRanksConcentratedBiasG(G)
+
+
+p, _ = biasedPropagateG(G, bias=[1,0,0,0])
 
 
 
 
 
+### Trying to import graphml network
+
+G = nx.readwrite.read_graphml(
+        'IMExEColi.graphml',
+        node_type=int)
+
+nx.draw(G)
+
+plt.show()
+
+G.nodes()
+
+G.nodes['537']
+
+G.edges()
+
+G.edges[0]
 
 
+p, W = powerIterateG(G, alpha=0.85, directmethod=True)
 
+p = biasedPropagateG(G, bias=[1,0,0,0] ,alpha=0.85)
 
+p[0:10]
+plt.bar(range(len(p)), p)
