@@ -273,3 +273,25 @@ def heatmap(mat, title):
     ax.set_xticks(np.arange(m))
     ax.set_yticks(np.arange(n))
     ax.set_title(title)
+
+
+def reducedInfluenceMatrixG(G, alpha=0.85, delta=0):
+    """Input: Graph G, restart parameter alpha, and minimal influence delta.
+    Output: 2d-array W, where W[i,j] is the minimum between the influence of i
+    on j (= the j-th coefficient of the stationary probabilty propagated from i)
+    and the influence of j on i, or 0 in case said minimum is smaller than the
+    threshold delta.
+    """
+    n = len(G.nodes())
+    _, W = pageRanksConcentratedBiasG(G, alpha=alpha)
+    Delta = W >= delta
+    W = Delta * W
+    C = W - W.transpose() < 0
+    A = C * W
+    A = A + A.transpose()
+    B = W == W.transpose()
+    W = B*W + A
+    return W
+
+
+

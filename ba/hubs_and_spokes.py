@@ -302,3 +302,24 @@ heatmap(W10, "Heatmap of BA25-2 Model and alpha=0.10")
 plt.savefig("Heatmap BA25-2 alpha=0.10.png")
 plt.close()
 
+# reducedInfluenceMatrixG
+W = reducedInfluenceMatrixG(G, delta=0.05)
+
+heatmap(W, "")
+
+Gd = nx.Graph()
+Gd.add_nodes_from(range(25))
+edges = [(i,j) for i in range(25) for j in range(i,25) if W[i,j]>0]
+
+Gd.add_edges_from(edges)
+
+nx.draw(Gd, with_labels=True)
+
+
+l = [W[e] for e in Gd.edges()]
+
+l
+
+nx.draw(Gd, with_labels=True, width=4, edge_color = range(40))
+
+
