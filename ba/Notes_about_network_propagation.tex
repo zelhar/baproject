@@ -13,7 +13,7 @@
 \usepackage{color}
 \usepackage{enumerate}
 %\usepackage{IEEEtrantools}
-\usepackage[redeflists]{IEEEtrantools}
+%\usepackage[redeflists]{IEEEtrantools}
 \usepackage{verbatim}
 
 % Basic data
@@ -404,16 +404,29 @@ P(t+1) = (\frac{(1-\alpha)}{N}\bar{1} + \alpha W) \cdot P(t) =
 \frac{(1-\alpha)}{N}\mathbf{1} + \alpha P(t)
 $$
 
-Also, instead of taking the uniform distribution, let $s$ be some state, and let
-$S = (s,s,\dots,s)$ a matrix whose columns are all $s$. Then if $p$ is any
-state, $Sp = s$. So we can replace $\mathbf{1}/N$ with $S$ in the above
-remarks, so our random restart distribution can be chosen arbitrarily as long as
-it is has no $0$ entries.
-
 \end{proof}
 \end{lemma}
 
-\begin{remark}As we have seen for $T$ irreducible, and any state $s$, 
+\begin{remark}
+Instead of taking the uniform distribution, let $s$ be some state, and let
+$S = (s,s,\dots,s)$ a matrix whose columns are all $s$. Then if $p$ is any
+state, $Sp = s$. So we can replace $\mathbf{1}/N$ with $S$ in the above
+remarks, so our random restart distribution can be chosen arbitrarily we
+actually don't need to require that that
+it is has no $0$ entries:
+
+Let $A,B \neq 0$ be non-negative square matrices, such that $A$ has a positive
+row, and $B$ has a positive entry in evert column. Then $(A+B) \gt 0$ and
+therefore $A+B$ is regular. The proof is trivial. What's important to our case
+is that the adjacency matrix of a connected graph has the property of $B$ and
+the matrix like $S$ has the property of $A$. Therefore the composite matrix is
+regular fro any arbitrary restart state $s$.
+
+\end{remark}
+
+
+\begin{remark}
+As we have seen for $T$ irreducible, and any state $s$, 
 $T^ks \to \pi$ where $\pi$ is the unique stationary state.
 
 $\pi$ can be approximated by itetrating this sequence until sufficent accuracy 
@@ -515,7 +528,7 @@ value being capped at a maximum of $1$):
 \begin{equation}
 \label{eq:gibb_propagation}
 P(X_i=1 | X_{[-i]}) = 
-\sum_{j \in \text{Nei}(i)} \frac{1}{\text{Nei}(j)}
+\sum_{j \in \text{Nei}(i)} \frac{1_{X_J}}{\text{Nei}(j)}
 \end{equation}
 
 Here we assume that the visiting agent will choose one of the neighbours at
@@ -529,7 +542,7 @@ as:
 \begin{equation}
 \label{eq:gibb_propagation_restart}
 P(X_i=1 | X) = 
-(1-\alpha) \sum_{j \in \text{Nei}(i)} \frac{1}{\text{Nei}(j)}
+(1-\alpha) \sum_{j \in \text{Nei}(i)} \frac{1_{X_J}}{\text{Nei}(j)}
 + \alpha \sum_{j : X_j=1} \frac{1}{\text{Nei}(j)}
 \end{equation}
 
@@ -537,9 +550,9 @@ $P(X_i=1 | X)$ here means that giving a labeling $X$ to all the nodes, we
 calculate the probabiliyt that $X_i$ will be labeled $1$ in the next iteration
 which is the probabilty that at least one of the agents will choose to visit it.
 
-I believe if we use gibbs sampling based algorithm with on \eqref{eq:gibb_propagation_restart}
-to find the $\pi$ the stationary distribution but I am not sure if it is 
-mor efficient than the iterative method. 
+%I believe if we use gibbs sampling based algorithm with \eqref{eq:gibb_propagation_restart}
+%to find the $\pi$ the stationary distribution but I am not sure if it is 
+%mor efficient than the iterative method. 
 
 \subsubsection{Estimation of the parametes}
 The authors of \textcite{deng2002prediction} used the quasi-likelihood
@@ -584,6 +597,8 @@ $\qedsymbol$
 
 \nocite{herstein_winter_1989}
 \nocite{meyer2000matrix}
+\nocite{lawler2010random}
+
 \begin{comment}
 \section{Tests}
 \nocite{herstein_winter_1989}
@@ -591,6 +606,7 @@ $\qedsymbol$
 %See \citetext{big} and \nocite{herstein_winter_1989}
 %\citet*{meyer2000matrix}
 \nocite{meyer2000matrix}
+
 
 %I doubt that there is any useful information here.~\cite{wikibook}
 %
