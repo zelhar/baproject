@@ -303,23 +303,56 @@ plt.savefig("Heatmap BA25-2 alpha=0.10.png")
 plt.close()
 
 # reducedInfluenceMatrixG
+# Compute the reduced influence matrix and create the corresponding graph and
+# the connected components.
 W = reducedInfluenceMatrixG(G, delta=0.05)
-
 heatmap(W, "")
-
 Gd = nx.Graph()
 Gd.add_nodes_from(range(25))
 edges = [(i,j) for i in range(25) for j in range(i,25) if W[i,j]>0]
-
 Gd.add_edges_from(edges)
 
 nx.draw(Gd, with_labels=True)
 
-
 l = [W[e] for e in Gd.edges()]
-
 l
-
 nx.draw(Gd, with_labels=True, width=4, edge_color = range(40))
 
+# Exploring graph clustering methods. 
+# Since we are dealing with propagation and interested in connected scale free
+# graphs such as Barabsi-Albert, I am trying to apply propagation to perform
+# this task. 
+# Idea 1: The hottest node is going to form the first cluster. We then extend it
+# by all nodes that are connected to it in a sufficiently hot path. Remove them
+# from the graph and repeat on the smaller graph. Thought should then be
+# dedicated to the matter of setting the parameters: what is 'hot' (delta), how
+# fast we propagate (alpha), how do we test statistical significance and
+# robustness. Define null model? Use connected edge swaps for robustness tests?
+
+G = nx.barabasi_albert_graph(n=50, m=1, seed=seed)
+
+nx.draw(G, with_labels=True)
+
+nx.draw_spectral(G, with_labels=True)
+
+x = nx.degree(G, range(50))
+x=dict(x)
+x=x.values()
+x=list(x)
+x
+x=np.array(x)
+nx.draw_circular(G, with_labels=True, node_color=x, node_size=50*x)
+
+G.remove_node(0)
+
+nx.draw(G, with_labels=True)
+
+
+G = nx.barabasi_albert_graph(n=5, m=4, seed=seed)
+nx.draw(G, with_labels=True)
+
+G.remove_node(1)
+
+
+nx.draw(G, with_labels=True)
 
