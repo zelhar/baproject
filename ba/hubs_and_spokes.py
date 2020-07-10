@@ -328,31 +328,113 @@ nx.draw(Gd, with_labels=True, width=4, edge_color = range(40))
 # dedicated to the matter of setting the parameters: what is 'hot' (delta), how
 # fast we propagate (alpha), how do we test statistical significance and
 # robustness. Define null model? Use connected edge swaps for robustness tests?
+n=50
+m=1
+seed=42
 
-G = nx.barabasi_albert_graph(n=50, m=1, seed=seed)
+G = nx.barabasi_albert_graph(n=n, m=m, seed=seed)
 
 nx.draw(G, with_labels=True)
 
 nx.draw_spectral(G, with_labels=True)
 
-x = nx.degree(G, range(50))
+x = nx.degree(G, range(n))
 x=dict(x)
 x=x.values()
 x=list(x)
 x
 x=np.array(x)
+
+# just toying around
 nx.draw_circular(G, with_labels=True, node_color=x, node_size=50*x)
+nx.draw_spring(G, with_labels=True)
+nx.draw_kamada_kawai(G, with_labels=True, node_color=x, node_size=50*x)
+G = nx.florentine_families_graph()
+nx.draw_spring(G, with_labels=True)
 
-G.remove_node(0)
+# trying to cluster a graph ...
+G = nx.dual_barabasi_albert_graph(n=50, m1=1, m2=2, p=0.7, seed=seed)
+H = G.copy()
+p, _ = powerIterateG(G, alpha=0.85)
+plt.bar(range(50), p)
 
-nx.draw(G, with_labels=True)
+nx.draw_kamada_kawai(G, with_labels=True, node_color=p, node_size=5000*p)
+
+nx.draw_circular(G, with_labels=True, node_color=p, node_size=5000*p)
+
+s = np.argmax(p)
+s
+
+W = reducedInfluenceMatrixG(G, delta=0)
+heatmap(W, "")
+
+H = nx.Graph()
+H.add_nodes_from(G.nodes())
+
+edges = [(i,j) for i in range(49) for j in range(i+1,50) if W[i,j]>0]
+
+H.add_edges_from(edges)
+
+nx.draw_circular(H, with_labels=True, node_color=p, node_size=5000*p)
+
+for delta in np.arange(0.01, 1, 0.01):
+    remlist = [e for e in list(H.edges()) if W[e] <= delta]
+    H.remove_edges_from(remlist)
+    if nx.number_connected_components(H) > 1:
+        print("break", len(H.edges()))
+        break
+
+len(H.edges())
+
+nx.draw(H)
+
+H = nx.Graph()
+H.add_nodes_from(G.nodes())
+nlist = list(H.nodes())
+
+nx.draw_circular(H, with_labels=True )
+
+s = np.argmin(p[nlist])
+s #coldest node, lets see to which clust it belongs
+nlist.remove(s)
+t = np.argmax([W[s,i] for i in nlist])
+t
+H.add_edge(s,t)
+nx.draw_circular(H, with_labels=True )
+
+# repeat
+s = np.argmin(p[nlist])
+
+H = nx.Graph()
+H.add_nodes_from(G.nodes())
+nlist = list(H.nodes())
+while nx.number_connected_components(H) > 3:
+    s = np.argmin(p[nlist])
+    x = nlist[s]
+    print(s,x)
+    nlist.pop(s)
+    t = np.argmax([W[x,i] for i in nlist])
+    H.add_edge(x,nlist[t])
+
+nx.draw_circular(H, with_labels=True )
+
+nx.number_connected_components(H)
+
+nx.draw_kamada_kawai(H, with_labels=True)
+
+CCs = [list(c) for c in nx.connected_components(H)]
+
+CCs
+
+colors = np.zeros(50)
+
+colors[CCs[1]]=1
+colors[CCs[2]]=2
 
 
-G = nx.barabasi_albert_graph(n=5, m=4, seed=seed)
-nx.draw(G, with_labels=True)
+nx.draw_kamada_kawai(H, with_labels=True, node_color=colors)
 
-G.remove_node(1)
+nx.draw_spring(H, with_labels=True, node_color=colors)
 
-
-nx.draw(G, with_labels=True)
+nx.draw_spring(G, with_labels=True, node_color=colors)
 

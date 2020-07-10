@@ -53,12 +53,12 @@ def powerIterate(A, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fals
 ## Power Iteration For Graph as input
 def powerIterateG(G, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=False):
     """The inputs: G: a non networkx type grap.
-    alpha: the restart parameter, must be between 0 and 1.
-    epsilon: convergence accuracy requirement
-    maxiter: additional stop condition for the loop,
-    whichever reached first stops the loop.
-    If directmethod=True the calculation is 
-    done using the direct method rather than iteration.
+    alpha: the restart parameter, must be between 0 and 1. epsilon: convergence
+    accuracy requirement maxiter: additional stop condition for the loop,
+    whichever reached first stops the loop. If directmethod=True the calculation
+    is done using the direct method rather than iteration. returns the
+    stationary distribution as 1d-array and the transition matrix of the
+    process.
     """
     A = np.array(nx.adj_matrix(G).todense())
     n = len(A)
