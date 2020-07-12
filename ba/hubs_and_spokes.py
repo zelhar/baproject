@@ -671,6 +671,24 @@ io.imsave('test2.png', y)
 io.imsave('reconstruct_test2.png', X.reshape(n,n))
 
 
+yy=np.zeros((n,n))
+yy.shape
 
+for i in range(0, n, 2):
+    yy[i] = y[i]
+    yy[i+1] = y[i]
+for i in range(0, n, 2):
+    yy[:,i+1] = yy[:,i]
 
+io.imshow(yy)
+
+for i in range(0, n, 2):
+    for j in range(0,n,2):
+        l = ((x,y) for x in range(i,i+2) for y in range(j,j+2))
+        print(l)
+        break
+        yy[l] = y[i,j]
+        #yy[[(x,y) for x in range(i,i+2) for y in range(j,j+2)]] = y[i,j]
+
+io.imshow(yy)
 
