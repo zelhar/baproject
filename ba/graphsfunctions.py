@@ -261,6 +261,24 @@ def pageRanksConcentratedBiasG(G, alpha=0.85):
             G.nodes[i]["br_" + str(vertex)] = p[i]
     return G, W
 
+def pageRanksConcentratedBias(A, alpha=0.85):
+    """Input A: non-negative matrix which represents a weighted adjacency matrix
+    of a connected graph, 
+    Input alpha: restart parameter.
+    output: Matrix W.  
+    The nodes are assumed to be represented by integers.
+    the stationary
+    distribution with bias on node i is the ith raw.
+    """
+    n = len(A)
+    W = np.zeros((n, n))
+    for vertex in tqdm(range(n)):
+        bias = np.zeros(n)
+        bias[vertex] = 1
+        p, _, __ = biasedPropagate(A, bias=bias, alpha=alpha)
+        W[vertex] = p
+    return W
+
 
 def heatmap(mat, title):
     """Help function designed to plot a heatmap of
@@ -294,4 +312,25 @@ def reducedInfluenceMatrixG(G, alpha=0.85, delta=0):
     return W
 
 
+def bottomUpCluster(T, k):
+    """
+    Input T: a weighted adjacency matrix of a connected graph.
+    obtained from a non-negative matrix or a connected graph.
+    Input k: numer of desired clusters k <= len(p).
+    Output: a List of k lists, which represents a partition of p 
+    into k clusters.
+    """
+    p, _, __ = powerIterate(T)
+    W = pageRanksConcentratedBias(T)
+    H = nx.Graph()
+    H.add_nodes_from(range(len(p)))
+    nlist = list(H.nodes())
+    while nx.number_connected_components(H) > k:
+        s = np.argmin(p[nlist])
+        x = nlist[s]
+        nlist.pop(s)
+        t = np.argmax([W[x,i] for i in nlist])
+        H.add_edge(x, nlist[t])
+    CCs = [list(c) for c in nx.connected_components(H)]
+    return CCs
 

@@ -6,6 +6,11 @@ import pandas as pd
 from scipy.stats import poisson
 from tqdm import tqdm
 
+import skimage as ski
+from skimage import io
+
+from skimage.transform import rescale, resize, downscale_local_mean
+
 # plt.ioff()
 plt.ion()
 
@@ -416,7 +421,7 @@ while nx.number_connected_components(H) > 3:
     t = np.argmax([W[x,i] for i in nlist])
     H.add_edge(x,nlist[t])
 
-nx.draw_circular(H, with_labels=True )
+nx.draw_circular(H, with_labels=True)
 
 nx.number_connected_components(H)
 
@@ -437,4 +442,235 @@ nx.draw_kamada_kawai(H, with_labels=True, node_color=colors)
 nx.draw_spring(H, with_labels=True, node_color=colors)
 
 nx.draw_spring(G, with_labels=True, node_color=colors)
+
+
+# Testing image clustering
+A = np.arange(9).reshape((3,3))
+A
+
+cx = lambda x: (x // 3, x % 3)
+
+ix = lambda x: x[0]*3 + x[1]
+
+G = nx.Graph()
+
+G.add_nodes_from([(i,j) for i in range(3) for j in range(3)])
+
+G.nodes()
+
+G.add_edges_from([((i,j), (i+1,j)) for i in range(2) for j in range(3)])
+
+
+G.add_edges_from([((i,j), (i,j+1)) for i in range(3) for j in range(2)])
+
+nx.draw_circular(G, with_labels=True)
+
+T = np.zeros((9,9))
+
+for i,j in G.edges():
+    print(ix(i),ix(j))
+    T[ix(i), ix(j)] = abs(A[i] - A[j])
+
+T = np.transpose(T) + T
+T
+
+W = T / T.sum(axis=0)
+
+A.sum(axis=0)
+A.sum(axis=1)
+
+
+W.sum(axis=0)
+
+
+p, Q, _ = powerIterate(W)
+
+
+H = nx.Graph()
+H.add_nodes_from(range(9))
+nlist = list(H.nodes())
+while nx.number_connected_components(H) > 3:
+    s = np.argmin(p[nlist])
+    x = nlist[s]
+    nlist.pop(s)
+    t = np.argmax([W[x,i] for i in nlist])
+    H.add_edge(x,nlist[t])
+
+
+CCs = [list(c) for c in nx.connected_components(H)]
+
+CCs[0]
+CCs[1]
+CCs[2]
+
+bottomUpCluster(p, 3)
+
+X = np.arange(9)
+X
+X.reshape((3,3))
+
+for i in range(3):
+    X[CCs[i]] = i
+
+X
+plt.imshow(X.reshape((3,3)))
+
+
+im = io.imread('chimp-665439.jpg', as_gray=True)
+
+im.shape
+
+
+x = ski.util.crop(im, ((0,0), (120,120))) 
+
+io.imshow(x)
+
+x.shape
+
+
+y = resize(x, (64,64))
+
+io.imshow(y)
+
+z = y.flatten()
+
+w = np.zeros((64*64,64*64))
+
+#w = w + np.identity(64*64)
+
+for i in range(63):
+    for j in range(63):
+        ix = 64*i + j
+        w[ix, ix+1] = 1 / (abs(y[i,j] - y[i,j+1]) + 1)
+        w[ix, ix + 64] = 1 / (abs(y[i,j] - y[i+1,j]) + 1)
+
+w[-1,-2] = 1 / (abs(y[63,63] - y[63,62]) + 1)
+w[-1,-65] = 1 / (abs(y[63,63] - y[62,63]) + 1)
+
+w = w + np.transpose(w)
+
+w[64*63].sum()
+
+#w = w - np.identity(64*64)
+
+p, _, __ = powerIterate(w, alpha=0.85)
+
+cc = bottomUpCluster(p, 99)
+
+X = np.zeros(64*64)
+for i in range(99):
+    X[cc[i]] = i
+
+
+plt.imshow(X.reshape(64,64))
+
+
+
+w = np.zeros((3*3,3*3))
+for i in range(2):
+    for j in range(2):
+        ix = 3*i + j
+        w[ix, ix+1] = 1
+        #w[ix+1, ix] = 1
+        w[ix, ix + 3] = 1
+        #w[ix+3, ix] = 1
+
+w 
+
+for i in range(2):
+    w[-i,-i - 1] = 1
+    w[-i,-i - 3] = 1
+
+w[-1,-2] = 1
+w[8,5] = 1
+
+w = w + np.transpose(w)
+
+w[64*63].sum()
+
+
+G = nx.Graph()
+G.add_nodes_from(range(9))
+G.add_edges_from([(i,i+1) for i in range(8)])
+nx.draw(G, with_labels=True)
+G.add_edges_from([(i,i) for i in range(9)])
+A = nx.adj_matrix(G).todense()
+powerIterate(A, alpha=1)
+
+
+# second mini attempt
+# we start with a 4x4 matrix, a mini image:
+A = np.zeros((4,4))
+T = np.zeros((16,16))
+n=4
+n**2
+for i in range(n**2 - 1):
+    if (i+1) % n > 0:
+        T[i,i+1] = 1
+    if (i+n) < n**2:
+        T[i,i+n] = 1
+T.sum()
+T = T + np.transpose(T)
+T
+p, _, __ = powerIterate(T)
+T = T + np.identity(n**2)
+p, _, __ = powerIterate(T, alpha=1)
+
+# now with a real image again
+n=50
+im = io.imread('chimp-665439.jpg', as_gray=True)
+im.shape
+x = ski.util.crop(im, ((0,0), (120,120))) 
+x.shape
+
+io.imshow(x)
+
+y = resize(x, (n,n))
+z = y.flatten()
+
+io.imshow(y)
+
+T = np.zeros((n**2,n**2))
+
+for i in range(n**2 - 1):
+    if (i+1) % n > 0:
+        r = i // n
+        c = i % n
+        T[i,i+1] = 1 / (1 + abs(
+            y[r,c] - y[r,c+1]))
+    if (i+n) < n**2:
+        T[i,i+n] = 1 / (1 + abs(
+            y[r,c] - y[r+1,c]))
+
+T.sum() 
+64*63*2
+
+T = T + np.transpose(T)
+
+p, _, __ = powerIterate(T)
+
+ww = pageRanksConcentratedBias(T)
+
+cc = bottomUpCluster(T, 560)
+
+len(cc)
+
+X = np.zeros(n*n)
+for i in range(560):
+    #X[cc[i]] = i
+    X[cc[i]] = z[cc[i]].mean()
+
+
+plt.imshow(X.reshape(n,n))
+
+io.imshow(X.reshape(n,n))
+
+io.imshow(y)
+
+io.imsave('test2.png', y)
+io.imsave('reconstruct_test2.png', X.reshape(n,n))
+
+
+
+
 
