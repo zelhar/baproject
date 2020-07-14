@@ -692,3 +692,66 @@ for i in range(0, n, 2):
 
 io.imshow(yy)
 
+# Karate Club
+G = nx.karate_club_graph()
+
+colors = [0 if G.nodes[v]['club'] == 'Mr. Hi' else 1 for 
+        v in G.nodes()]
+
+clublabel = ['Hi' if i==0 else 'Off' for i in colors]
+
+clubdict = dict(zip(G.nodes(), clublabel))
+
+nx.draw_spring(G, with_labels=True, node_color=colors, k=30, labels=clubdict)
+
+W = reducedInfluenceMatrixG(G, delta=0)
+
+cc = bottomUpClusterG(G, W, 2)
+
+clusters = np.zeros(len(W))
+
+clusters[cc[1]]=1
+clusters
+
+colors = np.array(colors)
+
+colors
+
+clusters == colors
+# so this algorithm got it mostly correct, with 2 errors.
+
+W
+
+for i,j in G.edges:
+    G.edges[i,j]['weight'] = W[i,j]
+
+clusterlabel = ['Hi' if i==0 else 'Off' for i in clusters]
+
+clusterdict = dict(zip(G.nodes(), clusterlabel))
+
+nx.draw_spring(G, with_labels=True, node_color=colors, k=30,
+        node_shape='s', labels=clusterdict)
+
+adjcolors = colors.copy()
+adjcolors[colors != clusters] = 2
+
+adjcolors
+
+nx.draw_spring(G, with_labels=True, node_color=adjcolors, 
+        node_shape='s', labels=clusterdict)
+
+nx.draw_spring(G, with_labels=True, node_color=adjcolors, 
+        node_shape='s', labels=clubdict)
+
+nx.draw_kamada_kawai(G, labels=clubdict, node_color=adjcolors)
+
+nx.draw_circular(G, labels=clubdict, node_color=adjcolors)
+
+nx.draw_circular(G, labels=clubdict, node_color=colors, with_labels=True)
+
+# labels: actual club membership colors: by cluster when it agrees with club,
+# third color in case of cluster which disagrees with actual membership
+nx.draw_circular(G, labels=clubdict, node_color=adjcolors, with_labels=True)
+
+nx.draw_circular(G, node_color=colors, with_labels=True)
+
