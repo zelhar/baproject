@@ -334,3 +334,27 @@ def bottomUpCluster(T, k):
     CCs = [list(c) for c in nx.connected_components(H)]
     return CCs
 
+
+def bottomUpClusterG(G, W, k):
+    """
+    Input G: undirected graph.
+    Input W: the reduced influence of G. It is better to calculate this matrix
+    once and then pass it as an argument to this function rather than repeating
+    this slow calulation with each call of this algorithm.
+    Input k: numer of desired clusters k <= len(p).
+    Output: a List of k lists, which represents a partition of p 
+    into k clusters.
+    """
+    p, _  = powerIterateG(G)
+    H = nx.Graph()
+    H.add_nodes_from(range(len(p)))
+    nlist = list(H.nodes())
+    while nx.number_connected_components(H) > k:
+        s = np.argmin(p[nlist])
+        x = nlist[s]
+        nlist.pop(s)
+        t = np.argmax([W[x,i] for i in nlist])
+        H.add_edge(x, nlist[t])
+    CCs = [list(c) for c in nx.connected_components(H)]
+    return CCs
+
