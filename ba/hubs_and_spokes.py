@@ -11,6 +11,8 @@ from skimage import io
 
 from skimage.transform import rescale, resize, downscale_local_mean
 
+from scipy.special import rel_entr
+
 # plt.ioff()
 plt.ion()
 
@@ -698,11 +700,20 @@ G = nx.karate_club_graph()
 colors = [0 if G.nodes[v]['club'] == 'Mr. Hi' else 1 for 
         v in G.nodes()]
 
+colors = np.array(colors)
+
+colors
+
+colours = ['yellow' if x==0 else 'green' for x in colors]
+
 clublabel = ['Hi' if i==0 else 'Off' for i in colors]
 
-clubdict = dict(zip(G.nodes(), clublabel))
+clublabel = [str(i) + ":" + clublabel[i] for i in G.nodes()]
 
-nx.draw_spring(G, with_labels=True, node_color=colors, k=30, labels=clubdict)
+clubdict = dict(zip(G.nodes(), clublabel))
+clubdict
+
+nx.draw_spring(G, with_labels=True, node_color=colours, k=30, labels=clubdict)
 
 W = reducedInfluenceMatrixG(G, delta=0)
 
@@ -713,23 +724,23 @@ clusters = np.zeros(len(W))
 clusters[cc[1]]=1
 clusters
 
-colors = np.array(colors)
-
-colors
-
 clusters == colors
 # so this algorithm got it mostly correct, with 2 errors.
 
 W
 
-for i,j in G.edges:
-    G.edges[i,j]['weight'] = W[i,j]
+#for i,j in G.edges:
+#    G.edges[i,j]['weight'] = W[i,j]
+#
+#nx.draw_spring(G, with_labels=True, node_color=colors, k=30, labels=clubdict)
 
-clusterlabel = ['Hi' if i==0 else 'Off' for i in clusters]
+clusterlabel = ['hi' if i==0 else 'off' for i in clusters]
+
+clusterlabel = [str(i) + ":" + clusterlabel[i] for i in G.nodes()]
 
 clusterdict = dict(zip(G.nodes(), clusterlabel))
 
-nx.draw_spring(G, with_labels=True, node_color=colors, k=30,
+nx.draw_spring(G, with_labels=True, node_color=colours, k=30,
         node_shape='s', labels=clusterdict)
 
 adjcolors = colors.copy()
@@ -747,11 +758,282 @@ nx.draw_kamada_kawai(G, labels=clubdict, node_color=adjcolors)
 
 nx.draw_circular(G, labels=clubdict, node_color=adjcolors)
 
-nx.draw_circular(G, labels=clubdict, node_color=colors, with_labels=True)
+nx.draw_circular(G, labels=clubdict, node_color=colours, with_labels=True)
 
 # labels: actual club membership colors: by cluster when it agrees with club,
 # third color in case of cluster which disagrees with actual membership
 nx.draw_circular(G, labels=clubdict, node_color=adjcolors, with_labels=True)
 
-nx.draw_circular(G, node_color=colors, with_labels=True)
+nx.draw_circular(G, node_color=colours, with_labels=True)
 
+# New Clustering Algorithm: Starting from a Graph G, we construct its 'edge
+# graph' G' whose vertices are the edges of G and vertices are connected by an
+# edge in G' iff their corresponding edges share a vertex.
+# Edges that connect multiple groups probably have high degree of betweeness. In
+# the edge graph G' I predict that these nodes are going to be highly ranked.
+# Edges that connect members of the same group in G will be nodes of average
+# pagerank because they are sort of all the same as the other inter-group edges.
+# The idea: Create the edge graph and calculate its pagerank. Then from G the
+# edges that correspond to the hottest nodes until G is split into 2 components.
+# Then repeat the procedure on each component.
+# Stopping points can also be defined. In case the pagerank is close to uniform
+# we predict that there is no informative subdivision and stop the process.
+# 
+# Further motivation: There are 2 types of edges: edges that connect 2 nodes
+# within the same group, or edges that connect 2 nodes from 2 different groups,
+# so in short and ecge is either 'within' or 'between'. We are interested in
+# identifying the between edges. Remove them, and the graph is partitioned to
+# connected component. Propagation is computed for nodes on the graph rather
+# than its edges. If we move to the edge graph, the propagation of the nodes of
+# the edge graph is an assessment of the edges of the original graph. a between
+# edge is not necesarily hotter than a within edge. But perhaps the variance of
+# its influence is smaller than a within edge, because it has some influence on
+# multiple groups whereas a 'within' edge has most of its influence concetrated
+# within its own group. Hypothesis: If we take a 'between' edge, and look at the
+# induced subgraph of that edge and its neighbouring edges in the edge graph, in
+# a sprung layout it will look like an hourglass. If we take a 'within' edge,
+# the induced subgraph will resemble a clique.
+# Extra motivation for PPIN: An edge in the PPI represent an interaction, which
+# can either be internal 'within a function/complex' or transitional 'between
+# function/complex'. 
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+p,_ = powerIterateG(eG)
+
+nx.draw_spring(G, node_color=colours, with_labels=True)
+
+x = np.argmax(p)
+
+eG.nodes[x]['edg']
+
+y = tuple( eG.nodes[x]['edg'])
+
+testG.remove_edge(*y)
+
+nx.number_connected_components(testG)
+
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+while nx.number_connected_components(testG) <= 3:
+    p,_ = powerIterateG(eG)
+    x = np.argmax(p)
+    y = tuple( eG.nodes[x]['edg'])
+    testG.remove_edge(*y)
+    eG = edgeGraphG(testG)
+
+nx.draw_spring(testG, node_color=colours)
+# fail :(
+
+_ , w = pageRanksConcentratedBiasG(eG)
+
+w[9].sum()
+
+w.sum(axis=1)
+
+w.min(axis = 1)
+
+plt.bar(range(len(w)), w.min(axis=1))
+
+x = np.argmax(w.min(axis=1))
+eG.nodes[x]['edg']
+
+x = np.argmax(w.var(axis=1))
+eG.nodes[x]['edg']
+# nope fail again :(
+
+
+x = np.argmin(w.var(axis=1))
+eG.nodes[x]['edg']
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+while nx.number_connected_components(testG) <= 1:
+    _ , w = pageRanksConcentratedBiasG(eG)
+    x = np.argmin(w.var(axis=1))
+    eG.nodes[x]['edg']
+    y = tuple( eG.nodes[x]['edg'])
+    testG.remove_edge(*y)
+    eG = edgeGraphG(testG)
+
+nx.draw_spring(testG, node_color=colours, with_labels=True)
+
+betweenEdges = [(u,v) for u,v in G.edges()
+        if G.nodes[v]['club'] != G.nodes[u]['club']]
+
+betweenEdges
+
+EdgeColors = ['red' if G.nodes[v]['club'] != G.nodes[u]['club'] else 'blue' for
+        u,v in G.edges()]
+
+
+nx.draw_spring(G, node_color=colours, edge_color=EdgeColors, with_labels=True)
+
+eG = edgeGraphG(G)
+p,_ = powerIterateG(eG)
+nx.draw_spring(eG, node_color=EdgeColors, with_labels=True, node_size=p*50000)
+
+
+g = nx.subgraph(eG, eG.neighbors(15))
+nx.draw_spring(g, with_labels=True)
+
+g = nx.subgraph(eG, eG.neighbors(28))
+nx.draw_spring(g, with_labels=True)
+
+g = nx.subgraph(eG, eG.neighbors(8))
+nx.draw_spring(g, with_labels=True)
+
+g = nx.subgraph(eG, eG.neighbors(44))
+nx.draw_spring(g, with_labels=True)
+
+g = nx.subgraph(eG, eG.neighbors(34))
+nx.draw_spring(g, with_labels=True)
+
+y = list(eG.neighbors(34))
+y.append(34)
+y
+
+g = nx.subgraph(eG,y )
+nx.draw_spring(g, with_labels=True)
+
+# when we consider between edges, in the edge graph, we expect? that their neighbors are divided
+# into 2 or more distinct groups. The neigbors of a within edge remain a single group
+# even when the with edge (as a node) is removed!
+# A graph cannot be further partition if in its edgegraph there are
+# no nodes whose neighbors form 2 or mored identifiable groups.
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+myList = eG.nodes()
+for e in myList:
+    g = nx.subgraph(eG, eG.neighbors(e))
+    if nx.number_connected_components(g) > 1:
+        print(e, eG.nodes[e]['edg'])
+        testG.remove_edge(*eG.nodes[e]['edg'])
+
+betweenEdges 
+
+nx.draw_spring(testG, node_color=colours, with_labels=True)
+
+# We need a looser criterion to qualify a 'between' edge. Instead of require
+# complete disconnection we need a measure of 'loosely connected' components.
+
+
+foo = nx.Graph()
+foo.add_nodes_from(range(5))
+
+bar, _ = powerIterateG(foo)
+
+foo.add_edges_from([(0,1),(0,2),(1,2),(3,4)])
+
+bar, _ = powerIterateG(foo)
+
+foo.add_node(5)
+foo.add_edges_from([(3,5),(4,5)])
+nx.draw_spring(foo)
+
+foo.add_node(6)
+foo.add_edges_from([(3,6),(4,6),(5,6)])
+nx.draw_spring(foo)
+
+foo.add_edge(2,3)
+nx.draw_spring(foo)
+
+bar, _ = powerIterateG(foo)
+voo = 1/len(bar) * np.ones_like(bar)
+
+rel_entr(bar,voo).sum()
+rel_entr(voo,bar).sum()
+
+_, w = pageRanksConcentratedBiasG(foo)
+
+
+ag = np.array(nx.adj_matrix(g).todense())
+
+w = pageRanksConcentratedBias(ag)
+
+q = 1/len(w)
+q
+
+np.max(1/w * q)
+
+(1/w * q).max(axis=1)
+
+plt.bar(range(len(w)), w[0])
+
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+myList = eG.nodes()
+for e in myList:
+    g = nx.subgraph(eG, eG.neighbors(e))
+    if nx.number_connected_components(g) > 1:
+        print('discovered ', e, eG.nodes[e]['edg'])
+        testG.remove_edge(*eG.nodes[e]['edg'])
+    else:
+        ag = np.array(nx.adj_matrix(g).todense())
+        w = pageRanksConcentratedBias(ag)
+        q = 1/len(w)
+        if np.max(1/w * q) > 2.5:
+            print('maybe discovered ', e, eG.nodes[e]['edg'])
+            testG.remove_edge(*eG.nodes[e]['edg'])
+
+        
+
+
+betweenEdges 
+
+nx.draw_spring(testG, node_color=colors, with_labels=True)
+
+nx.draw_spring(G, node_color=colors, with_labels=True)
+
+pos = nx.spring_layout(g)
+
+
+eG = edgeGraphG(G)
+p,_ = powerIterateG(eG)
+nx.draw_spring(eG, node_color=EdgeColors, with_labels=True, node_size=p*50000)
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+myList = eG.nodes()
+while nx.number_connected_components(testG) == 1:
+    p,_ = powerIterateG(eG)
+    e = np.argmax(p)
+    print(e, eG.nodes[e]['edg'])
+    testG.remove_edge(*eG.nodes[e]['edg'])
+    eG = edgeGraphG(testG)
+
+nx.draw_spring(testG, node_color=colours, with_labels=True)
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+myList = eG.nodes()
+while nx.number_connected_components(testG) == 1:
+    _, w = pageRanksConcentratedBiasG(eG)
+    #w =reducedInfluenceMatrixG(eG)
+    e = w.min(axis=0).argmax()
+    print(e, eG.nodes[e]['edg'])
+    testG.remove_edge(*eG.nodes[e]['edg'])
+    eG = edgeGraphG(testG)
+
+nx.draw_spring(testG, node_color=colours, with_labels=True)
+
+
+nx.draw_spring(G, node_color=colours, with_labels=True)
+
+w =reducedInfluenceMatrixG(eG)
+_, w = pageRanksConcentratedBiasG(eG)
+
+testG = G.copy()
+eG = edgeGraphG(testG)
+myList = eG.nodes()
+while nx.number_connected_components(testG) == 1:
+    _, w = pageRanksConcentratedBiasG(testG)
+    #w =reducedInfluenceMatrixG(eG)
+    x = w.min(axis=0).argmax()
+    print(x)
+    testG.remove_node(x)
+
+nx.draw_spring(testG, node_color=colours, with_labels=True)

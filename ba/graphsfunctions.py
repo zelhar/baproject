@@ -252,13 +252,16 @@ def pageRanksConcentratedBiasG(G, alpha=0.85):
     """
     n = len(G.nodes())
     W = np.zeros((n, n))
-    for vertex in tqdm(G.nodes()):
+    #for vertex in tqdm(G.nodes()):
+    #for vertex in G.nodes():
+    for vertex in range(n):
         bias = np.zeros(n)
         bias[vertex] = 1
         p, _ = biasedPropagateG(G, bias=bias, alpha=alpha)
         W[vertex] = p
         for i in G.nodes():
-            G.nodes[i]["br_" + str(vertex)] = p[i]
+            G.nodes[i]["br_" + str(list(G.nodes())[vertex])] = p[i]
+            #G.nodes[i]["br_" + str(vertex)] = p[i]
     return G, W
 
 def pageRanksConcentratedBias(A, alpha=0.85):
@@ -272,7 +275,8 @@ def pageRanksConcentratedBias(A, alpha=0.85):
     """
     n = len(A)
     W = np.zeros((n, n))
-    for vertex in tqdm(range(n)):
+    #for vertex in tqdm(range(n)):
+    for vertex in range(n):
         bias = np.zeros(n)
         bias[vertex] = 1
         p, _, __ = biasedPropagate(A, bias=bias, alpha=alpha)
@@ -316,7 +320,7 @@ def bottomUpCluster(T, k):
     """
     Input T: a weighted adjacency matrix of a connected graph.
     obtained from a non-negative matrix or a connected graph.
-    Input k: numer of desired clusters k <= len(p).
+    Input k: number of desired clusters k <= len(p).
     Output: a List of k lists, which represents a partition of p 
     into k clusters.
     """
@@ -357,4 +361,25 @@ def bottomUpClusterG(G, W, k):
         H.add_edge(x, nlist[t])
     CCs = [list(c) for c in nx.connected_components(H)]
     return CCs
+
+def edgeGraphG(G):
+    """Input: G undirected graph whose vertices are assumed to be
+    an initial segemnent of the naturals. 
+    Output: EG whose vertices are the edges of G, also numbered but they edge
+    they represent is preserved as a node property 'edg'. Two vertices in G' are
+    connected by an edge if their respected edges in G have a common vertex.
+    """
+    temp = [set(e) for e in G.edges()]
+    edgesG = np.array(G.edges())
+    n = len(edgesG)
+    EG = nx.Graph()
+    EG.add_nodes_from(range(n))
+    edgesEG = [(x,y) for x in range(n-1)
+            for y in range(x+1,n)
+            if not temp[x].isdisjoint(temp[y])]
+    EG.add_edges_from(edgesEG)
+    for x in EG.nodes():
+        EG.nodes[x]['edg'] = edgesG[x]
+    return EG
+
 
