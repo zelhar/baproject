@@ -6,8 +6,7 @@
 \usepackage[backend=biber,autocite=inline]{biblatex}
 \addbibresource{mybib.bib}
 \usepackage{a4wide}
-\usepackage{mathtools}
-%\usepackage{amsmath} %included already in mathtools
+\usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{listings}
@@ -17,6 +16,7 @@
 %\usepackage[redeflists]{IEEEtrantools}
 \usepackage{verbatim}
 \usepackage{graphicx}
+\usepackage[section]{placeins} %no trans-sectional figures!
 
 % Basic data
 \newcommand{\N}{\mathbb{N}}
@@ -64,18 +64,11 @@ breaklines=true,
 %language=C++
 }
 
-
-%\renewcommand{\[}{\begin{IEEEeqnarray}{l"s}}
-%\renewcommand{\]}{\end{IEEEeqnarray}}
-%\newcommand{\equ}{\begin{IEEEeqnarray*}{c"s}}
-%\newcommand{\uqe}{\end{IEEEeqnarray*}}
-
 \theoremstyle{definition}
 \newtheorem{mydef}{Definition}[section]
 
-%\theoremstyle{remark}
-\newtheorem{remark}{Remark}[section]
-%\newtheorem{remark}{Remark}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Theorem}[section]
@@ -88,20 +81,61 @@ breaklines=true,
 
 % Document title
 \begin{titlepage}
-    \title{Notes about Network Propagation}
-    \author{Yiftach Kolb}
-    %\author{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}
-    \date{\today}
+	\centering
+%    \title{Bachelorthesis about Network Propagation}
+%    \author{Yiftach Kolb}
+%    \date{\today}
+    {\scshape\LARGE \par Bachelorthesis about Community Structure in Graphs
+    \par Using Network Propagation Methods 
+    \par and Applications in Protein Function Annotaions}
+    \vfill
+  	{\Large Yiftach Kolb \par}
+    \vfill
+	  {\Large Instructor\par
+    Prof. Dr. Matin Vingorn 
+    \par}
+    {\large \today\par}
 \end{titlepage}
 
-\maketitle
+%\begin{titlepage}
+%	\centering
+%    %\title{Neoropraktikumsprotoklsmuster}
+%    %\author{Felix Droop, Yiftach Kolb}
+%    %\date{\today}
+%    {\scshape\LARGE \par Protokoll von Experiment 4
+%    \par vom 20/01/2020 \par Konditionierung von Larven}
+%    \vfill
+%  	{\Large Gruppe 7 \par Felix Droop, Yiftach Kolb \par}
+%    \vfill
+%	  {\large Lehrende:\par
+%    Prof. Dr. Mathias Wernet, 
+%    Prof. Dr. Robin Hiesinger 
+%    \par Tutoren: \par
+%    Lisa Peters, Johannes Hammacher, Kai Kramm, \break Nurelhoda Abdul Muti
+%    \par}
+%    \vfill
+%    {\large \today\par}
+%\end{titlepage}
 
-% Use this to give math equations different colot, but it may be buggy.
+%\maketitle
+
+
 %\everymath{\color{blue}}
 %\everydisplay{\color{blue}} 
 
-\section{Mathematical Primer}
-\subsection{Matrix Algebra Primer}
+\section{Introduction}
+This Thesis deals with the propagation methods for clustering and community structue in
+Graphs.
+The original motivation is to find application
+of these methods on Protein-Protein Interaction Networks (PPI) specifically for
+function annotations.
+
+We are given an (in my case undirected) connected graph, which represents some sort of
+network structure, be it a PPI or A social network. Real world networks tend to
+have some characteristics that are clearly not random, such as the 'small world
+property' and tendency to forming hubs. 
+
+\section{Linear Algebra Primer}
 
 \begin{mydef}
 \label{def:transition}
@@ -290,7 +324,7 @@ so there exists a unique stationary state.
 2. All the other eigenvalues have absolute value strictly less than $1$.
 
 3. For every state $u$, $T^ku$ converges to the stationary state $\pi$.
-In particular the columns of $T$ converge to $\pi$.
+In particular the columns of $T^k$ converge to $\pi$.
 
 \begin{proof}
 1 and 2. We already know.
@@ -320,8 +354,8 @@ so there exists a unique stationary state.
 2. If there are other other eigenvalues on the unit circle then their algebaic
 multiplicity is equal their geometric multiplicity.
 
-3. For every state $u$, $\frac{1}{n}\sum_{k=1}^n T^ku$ converges to the stationary state $\pi$.
-In particular the columns of $T$ converge to $\pi$.
+3. For every state $u$, the \textbf{Cesaro sums} 
+$\frac{1}{n}\sum_{k=1}^n T^ku$ converge to the stationary state $\pi$.
 
 \begin{proof}
 1 We already know.
@@ -330,13 +364,14 @@ In particular the columns of $T$ converge to $\pi$.
 matrix, $j_{1,1} = 1$ and the rest of the main diagonal $|J_{i,i}| \leq 1$.
 
 If we had a Jordan block of size greater than $1$ for an eigenvalue $\lambda$,
-Then on the superdiagonal of $J^k$ we would have $k \lambda$. If $\lambda =1$
+Then on the superdiagonal of $J^k$ we would have $k \lambda$. If $|\lambda| =1$
 then $J^k$ and hence $T^k$ would be unbounded, but that is impossible since
 $T^k$ is a transition. If follows that all eigenvalues on the unit circle must
 be simple (alebgaic multiplicity equals geometric).
 
 3. For the convergence, it follows from calculations on the Jordan blocks, which
-I omit. See \textcite{meyer2000matrix} for rigorous proof.
+I omit. See \textcite{meyer2000matrix} or \textcite{serre2010matrices}
+for rigorous proof.
 \end{proof}
 \end{thm}
 
@@ -481,7 +516,7 @@ A =
 \begin{pmatrix}
 0 & M_1 & 0 & \dots & 0 \\
 0 & 0 & M_2 & 0 \dots & 0 \\
- &  & \ddots &  & &  \\
+ &  & \ddots & \ddots & &  \\
 0 & \dots & 0 & 0 & M_{h-1} \\
 M_h & 0 & \dots & 0 & 0 
 \end{pmatrix}
@@ -493,7 +528,7 @@ Now we will just present the Perron-Frobenius theorems. The main parts that are
 important to our work have appeared in the previous theorems.
 
 \begin{thm}[Perron-Frobenius \cite{meyer2000matrix}]
-\label{perron1}
+\label{thm:perron1}
 
 
 Let $0 \lt A \in \R^{n \times n}$ with spectral radius $\rho := \rho(A)$, then the following are all true:
@@ -510,7 +545,7 @@ with $\Gamma = \{x | x \geq 0, x \neq 0\}$
 \end{thm}
 
 \begin{thm}[Perron-Frobenius for irreducible matrices \autocite{meyer2000matrix}]
-\label{perron2}
+\label{thm:perron2}
 
 Let $0 \leq A \in \R^{n \times n}$ be irreducible with spectral radius $\rho := \rho(A)$,
 then the following are all true:
@@ -527,18 +562,11 @@ with $\Gamma = \{x | x \geq 0, x \neq 0\}$
 \end{thm}
 
 
+\section{More on Matrices, Graphs and Stochastics}
 
-
-
-\subsection{More on Matrices, Graphs and Stochastics}
-
-%There is a simple correspondence between directed weighted graphs and
-%non-negative matrices. Let $G$ be a directed weighted graph on $n$ vertices,
-%then Let $A \ in \R^{n \times n}$ be the where $A_{i,j}$ is the weight of the
-%edge $e(i,j)$ if it exists on $G$ or $0$ otherwise.
-
-A directed non-weighted graph can be uniquely represented by its adjacency matrix.
-$A_{i,j} = 1$ if and only if there is a directed edge from $i$ to $j$ (if we
+A directed non-weighted graph $G$ can be uniquely represented by its
+\textbf{adjacency matrix},
+$A_{i,j} := 1$ if and only if there is a directed edge from $i$ to $j$ (if we
 want to use it for transitioning on columns as done above). It's possible to
 assign different edge weights rather than only $1$ and $0$. If the graph is
 undirected each edge would be counted in both directions and the matrix is
@@ -552,6 +580,9 @@ transition matrix of this graph (because right-multiplying by $D$ normalizes eac
 column by its rank).
 If the graph was stochastic to begin with then the adjacency matrix as we
 defined it is already column-normalized.
+Going forward when we are always implicitly assuming that the adjacency matrix
+is column-normalized.
+
 
 \begin{mydef}
 \label{def:stronglyconnected}
@@ -576,309 +607,139 @@ So if the graph $G$ is strongly connected and has period $1$
 then the adjacency matrix is aperiodical and hence primitive, and vice versa. 
 \end{remark}
 
+From all the above we have seen that a Markov process can be represented in two
+equivalent ways \textemdash as a transition matirx  and as the the 
+corresponding weighted directed graph.
 
+If the graph $G$ is strongly connected and aperiodic, its corresponding
+adjacency matrix is primitive. We know from \ref{thm:perron1} that there is a
+unique stationary distribution $p$ and that the Markov converges to $p$ no
+matter from which distribution it starts. We may calculate $p$ using the
+\textbf{power
+method} which is efficient because it can be done in a matrix-free method. 
+We don't need to know the matrix itself just the dot product of it with a state
+vector.
 
-Primitivity is a stronger condition than
-irreucibility and also I think it is easy to that if $A$ is irreducible then
-$I+A$ is regular, because as we exponentiate it every positive entry remains
-positiv \dots. 
+If the graph $G$ is strongly connected, then \ref{thm:perron2} assures as the
+existence and uniqueness of a stationary distribution $p$. But if $G$ is not
+aperiodic, the corresponding adjacency matrix is not primitive. We cannot use
+the efficient power method to calculate $p$. Also the process itself doesn't
+stabilize on $p$, it is periodic and cycles on between the $h$ eigenvectors on
+the unit circle. 
 
-We first show that the two condidtions for irreducibility of a matrix are
-equivalent.
-If $A$ is similar to a block  upper triangular matrix, than clearly the bottom
-left $0$-block is going to stay all-$0$s in the similar matrix and the
-corresponding entries in the original matrix as well. 
-So there are $i,j$ such that $\forall m A^m_{i,j} = 0$ 
-
-On the other direction if $A$ has indices $i,j$ such that $\forall m A^m_{i,j} =
-0$ rename $i$ to $1$ and $j$ to $n$. Now consider the graph $G$ that $A$ is its
-adjacency matrix. Then rename the vertices so that then first $k$ vertices are
-all the vertices reachable from $1$, and the other are the vertices unreachable
-from $1$ (we know that $n$ is unreachable). Since there is no edge between
-vertice from $\{1 \dots k\}$ to any vertice of $\{k+1 \dots n\}$ the adjacency
-matrix is upper block-triangular $\qedsymbol$.
-
-Now we show that if $G$ is strongly connected then $A$ is irreducible:
-Let graph $G$ be strongly connected and $A$ ist adjacency matrix. 
-We want to show that it is irreducible.
-Let $G^n$ be the graph on the same vertices such that $i,j$ have an edge in
-$G^n$ iff there is a path of length $n$ in $G$ connecting them. Then its
-adjacency matrix is exactly $A^n$ converted to boolean (positive means true). It
-is relatively easy to show by induction but I won't show it reigorously. Just
-consider that if and only if there is a pathe $i$ to $k$ to $j$ then 
-$A_{i,k}A_{k,j} > 0$. So from here we see that if $G$ is strongly connected,
-then for any $i,j$ we can find some $m$ so that there is is an $m$-path
-connecting them and therefore $A^m_{i,j} >0$.
-
-Finally we show the
-other direction: if the graph $G$ is not strongly connected we want to show its
-adjacency matrix is reducible. We take a node $i$ that has a minimal number of
-reachable nodes. If $i$ is a sink then we switch it's name to $0$. We assume by
-induction that the rest of the nodes have some permutations that results in a
-triangular matrix and then we trivially extend it with the sink node that we
-took out as the new first column. If $i$ is not a sink by minimality there must
-be a cycle of minimally connected nodes including $i$, so we reduce all of them
-to one representative which must be a sink of the reduced graph. Now build the
-block triangular matrix on the smaller graph (so induction hypothesis), then
-extend it again which should be easy because the removed nodes form a block that
-connects only to itself (columns with $1$ only between said indices, $0$
-otherwise) so we can put them as the first indices of the matrix $\dots$.
-
-It is possible to turn a reducible transition into a regular and therefore irreducible by way of
-random restart as explained in the article \textcite{cowen2017network}.
-
-If we start with the adjacency matrix and replace each $0$ with some small
-$\epsilon$ representing a light weight edge, then normalize the rows, we would
-get the same thing. Another way to see it: take two transition matrices $P$ and
-$Q$, then any convex combination of them, namely $\alpha Q + (1-\alpha)P$ for
-$\alpha \in [0,1]$ is also a transition because the rows clearly still all sum
-to $1$.
-
-\begin{remark}
-\label{remark:permutations}
-Regarding permutation matrices and similarity.
-There is a natural isomorphism between the permutation group $S_n$ and the
-parmutation matrices of $n\times n$ size: 
-$\pi \mapsto (e_{\pi(1)},\dots, e_{\pi(n)})$. If $P$ is a permutation matrix
-with a corresponding permutation $\pi$, 
-and $A$ any ($n$ square) matrix, then $PA$ is be the matrix obtained by
-permuting the rows of $A$ according to the permutation $\pi$. $AP$ is the result
-of permuting the columns by the permutation $\pi^{-1}$, why is that? see below
-for the explanation but if you just consider that $P = \prod \Theta_i$ is the
-product of permutation matrices that each corresponds to a 2-cycle permutations
-(I think these are called transpositions), it becomes clear.
-
-Now when we are dealing with adjacency matrices, we want to rename the indices,
-thereby rearranging the adjacency matrix to be block triangular. This
-'rearrangement' means exactly multiplying it from left and right by some
-$PAP^{-1}$, and from here arises this similarity condition. If we recall every
-permutation $\pi$ is a composition of 2-cycles, and 2-cycles are their own
-inverse. So when we switch indices $i$ and $j$ what we actually do is switching
-row $i$ with $j$m then permuting column $i$ with $j$. Then, we permute indices
-$i'$ and $j'$, so the row permutation will stack up from the left, the column
-permutation will stack from the right, and thus arises this $PAP^{-1}$ type of
-matrix from the original adjacency matrix.
-\end{remark}
+We are therefore interested to find next how to convert an \text{imprimitive}
+matrix (= irreducible but not primitive)
+to a primitive matrix or or equivalently a strongly connected but periodic graph
+to an aperiodic graph.
 
 \begin{lemma}
-\label{theonelemma}
-If $s$ is a state (column), $T$ is a transition, and $\bar{1}$ is the matrix with all $1$'s,
-then $\bar{1}s = (1,1,\dots,1)^t = \mathbf{1}$ and $\bar{1}T = \bar{1}$.
+\label{lem:1plusA}
+Let $A \geq 0$ be irreducible. Then $(A + I)^{n-1} \gt 0$, and therefore $A+I$
+is primitive.
 \begin{proof}
-Every element of the product matrix is a sum of a column of $T$, hence $1$.
-$s$ is the same it's like taking just one column of $T$.
-
-We therefore see that, using the notations of the article
-\parencite{cowen2017network}
-Since $\bar{1} \cdot P(t) = \bar{1}$, using 
-$(\frac{(1-\alpha)}{N}\bar{1} + \alpha W)$ as the transition matrix (where $W$
-is the transition originated from the normalized adjacency matrix of the
-original graph), we get:
-
-$$
-P(t+1) = (\frac{(1-\alpha)}{N}\bar{1} + \alpha W) \cdot P(t) = 
-\frac{(1-\alpha)}{N}\mathbf{1} + \alpha P(t)
-$$
-
+Notice that the $I$ represents self loops and it absorbs all the lower powers so
+if $(A^k)_{i,j} \gt 0$ for some $k \lt n$ then so is $(A+I)^{n-11}$.
+Let $G := G_A$ be the corresponding graph to $A$. Then $G$ is strongly
+connected. For every $i \neq j$ there is a directed \textbf{shortest path}
+$\sigma$ in $G$ from $i$ to $j$. Its length must be $|\sigma| \lt n$. Otherwise
+$\sigma$ would have to contain a cycle and not be of minimal length.
+This shows that we have for every $i \neq j$ some $k$ sucht that $A^k_{i,j} \gt
+0$ and therefore $(A+I)^{n-1} \gt 0$.
 \end{proof}
 \end{lemma}
 
-\begin{remark}
-Instead of taking the uniform distribution, let $s$ be some state, and let
-$S = (s,s,\dots,s)$ a matrix whose columns are all $s$. Then if $p$ is any
-state, $Sp = s$. So we can replace $\mathbf{1}/N$ with $S$ in the above
-remarks, so our random restart distribution can be chosen arbitrarily we
-actually don't need to require that that
-it is has no $0$ entries:
+The properties of irreducibility, primitivity and positivity only depend on the
+sign ($-,0,+$) of the entries and not on their size. So we use the following definition to
+test matrices for these properties:
 
-Let $A,B \neq 0$ be non-negative square matrices, such that $A$ has a positive
-row, and $B$ is irreducible. Then for all sufficiently large $k$  $(A+B)^k \gt
-0$ and therefore $A+B$ is regular. The proof is pretty straight forward. What's
-important to our case is that the adjacency matrix of a connected graph has the
-property of $B$ and the matrix like $S$ has the property of $A$. Therefore the
-composite matrix is regular fro any arbitrary restart state $s$.
+\begin{mydef}
+Let $A \in \R^{n \times n}$, then its \text{binary form} is the matrix
+$\beta(A) := \text{sgn}(A)$ where $\text{sgn}$ is applied element-wise.
+\end{mydef}
 
-\end{remark}
+The following trivial lemmas would help as to construct primitive transitions:
+
+\begin{lemma}
+$A$ is positive/primitive/irreducibly if
+and only if $\beta(A)$ is.
+
+Let $0 \leq \beta(A) \leq \beta(B)$.
+Then If $A$ is positive/primitive/irreducibly so is $B$.
+
+Let $0 \lt \alpha \lt 1$. If $T,S$ are transitions the so is $W=(1-\alpha)T +
+\alpha S$.
+If one of $S,T$ is positive/primitive/irreducible so is $W$
+\end{lemma}
+
+Let $G$ be any weighted graph and $A$ its adjacency transition matrix. Some vertices may
+be unreachable from other vertices and we there might not exist a single and
+unique stationary distribution. A random walk on this graph is generally
+dependent on the initial state.
+However if we allow the possibility of 'random restart' from any state, this
+graph becomes totally connected it is guarantied to have a unique stationary
+distribution to which any random walk converges regardless of the initial state.
+
+In terms of matrices, we create a positive transition matrix $W = (1-\alpha)A + \alpha
+\mathbf{1} \gt 0$. The stationary distribution is called the \textbf{PageRnak}
+for $G$ with restart parameter $\alpha$. It is used to order the vertices
+according to their 'relevance' in the network.
 
 
-\begin{remark}
-As we have seen for $T$ regular, and any state $s$, 
-$T^ks \to \pi$ where $\pi$ is the unique stationary state.
+\begin{figure}[!htb]
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example_unranked.png}
+  \caption{This is an example of a weakly connected graph. If we start walking
+  from $0$, $5$ or $6$ we can never reach vertices $1-4$. It is also not immediately
+  clear which vertex $0$ or $5$ is more 'important'. While $0$ is directly
+  connected to more vertices, $5$ may get more 'flow' through it since every
+  path of length $2$ or more passes though it.}
+  \label{fig:weaklyconnected}
+\end{figure}
 
-$\pi$ can be approximated by itetrating this sequence until sufficent accuracy 
-has been reached.
+\begin{figure}[!htb]
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example.png}
+  \caption{The same graph with vertex size and color indicating its PageRank
+  with parameter $\alpha=0.15$. We see that $5$ is ranked first, followed by
+  $0$. The smaller the restart parameter, the more important $5$ will get
+  because we allow for longer paths with fewer restarts.}
+  \label{fig:weaklyconnectedpagedranked}
+\end{figure}
 
-There is also a direct solution for the random walk with restart which goies as
-follows: let $p > 0$ be a state (no $0$ entries), let $W$ be its
-column-normalized adjacency matrix, and let $P = (p,\dots,p)$. as we have seen above,
-$T = (1 - \alpha)P + \alpha W$ is an irreducible transition matrix
-therefore $\pi$ exists and unique.
+\begin{figure}[!htb]
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example_tinyalpha.png}
+  \caption{When the restart parameter is too large, the rank becomes almost
+  uniform because the convex combination of the original graph with the
+  $n$-clique graph of the restarts is weighted too heavily on the latter}
+  \label{fig:weaklyconnectedpagedrankedbadly}
+\end{figure}
 
-Let $p_0 = p, p_k := Tp_{k-1} = p_0(1-\alpha) + \alpha p_{k-1}$
-Then $p_k \to \pi$ and 
-We have the relation:
-
-$$
-I \pi = \lim(p_k) = (1 - \alpha)p_0 + \alpha \lim(W p_{k-1}) 
-= (1-\alpha)I p_0 + \alpha W \pi
-$$
-
-and rearragement gives:
-
-$$
-(I - \alpha W)\pi = (1 - \alpha) p_0
-$$
-
-Now because $W$ is a transition and $0 < \alpha < 1$, for any $v$
-such that $\|v\|_1 = 1$, then $\tilde{v}$ is a state and
-it holds that:
-
-$$
-\|\alpha W v\|_1 \leq \alpha \|W \tilde{v}\| 
-= \alpha \lt 1
-$$
-
-This guaranties that $I - \alpha W$ is invertible and
-the direct solution is:
-
-%\renewcommand{\[}{\begin{IEEEeqnarray}{l"s}}
-%\renewcommand{\]}{\end{IEEEeqnarray}}
-
-\[
-\pi = (1 - \alpha) (I - \alpha W)^{-1} p_0
-\]
-
-\end{remark}
-
-\section{Toying around with graph propagation}
-\subsection{Motivation}
-We work with random graphs genertated by one of the standard models (Erdos- \dots)
-because the real world graphs have similar topology.
-
-For a given category we expect only a small number of proteins play a direct role and hence should carry
-its annotation, some of them are already known. Ideally we want that with some choice of $\alpha$ (the restart factor),
-We get a stationary distribution that is fairly concentrated exactly on the proteins that belong to that category.
-Is it possible?
-
-Even stronger evidence: we start with $2$ or more mutally exclusive categories and partial annonations for each,
-and we want that the stationary distributions will reflect that- namely they should be concentrated on non-overlapping subsets
-of graph nodes.
+\begin{figure}[!htb]
+  \centering
+    \includegraphics[width=0.55\linewidth]{undirected_graph_example.png}
+  \caption{When we treat the graph as undirected and calculate the PageRanks
+  ($\alpha=0.15$),
+  Vertex $0$ comes this time on top. It is more central than $5$ and
+  more random paths intersect it than any other vertex.}
+  \label{fig:undirectedanked}
+\end{figure}
 
 
 
-\section{The Markov Random Fields Methd}
-We use almost the same terminology of \textcite{deng2002prediction}
-so I won't repeat everything here.
 
-We have a PPI and partial annotaion which gives the potential function $U(x)$
-which actually depends on the parameter $\Theta =(\alpha, \beta, \gamma)$
-And we want to maximize:
+\section{The Propagation Method}
+The normalize adjacency matrix of 
+a connected graph (for simplicity we use here undirected) is a transition matrix
+and represents a
+Markov process. On a given time-step, a visitor on a graph node chooses
+his next station at random among the neighbours of the current station (node).
 
-\begin{equation} \label{eq:gibbs_dist}
-P(X | \Theta) = \frac{1}{Z(\Theta)}\exp(-U(x))
-\end{equation}
-
-To eliminate $Z(\Theta)$ from the equation we are looking at:
-
-\begin{equation} \label{eq:gibbs_samp}
-P(X_i=1 | X_{[-i]}, \Theta) =
-\frac{\exp(\alpha + (\beta -1)M_0^{i} + (\gamma - \beta)M_1^{i})}{
-1 + \exp(\alpha + (\beta -1)M_0^{i} + (\gamma - \beta)M_1^{i})}
-\end{equation}
-
-If we think of every node labeled with $1$ as being occupied by a traveling
-agent, who in the next iteration is going to visit some other (i.e not allowed
-to stay in the same place) node according to some
-probability, then $P(X_i = 1 | X_{[-i]}, \Theta)$ is the probability 
-That node $i$ will be visited in the next iteration. In the propagation model
-we look at the neighbours of $i$ that have a visitor in them, and we 
-look for each of these how many other neighbours it has to calculate the 
-visit probability of $i$, whereas in equation \eqref{eq:gibbs_samp} we don't
-explicitly look at neighbours of neighbours but rather consider direct
-interaction between $i$ and all its neighbours.
-
-In the propagation model without restart, we have (of course with 
-the resulting
-value being capped at a maximum of $1$):
-
-\begin{equation}
-\label{eq:gibb_propagation}
-P(X_i=1 | X_{[-i]}) = 
-\sum_{j \in \text{Nei}(i)} \frac{1_{X_J}}{\text{Nei}(j)}
-\end{equation}
-
-Here we assume that the visiting agent will choose one of the neighbours at
-equal probability. We can also formulate this similarly to the random restart
-case. Also perhaps it would make sense, to consider instead of $X_{[-i]}$, a
-label assignment of all the nodes including $i$, then update $X_i$ in the next
-iteration by the probability that it would be visited in the next iteration.
-And in this case we can add restart an reformulate \eqref{eq:gibb_propagation}
-as: 
-
-\begin{equation}
-\label{eq:gibb_propagation_restart}
-P(X_i=1 | X) = 
-(1-\alpha) \sum_{j \in \text{Nei}(i)} \frac{1_{X_J}}{\text{Nei}(j)}
-+ \alpha \sum_{j : X_j=1} \frac{1}{\text{Nei}(j)}
-\end{equation}
-
-$P(X_i=1 | X)$ here means that giving a labeling $X$ to all the nodes, we
-calculate the probabiliyt that $X_i$ will be labeled $1$ in the next iteration
-which is the probabilty that at least one of the agents will choose to visit it.
-
-%I believe if we use gibbs sampling based algorithm with \eqref{eq:gibb_propagation_restart}
-%to find the $\pi$ the stationary distribution but I am not sure if it is 
-%mor efficient than the iterative method. 
-
-\subsubsection{Estimation of the parametes}
-The authors of \textcite{deng2002prediction} used the quasi-likelihood
-approach and logistic regression.
-
-If I understand this correctly, they take the subnetwork of annotated proteins
-(of a specific function), that gives a binary vector $X = (X_i)_{i=1 \dots m}$
-and each $X_i$ is treated as an observation that is independent from the other
-observations, then they find the paramers that best fit the logistic model to
-the sample distribution.
-
-%I have been doing some reading in \textcite{goodfellow2016deep} (chapters
-%16,17,18) to
-%get more understanding on the topic because this looks like
-%it could be worth trying a machine learning algorithm ob \eqref{eq:gibbs_dist} 
-%instead of logistic regression.
-
-\subsubsection{Estimating the probabvilty}
-In the article, for a given a function annotaion, 
-$\pi$ is the probability that a protein has that  
-a protein has that function annotation (disregarding the information
-from the PPI network). This $\pi$ is used to assign random values to the missing
-data.
-
-\textbf{An Idea}: Maybe we can use use the pagerank (and a cutoff) for the
-initial assignment instead?
-
-$\qedsymbol$
-
-%It seems like a "no brainer" since we are fundementally assuming the PPI
-%structure carries significant information about the functionality.
-
-%\subsubsection{Temporary Conclusion}
-%If I have to guess how Propagation network will compare to Gibbs sampling I am
-%going to guess the latter will win, and the formaer is too naive.
-%
-%However I think there is potential room for improvement by using 
-%machine learning methods to estimate $\Theta$ instead of linear logistic,
-%mybe using pagerank to estimate
-%$\pi$.
-
-
-\nocite{herstein_winter_1989}
-\nocite{meyer2000matrix}
-\nocite{lawler2010random}
-\nocite{girvan2002community}
-\nocite{newman2006modularity}
-\nocite{slides_from_lecture}
+We want to know first, if we repeat this process to infinity will the frequency
+of the visits at each node stabalize 
 
 \section{testing}
+
 \subsection{citations}
 
 For more info see (textcite) \textcite[631]{meyer2000matrix}.
@@ -890,7 +751,7 @@ This is an (autocite) see \autocite[231]{lion2010}.
 Change autocite in the usepackage definition to suit your needs. Use textcite if
 you want to insert inline cite that includes the author's name.
 
-Here is a \cite{WikipediaPerronFrobenius} cite from wikipedia.
+Here is a~\cite{WikipediaPerronFrobenius} cite from wikipedia.
 
 Just cite is just the normal citation command and nocite will make sure that the
 reference appears in the bibliography even though it may have not specifically
@@ -945,38 +806,7 @@ Refer to it with fig \ref{fig:heatmap} tada.
 \end{center}
 \end{table}
 
-\begin{comment}
-\section{Tests}
-\nocite{herstein_winter_1989}
-\nocite{goodfellow2016deep}
-%See \citetext{big} and \nocite{herstein_winter_1989}
-%\citet*{meyer2000matrix}
-\nocite{meyer2000matrix}
-
-
-%I doubt that there is any useful information here.~\cite{wikibook}
-%
-%All we know is limited, apart from knowing the answer we all
-%know. Or do we? \citeauthor{wombat2016} have discovered some interesting
-%things.~\autocite[compare][80]{wombat2016}
-%
-%What can happen to nosy people is described by \textcite[9]{lion2010}.
-%
-%Also \parencite{lion2010} for parentices cite \dots
-%and \autocite{wikibook}
-
-\end{comment}
-
 \section{Reference}
-%\begin{itemize}
-%\item{} Herstein: Matrix Theory and Linear Algebra
-%\item{} Meyer: Matrix Analysis and applied linear Algebra
-%\item{} Cowen et al. slides and aritcle
-%\end{itemize}
-
-%\bibliographystyle{plainnat}
-%\bibliography{mybib} 
 \printbibliography
+
 \end{document}
-
-

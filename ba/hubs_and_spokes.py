@@ -1037,3 +1037,190 @@ while nx.number_connected_components(testG) == 1:
     testG.remove_node(x)
 
 nx.draw_spring(testG, node_color=colours, with_labels=True)
+
+
+################ Testing with other graphs
+
+M = nx.florentine_families_graph()
+
+M = nx.davis_southern_women_graph()
+
+M = nx.les_miserables_graph()
+
+m = nx.convert_node_labels_to_integers(M, label_attribute='name')
+
+G = nx.karate_club_graph()
+
+M.nodes()
+
+nx.draw_spring(M, with_labels=True)
+
+ldict = dict(zip(m.nodes(), M.nodes))
+nx.draw_spring(m, with_labels=True, k=5, labels=ldict)
+
+
+b = np.ones(len(M.nodes()))
+
+biasedPropagateG(M, b)
+
+pageRanksConcentratedBiasG(G)
+
+pageRanksConcentratedBiasG(M)
+
+w = reducedInfluenceMatrixG(M)
+
+c = bottomUpClusterG(M, w, 3)
+
+mycolors = len(M.nodes()) * ['red']
+
+len(c)
+
+cols = ['red', 'yellow', 'green', 'blue', 'purple', 'white', 'cyan']
+
+i = 0
+for xs in c:
+    for x in xs:
+        mycolors[x] = cols[i]
+    i += 1
+
+
+nx.draw_spring(M, node_color=mycolors, with_labels=True)
+
+xx = edgeGraphG(M)
+
+len(M.nodes())
+
+test = np.arange(start=0, stop=1, step=1/77)
+
+nx.draw_spring(M, node_color=test, with_labels=True, cmap='viridis')
+
+##### Doing more experiment with Karate Club (G)
+mrhi = np.zeros(len(G.nodes()))
+officer = np.zeros_like(mrhi)
+
+mrhi[0] = 1
+
+p, _ = powerIterateG(G)
+
+l = np.argsort(p)
+
+l = l[-1::-1]
+
+colors[l]
+l
+
+mrhi[2] = 1
+mrhi[1] = 1
+
+mrhi
+
+officer[[32,33,31]]=1
+officer
+
+phi, _ = biasedPropagateG(G, bias=mrhi)
+
+pofficer, _ = biasedPropagateG(G, bias=officer)
+
+pofficer[8]
+phi[8]
+
+nx.draw_spring(G, with_labels=True, node_color=colours, k=15, labels=clubdict)
+
+
+G.nodes[8]
+
+G.adj[8]
+
+mrhi[[0,2]] = 1
+mrhi
+
+officer[[30,32,33]]=1
+officer
+
+phi, _ = biasedPropagateG(G, bias=mrhi)
+
+pofficer, _ = biasedPropagateG(G, bias=officer)
+
+pofficer[8]
+phi[8]
+
+# idea: for a node with unknown function: take its neighours with known
+# functions, compute biased propagation, assign functionality to the highest
+# result.
+
+colors
+
+
+
+
+
+testclusters = colors
+
+ns = list(nx.neighbors(G,8))
+colors[ns]
+np.unique(colors[ns])
+
+redoNode(G, testclusters, 8)
+
+W = reducedInfluenceMatrixG(G, delta=0)
+cc = bottomUpClusterG(G, W, 2)
+cc
+
+testclusters = np.zeros(len(W))
+
+testclusters[cc[1]]=1
+testclusters
+
+testclusters[8:10] == colors[8:10]
+
+nx.draw_spring(G, with_labels=True, node_color=testclusters, k=15, labels=clubdict)
+
+redoNode(G, testclusters, 8)
+
+redoNode(G, colors, 8)
+
+redoNode(G, testclusters, 9)
+redoNode(G, colors, 9)
+
+# So if we propagate from the neighbors of each of the two problematic nodes,
+# 8,9, we still get an indication that favors the bottomUpClusterG rather than
+# the actual division.
+# Also if we propagate with bias on all the Mr Hi nodes and alternatively on all
+# the officer node we get for 8 a higher propagation from the officer (1) and
+# fro 9 a higher propagation from the mr hi (0 cluster).
+
+p, _ =biasedPropagateG(G, bias=colors)
+p[8:10]
+
+p, _ =biasedPropagateG(G, bias=1-colors)
+p[8:10]
+
+
+# More tests
+X = nx.connected_caveman_graph(2, 5)
+
+W = reducedInfluenceMatrixG(X, delta=0)
+
+cc = bottomUpClusterG(X, W, 3)
+
+cc
+
+mycolors = len(X.nodes()) * ['red']
+cols = ['red', 'yellow', 'green', 'blue', 'purple', 'white', 'cyan']
+
+i = 0
+for xs in cc:
+    for x in xs:
+        mycolors[x] = cols[i]
+    i += 1
+
+nx.draw_spring(X, node_color=mycolors, with_labels=True)
+
+x=np.zeros_like(X.nodes)
+x[0] = 1
+
+p,_ = biasedPropagateG(X, bias=x)
+p
+
+w = pageRanksConcentratedBiasGv2(X)
+cc = bottomUpClusterG(X, w, 3)

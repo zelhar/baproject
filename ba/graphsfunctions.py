@@ -17,6 +17,8 @@ def powerIterate(A, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fals
     whichever reached first stops the loop.
     If directmethod=True the calculation is 
     done using the direct method rather than iteration.
+    The Matrix W is column-normalized so implicitly A[i,j]>0 means and edge FROM
+    (column) j to (row) i.
     """
     n = len(A)
     # normaliz A column-wise:
@@ -59,14 +61,22 @@ def powerIterateG(G, alpha=0.85, epsilon=1e-7, maxiter=10 ** 7, directmethod=Fal
     is done using the direct method rather than iteration. returns the
     stationary distribution as 1d-array and the transition matrix of the
     process.
+    Note that in networkx the adj_matrix is row-to-column so A[i,j]=1
+    means from i to j. BUT the returned matrix here is column-to-row!
+    For undirected there is no problem because the adj_matrix is
+    symmetric.
     """
     A = np.array(nx.adj_matrix(G).todense())
+    #transpose A because we are going to column-normalize it
+    #If G is a directed graph in networkx A[i,j]=1 means from i to j and we want
+    # it to mean from j to i so we can column-normalize the matrix.
+    A = A.transpose()
     n = len(A)
     # normaliz A column-wise:
     d = A.sum(axis=0).reshape((1, n))
     d[d == 0] = 1  # avoid division by 0
     A = A / d
-    # comnine A with the restart matrix
+    # combine A with the restart matrix
     W = np.ones((n, n)) / n
     W = (1 - alpha) * W + alpha * A  # the transition matrix
     # create a random state vector:
@@ -107,6 +117,7 @@ def biasedPropagate(A, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7):
         connected, than it regular (and only if, see notes doc).
     So the transitional matrix incorporates both the biased and the uniform
     distribution.
+    A should be in row-to-column format so A[i,j]>0 means from j to j.
     """
     n = len(A)
     # normaliz A column-wise:
@@ -153,6 +164,7 @@ def biasedPropagateG(G, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7)
     distribution.
     """
     A = np.array(nx.adj_matrix(G).todense())
+    A = A.transpose() #we want A[i,j]=1 to mean from j to i
     n = len(A)
     # normaliz A column-wise:
     d = A.sum(axis=0).reshape((1, n))
@@ -254,21 +266,42 @@ def pageRanksConcentratedBiasG(G, alpha=0.85):
     W = np.zeros((n, n))
     #for vertex in tqdm(G.nodes()):
     #for vertex in G.nodes():
+    nodes = list(G.nodes()) #don't expect nodes to be a range
     for vertex in range(n):
         bias = np.zeros(n)
         bias[vertex] = 1
         p, _ = biasedPropagateG(G, bias=bias, alpha=alpha)
         W[vertex] = p
-        for i in G.nodes():
-            G.nodes[i]["br_" + str(list(G.nodes())[vertex])] = p[i]
+        for i in range(n):
+            G.nodes[nodes[i]]["br_" + str(list(G.nodes())[vertex])] = p[i]
             #G.nodes[i]["br_" + str(vertex)] = p[i]
     return G, W
+
+def pageRanksConcentratedBiasGv2(G, alpha=0.85):
+    """
+    Input: graph G, restart parameter alpha, and stopping criterions.
+    output: Influence matrix W.
+    where the stationary
+    distribution with bias on node i is the ith ROW. So W[i] is like calling 
+    biasedPropagateG with bias concentrated on node i.
+    """
+    n = len(G.nodes())
+    W = np.zeros((n, n))
+    #for vertex in tqdm(G.nodes()):
+    #for vertex in G.nodes():
+    nodes = list(G.nodes()) #don't expect nodes to be a range
+    for vertex in range(n):
+        bias = np.zeros(n)
+        bias[vertex] = 1
+        p, _ = biasedPropagateG(G, bias=bias, alpha=alpha)
+        W[vertex] = p
+    return W
 
 def pageRanksConcentratedBias(A, alpha=0.85):
     """Input A: non-negative matrix which represents a weighted adjacency matrix
     of a connected graph, 
     Input alpha: restart parameter.
-    output: Matrix W.  
+    output: Matrix W.
     The nodes are assumed to be represented by integers.
     the stationary
     distribution with bias on node i is the ith raw.
@@ -363,9 +396,9 @@ def bottomUpClusterG(G, W, k):
     return CCs
 
 def edgeGraphG(G):
-    """Input: G undirected graph whose vertices are assumed to be
-    an initial segemnent of the naturals. 
-    Output: EG whose vertices are the edges of G, also numbered but they edge
+    """Input: G undirected graph.
+    Output: EG whose vertices are the edges of G, numbered in the same order of
+    G.edges(). The edge
     they represent is preserved as a node property 'edg'. Two vertices in G' are
     connected by an edge if their respected edges in G have a common vertex.
     """
@@ -381,5 +414,61 @@ def edgeGraphG(G):
     for x in EG.nodes():
         EG.nodes[x]['edg'] = edgesG[x]
     return EG
+
+def redoNode(G, clusters, x):
+    """
+    Input G: a graph. It is assumed that the nodes are labeled by an initial
+    segments of the naturals 0,1,...,last. Use
+    'nx.convert_node_labels_to_integers' before using this function if this is
+    not the case.
+    clusters: list or 1d array of integers which represents division of
+    the nodes into clusters.
+    -1 represent cluster undetermined, nonnegative represent real cluster
+    assigment.
+    x: an int which represents the x node of G.nodes()
+    """
+    clusters = np.array(clusters)
+    clusterTypes = np.unique(clusters)
+    clusterTypes.sort()
+    nodes = list(G.nodes())
+    neighbors = list(nx.neighbors(G, x))
+    print(neighbors)
+    cs = np.unique(clusters[neighbors])
+    pmax = 0
+    cmax = -1
+    for c in cs:
+        if c < 0:
+            continue
+        b = np.zeros_like(G.nodes)
+        l = [i for i in neighbors if clusters[i] == c and c>=0]
+        print(l)
+        b[l] = 1
+        print(b)
+        p, _ = biasedPropagateG(G, bias=b)
+        print(c, p[x])
+        if p[x] >= pmax:
+            pmax = p[x]
+            cmax = c
+    return cmax
+
+def diffKernel(T, alpha=0.15):
+    """
+    Input T: Transition (column-normalized).
+    Input alpha: restart probabilty (default=0.15)
+    Output K: K=1/alpha [I - (1-alpha)T]^-1 is the diffusion kernel of the
+    process. So if q is some restart distribution (bias) then p=Kq is the
+    stationary distribution of the Markov process with restarts to q.
+    """
+    d = T.sum(axis=0)
+    d[d == 0] = 1  # avoid division by 0
+    A = T/d
+    n = len(A)
+    I = np.identity(n)
+    B = I - (1 - alpha) * A
+    K = alpha * np.linalg.inv(B)
+    return K
+
+
+
 
 
