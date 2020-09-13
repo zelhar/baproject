@@ -137,10 +137,12 @@ p,w = biasedPropagateG(G, b)
 ### trying this 'spectral_partitioning' on karate
 G = nx.karate_club_graph()
 
+p, _ = powerIterateG(G)
+
 colors = [0 if G.nodes[v]['club'] == 'Mr. Hi' else 1 for 
         v in G.nodes()]
 colors = np.array(colors)
-colors
+colors #0=Hi, 1=Off
 colours = ['yellow' if x==0 else 'green' for x in colors]
 
 clublabel = ['Hi' if i==0 else 'Off' for i in colors]
@@ -150,15 +152,81 @@ clublabel = [str(i) + ":" + clublabel[i] for i in G.nodes()]
 clubdict = dict(zip(G.nodes(), clublabel))
 clubdict
 
-T = np.array(nx.adj_matrix(G).todense())
+nx.draw_spring(G, with_labels=True, node_color=colours, labels=clubdict,
+        node_shape='s', node_size=5000*p)
+plt.savefig("Karate_ground_truth.png")
+plt.close()
 
-n=len(T)
+#W = reducedInfluenceMatrixG(G, delta=0)
+
+W = pageRanksConcentratedBiasGv2(G)
+
+
+cc = bottomUpClusterG(G, W, 2)
+clusters = np.zeros(len(W))
+clusters[cc[1]]=1
+clusters
+
+colorcode = []
+for i in range(len(colors)):
+    x = 'yelllow'
+    if colors[i] == 0:
+        x = 'yellow' if clusters[i] == 0 else 'cyan'
+    else:
+        x = 'green' if clusters[i] == 1 else 'magenta'
+    colorcode.append(x)
+
+nx.draw_spring(G, with_labels=True, node_color=colorcode, labels=clubdict,
+        node_shape='s', node_size=5000*p)
+plt.savefig("Karate_coolwarmclustering.png")
+plt.close()
+
+A = np.array(nx.adj_matrix(G).todense())
+n=len(A)
 n
 
 # column normalized
-A = T / T.sum(axis=0)
+d = A.sum(axis=0)
+d
 
-K = diffKernel(A)
+R = np.dot(d.reshape((n,1)), d.reshape((1,n)))
+R
+
+m = len(G.edges)*2
+m
+
+T = A / A.sum(axis=0)
+
+K = diffKernel(T)
+
+p8 = W[8] #influence vector of 9
+
+p8[8]
+colors[8]
+clusters[8]
+
+p8[8]=0 #ignore self influence
+
+p8_0 = p8 * (1 - colors) #mr hi
+p8_1 = p8 * colors #officer
+
+p8_0.sum()
+p8_1.sum()
+
+test_hi = colors
+test_hi[1]
+test_off = 1 - test_hi
+test_off[8] = 0 #no self effect
+test_off[8]#no self effect
+
+np.dot(K, test_hi)[8] / test_hi.sum()
+np.dot(K, test_off)[8] / test_off.sum()
+
+ccc = bottomUpClusterGImproved(G, W, 2)
+
+clusters2 = np.zeros(len(W))
+clusters2[ccc[0]]=1
+clusters2
 
 eigvals, eigvects = np.linalg.eig(K)
 
@@ -167,12 +235,68 @@ eigvals
 x = np.argsort(eigvals)
 x
 
+B = K - R/m
+
+u,v = np.linalg.eig(B)
+
+z = np.sign(v[1,:])
+
+z = np.sign(z + 1)
+colors - z # no :(
+
+B = np.dot(np.transpose(K), K)
+
+foo, bar = np.linalg.eig(B)
+
+moo = np.sign(bar[:,1]) + 1
+moo = np.sign(moo)
+moo
+
+moo = 1 - moo
+moo
+
+moo - colors #just one error!
+
+boo = 2*moo + 1
+boo
+
+boo = 4*colors + boo
+boo
+
+nx.draw_spring(G, with_labels=True, node_color=boo, cmap=plt.cm.coolwarm,
+        node_size=8000*p, node_shape='s', labels=clubdict)
+plt.savefig("Karate_spectralKK2clustering.png")
+plt.close()
+
 # The fiedler eigenvector is the one corresponding to the second largest
 # eigenvalue. We use it to create the partition.
 
-y = eigvects[:,x[-2]]
+u,v = np.linalg.eig(T)
+u
+v
 
-z = np.sign(y)
+y = v[:,1]
+y
+
+y = eigvects[:,x[-2]]
+y
+
+y = np.sign(y)
+y = np.sign(y+1)
+y
+
+y = 1 -y
+y = y*2
+y = y+1
+y
+
+y+colors - 1
+
+
+nx.draw_spring(G, with_labels=True, node_color=(y+colors-1), cmap=plt.cm.coolwarm,
+        node_size=8000*p, node_shape='s', labels=clubdict)
+plt.savefig("Karate_spectralT2clustering.png")
+plt.close()
 
 d = np.array([1 if x<0 else 0 for x in z]) 
 
@@ -191,24 +315,81 @@ testvects[:,1] - eigvects[:,1]
 
 
 
+#### Lets construct a graph with 3 cliques and see how it can be clustered by
+#### fiedler eigenvector of A and of K^tK
+
+G = nx.Graph()
+G.add_nodes_from(range(12))
+G.add_edges_from([(i,j) for i in range(1,5) for j in range(i)])
+G.add_edges_from([(i,j) for i in range(6,9) for j in range(5,i)])
+G.add_edges_from([(i,j) for i in range(10,12) for j in range(9,i)])
+G.add_edge(4,5)
+G.add_edge(8,9)
+G.add_node(12)
+G.add_edge(9,12)
+G.add_edge(4,12)
+
+p, _ = powerIterateG(G)
+
+nx.draw_spring(G, with_labels=True, node_size=5000*p)
+
+A = np.array(nx.adj_matrix(G).todense())
+d = A.sum(axis=0)
+T = A / d
+T.sum(axis=0)
+T[1].sum()
+T[:,0].sum()
+
+eu, ev = np.linalg.eig(T)
+
+eu
+
+x = ev[:,1]
+x = np.sign(x)
+x
 
 
+nx.draw_spring(G, with_labels=True, node_color=x, cmap=plt.cm.prism,
+        node_size=8000*p, node_shape='s')
+plt.savefig("example_spectralT2clustering.png")
+plt.close()
+#bing
 
+n = len(G.nodes())
+I = np.identity(n)
+W = pageRanksConcentratedBiasGv2(G)
+K = diffKernel(T)
 
+np.dot(K, I[0]) - W[0] #good
 
+B = np.dot(np.transpose(K), K)
 
+eku, ekv = np.linalg.eig(B)
 
+y = ekv[:,1]
+y = np.sign(y)
+y
 
+nx.draw_spring(G, with_labels=True, node_color=y, cmap=plt.cm.prism,
+        node_size=8000*p, node_shape='s')
+plt.savefig("example_spectralKK2clustering.png")
+plt.close()
+#bingo!
 
+G=nx.convert_node_labels_to_integers(G)
 
+c3 = bottomUpClusterGImproved(G,3)
+c2 = bottomUpClusterGImproved(G,2)
 
+nx.draw_spring(G, with_labels=True, node_color=c2, cmap=plt.cm.prism,
+        node_size=8000*p, node_shape='s')
+plt.savefig("example_coolwarm2clusters.png")
+plt.close()
 
-
-
-
-
-
-
+nx.draw_spring(G, with_labels=True, node_color=c3, cmap=plt.cm.prism,
+        node_size=8000*p, node_shape='s')
+plt.savefig("example_coolwarm3clusters.png")
+plt.close()
 
 
 

@@ -375,7 +375,7 @@ def bottomUpCluster(T, k):
 def bottomUpClusterG(G, W, k):
     """
     Input G: undirected graph.
-    Input W: the reduced influence of G. It is better to calculate this matrix
+    Input W: the influence Matrix of G. It is better to calculate this matrix
     once and then pass it as an argument to this function rather than repeating
     this slow calulation with each call of this algorithm.
     Input k: numer of desired clusters k <= len(p).
@@ -394,6 +394,55 @@ def bottomUpClusterG(G, W, k):
         H.add_edge(x, nlist[t])
     CCs = [list(c) for c in nx.connected_components(H)]
     return CCs
+
+def bottomUpClusterGImproved(G,k):
+    """
+    Input G: undirected graph.
+    Input k: numer of desired clusters k <= len(p).
+    Output: a List of k lists, which represents a partition of p 
+    into k clusters.
+    """
+    G = nx.convert_node_labels_to_integers(G)
+    A = np.array(nx.adj_matrix(G).todense())
+    d = A.sum(axis=0)
+    T = A / d
+    K = diffKernel(T)
+    n = len(G.nodes())
+    I = np.identity(n)
+    W = pageRanksConcentratedBiasGv2(G)
+    p, _  = powerIterateG(G)
+    H = nx.Graph()
+    H.add_nodes_from(range(len(p)))
+    nlist = list(H.nodes())
+    while nx.number_connected_components(H) > k:
+        s = np.argmin(p[nlist])
+        x = nlist[s]
+        nlist.pop(s)
+        t = np.argmax([W[x,i] for i in nlist])
+        H.add_edge(x, nlist[t])
+    CCs = [list(c) for c in nx.connected_components(H)]
+    cc = np.zeros(n)
+    for i in range(1,k):
+        cc[CCs[i]] = i
+    return cc
+#    nlist = list(H.nodes())
+#    #ccc = [[]] * k
+#    ccc = [[] for i in range(k)]
+#    print("ccc = ", ccc)
+#    for x in range(len(nlist)):
+#        print("rechecking ", x)
+#        p = W[x].copy()
+#        print(p.sum())
+#        p[x] = 0 #ignore self propagation
+#        print(p.sum())
+#        l = [p[c].sum() for c in CCs]
+#        print(l)
+#        i = np.argmax(l)
+#        print(i)
+#        ccc[i].append(x)
+#        print(ccc)
+#        print("Done \n")
+#    return ccc
 
 def edgeGraphG(G):
     """Input: G undirected graph.

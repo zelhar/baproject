@@ -16,6 +16,7 @@
 %\usepackage[redeflists]{IEEEtrantools}
 \usepackage{verbatim}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage[section]{placeins} %no trans-sectional figures!
 
 % Basic data
@@ -47,8 +48,8 @@
 
 \lstset{
 %basicstyle=\footnotesize,
-%basicstyle=\ttfamily\footnotesize,
-basicstyle=\ttfamily\small,
+basicstyle=\ttfamily\footnotesize,
+%basicstyle=\ttfamily\small,
 %basicstyle=\ttfamily\scriptsize,
 frame=single,
 numbers=left,
@@ -124,11 +125,10 @@ breaklines=true,
 %\everydisplay{\color{blue}} 
 
 \section{Introduction}
-This Thesis deals with the propagation methods for clustering and community structue in
-Graphs.
-The original motivation is to find application
-of these methods on Protein-Protein Interaction Networks (PPI) specifically for
-function annotations.
+This Thesis deals with the propagation methods for clustering and community
+structure in Graphs. The original motivation is to utilize these methods on
+Protein-Protein Interaction Networks (PPI) specifically for function
+annotations.
 
 We are given an (in my case undirected) connected graph, which represents some sort of
 network structure, be it a PPI or A social network. Real world networks tend to
@@ -140,19 +140,18 @@ property' and tendency to forming hubs.
 \begin{mydef}
 \label{def:transition}
 A \textbf{Transition Matrix} is a real valued non negative square ($n^2$) matrix $A$ s.t. each of its
-columns sums up to one: $$\forall j \sum_i A_{i,j} = 1,\ \forall i,j A_{i,j} \geq
-1$$ 
+columns sums up to one: $$A \geq 0,\ \forall j \sum_i A_{i,j} = 1$$
 $A$ acts from the left as a linear mapping:
-$T(v) := Av, \forall v \in R^{n}$. In the following script we might
-interchangeably and indistinguishably use $T$ (the mapping) or $A$ the matrix.
+$A:v \to A \cdot v$. In the following script we treat matrices by default
+as acting from the left ($Av$). 
 
 A transition is \textbf{positive}, designated by $A > 0$ if all its entries are positive.
 
-A transition is \textbf{regular} if for some $k>$ $A^k$ is positive. The same
-property is called \textbf{primitive} in some other sources.
+A transition is \textbf{primitive} if for some $k>$ $A^k$ is positive. The same
+property is called \textbf{regular} in some other sources.
 
 A transition is \textbf{irreducible} if for every entry $A_{i,j}$ there is some $k$ such
-that $A^k_{i,j} > 0$ (More on that further down).
+that $A^k_{i,j} > 0$.
 
 Equivalently it can be shown that 
 A matrix $A$ is 
@@ -185,6 +184,10 @@ state and $A$ is a transition as defined in
 \ref{def:transition}, then
   $Av$ is also a state because: 
 $$\sum_i(Av)_i = \sum_j v_j(\sum_k A_{j,k}) = \sum_j v_j \cdot 1 = 1$$
+Also its easy to confirm by multiplying with $e_i$, that if $Av$ is a state
+for every state $v$ 
+each column $A e_i$ must sum to $1$.
+Therefore this is an equivalent definition for a transition.
 
 If $A$ is a transition and $x,y$ are two states such that
 $x \leq Ay$ then $x=y$.
@@ -213,12 +216,12 @@ Trivial.
 \begin{remark}
 \label{remark:abs}
 If $u \in \C^n$ is on the unit circle and $T$ a transition then
-$|u|$ is a transition, meaning $\||u|\|=1$, so $T|u|$ is also a transition
-so $\|T|u|\|=1$.
+$|u|$ is a state, meaning $\||u|\|_1=1$, so $T|u|$ is also a state 
+so $\|T|u|\|_1=1$.
 
 We have (component-wise) $|Tu| \leq T|u|$. If $T>0$ and $u$ has negative or
 non-real entries, then this inequality must be strict and
-then $\|Tu\| \lt \|T|u|\| = 1$.
+then $\|Tu\|_1 \lt \|T|u|\|_1 = 1$.
 \end{remark}
 
 \begin{lemma}
@@ -302,8 +305,9 @@ $w^+ = 0$.
 \begin{remark}
 \label{remark:rhoisone}
 The lemmas and theorems in this section are phrased in term of transitions. They
-hold true almost verbatim in the more general case of positive/non-negative
-linear transformations.
+hold true in the more general case of positive/non-negative
+linear transformations and one just replaces $1$ with the \textbf{spectral
+radius} $ \rho = \rho(A)$.
 
 In general a non-negative linear transformation has a \textbf{spectral radius}
 $\rho = \rho(A)$ which is the absolute value of its greatest eigenvalue. In the case of
@@ -329,10 +333,10 @@ In particular the columns of $T^k$ converge to $\pi$.
 \begin{proof}
 1 and 2. We already know.
 
-3. There is a Jordan decomposition $T = PJP^{-1}$.Such that $J$ is a Jordan
-matrix, $j_{1,1} = 1$ and the rest of the main diagonal $|J_{i,i}| <1$.
+3. There is a Jordan decomposition $T = PJP^{-1}$, such that $J$ is a Jordan
+matrix, $J_{1,1} = 1$ and the rest of the main diagonal $|J_{i,i}| <1$.
 So now the convergence is clear $J^k \to (e_1 | 0 \dots | 0)$.
-For the matrix $P$ it must hold that $P = (P_1, \dots, P_n)$ and $P_1$ is the
+For the matrix $P$ it must hold that $P = (P_1| \dots| P_n)$ and $P_1$ is the column 
 eigenvector of $T$ corresponding to $1$ which we are free to $l_1$ normalize 
 and the first row of $P^{-1}$ is the
 left eigenvector corresponding to $1$ and so force \dots.
@@ -367,7 +371,7 @@ If we had a Jordan block of size greater than $1$ for an eigenvalue $\lambda$,
 Then on the superdiagonal of $J^k$ we would have $k \lambda$. If $|\lambda| =1$
 then $J^k$ and hence $T^k$ would be unbounded, but that is impossible since
 $T^k$ is a transition. If follows that all eigenvalues on the unit circle must
-be simple (alebgaic multiplicity equals geometric).
+be semi simple (alebgaic multiplicity equals geometric).
 
 3. For the convergence, it follows from calculations on the Jordan blocks, which
 I omit. See \textcite{meyer2000matrix} or \textcite{serre2010matrices}
@@ -375,9 +379,8 @@ for rigorous proof.
 \end{proof}
 \end{thm}
 
-
-What differs irreducible non-primitive matrices from being primitiv is
-that they are periodical on their complex eigenvectors with complex eigenvalues
+What differs irreducible non-primitive matrices from primitive is
+that they are periodical on their eigenvectors with complex eigenvalues
 on the unit cycle. There is, in fact a wonderful theorem from Wielandt which
 characterizes these Matrices:
 
@@ -412,8 +415,9 @@ corresponds to the eigenvalue $\rho(A)=|\mu|$ the greatest eigenvalue of $A$.
 To see a rigorous proof I suggest \textcite{meyer2000matrix}.
 
 The keys for proving this theorem are:
-First WLG assume $A$ is a transition. This is possible because we may replace $A$ with $W^{-1}A$, and $B$ with
-$W^{-1}B$, where $W$ is the diagonal matrix that has the column-sums of $A$.
+First WLG assume $A$ is a transition. This is possible because we may replace
+$A$ with $AW^{-1}$, and $B$ with
+$BW^{-1}$, where $W$ is the diagonal matrix that has the column-sums of $A$.
 Since $A$ is irreducible it cannot have a column or a row that is all $0$
 so this diagonal is positive $W$ is indeed invertible and later we can cancel out the
 $W$'s and return to the general case.
@@ -575,23 +579,20 @@ Relabeling the vertices of a graph yields an adjacency matrix that is similar by
 permutations ($PAP^{-1}$, where $P$ is a permutation matrix) and vice versa.
 
 To turn $A$ into a transition, normalize each column by dividing it with
-its out going rank, so let $D_{i,i} = \text{outrank}(i)^{-1}$, $AD$ is the
+its out going rank, so let $D_{i,i} = \text{out~rank}(i)$, $T:=AD^{-1}$ is the
 transition matrix of this graph (because right-multiplying by $D$ normalizes each
 column by its rank).
 If the graph was stochastic to begin with then the adjacency matrix as we
 defined it is already column-normalized.
-Going forward when we are always implicitly assuming that the adjacency matrix
-is column-normalized.
-
 
 \begin{mydef}
 \label{def:stronglyconnected}
 A graph is $G$ \textbf{strongly connected} if there is a directed path form any edge
-to any edge. if and only if the adjacency matrix is irreducible.
+to any edge. Equivalently $G$ is strongly connected if and only if its adjacency matrix is irreducible.
 
 We say that the \textbf{Period of a vertex} $v \in V(G)$ is the greatest common
-divider of all closed paths on $v$. If the periods of all vertices are equal
-(spoiler- in the case that $G$ is strongly connected they do), we call it the
+divisor of all closed paths on $v$. If the periods of all vertices are equal
+(spoiler: in the case that $G$ is strongly connected they are), we call it the
 \textbf{Period of the graph} $G$.
 \end{mydef}
 
@@ -604,11 +605,11 @@ equal to the graph period (can be shown using \ref{thm:wielandt2} and
 \ref{remark:wielandt_cyclicity}).
 
 So if the graph $G$ is strongly connected and has period $1$
-then the adjacency matrix is aperiodical and hence primitive, and vice versa. 
+then the adjacency matrix is \textbf{aperiodic} and hence primitive, and vice versa. 
 \end{remark}
 
 From all the above we have seen that a Markov process can be represented in two
-equivalent ways \textemdash as a transition matirx  and as the the 
+equivalent ways \textemdash as a transition matrix  and as the 
 corresponding weighted directed graph.
 
 If the graph $G$ is strongly connected and aperiodic, its corresponding
@@ -620,17 +621,17 @@ method} which is efficient because it can be done in a matrix-free method.
 We don't need to know the matrix itself just the dot product of it with a state
 vector.
 
-If the graph $G$ is strongly connected, then \ref{thm:perron2} assures as the
+If the graph $G$ is strongly connected, then \ref{thm:perron2} assures us the
 existence and uniqueness of a stationary distribution $p$. But if $G$ is not
 aperiodic, the corresponding adjacency matrix is not primitive. We cannot use
 the efficient power method to calculate $p$. Also the process itself doesn't
-stabilize on $p$, it is periodic and cycles on between the $h$ eigenvectors on
+stabilize on $p$. It is periodic and cycles between the $h$ eigenvectors on
 the unit circle. 
 
-We are therefore interested to find next how to convert an \text{imprimitive}
+We are therefore interested to find how to convert an \text{imprimitive}
 matrix (= irreducible but not primitive)
-to a primitive matrix or or equivalently a strongly connected but periodic graph
-to an aperiodic graph.
+to a primitive matrix or equivalently to turn a strongly connected but periodic graph
+into an aperiodic graph.
 
 \begin{lemma}
 \label{lem:1plusA}
@@ -648,7 +649,7 @@ This shows that we have for every $i \neq j$ some $k$ sucht that $A^k_{i,j} \gt
 \end{proof}
 \end{lemma}
 
-The properties of irreducibility, primitivity and positivity only depend on the
+The properties of irreducibility, primitiveness and positivity only depend on the
 sign ($-,0,+$) of the entries and not on their size. So we use the following definition to
 test matrices for these properties:
 
@@ -672,17 +673,19 @@ If one of $S,T$ is positive/primitive/irreducible so is $W$
 \end{lemma}
 
 Let $G$ be any weighted graph and $A$ its adjacency transition matrix. Some vertices may
-be unreachable from other vertices and we there might not exist a single and
+be unreachable from other vertices and there might not exist a single and
 unique stationary distribution. A random walk on this graph is generally
 dependent on the initial state.
 However if we allow the possibility of 'random restart' from any state, this
 graph becomes totally connected it is guarantied to have a unique stationary
 distribution to which any random walk converges regardless of the initial state.
 
-In terms of matrices, we create a positive transition matrix $W = (1-\alpha)A + \alpha
-\mathbf{1} \gt 0$. The stationary distribution is called the \textbf{PageRnak}
-for $G$ with restart parameter $\alpha$. It is used to order the vertices
-according to their 'relevance' in the network.
+In terms of matrices, we create a positive transition matrix $W = (1-\alpha)A +
+\alpha \mathbf{\frac{1}{n}} \gt 0$. Where $\mathbf{\frac{1}{n}}$ is the $n
+\times n$ matrix whose entries are all $\frac{1}{n}$. The stationary
+distribution is called the \textbf{PageRnak} for $G$ with restart parameter
+$\alpha$. It is used to order the vertices according to their 'relevance' in the
+network.
 
 
 \begin{figure}[!htb]
@@ -711,7 +714,9 @@ according to their 'relevance' in the network.
     \includegraphics[width=0.55\linewidth]{directed_graph_example_tinyalpha.png}
   \caption{When the restart parameter is too large, the rank becomes almost
   uniform because the convex combination of the original graph with the
-  $n$-clique graph of the restarts is weighted too heavily on the latter}
+  $n$-clique graph of the restarts is weighted too heavily on the latter. It
+  also shows that for high restart values $0$ becomes hotter than $5$. That is
+  because paths of length $\gt 2$ (before restart) become very unlikely in this random walk.}
   \label{fig:weaklyconnectedpagedrankedbadly}
 \end{figure}
 
@@ -725,7 +730,334 @@ according to their 'relevance' in the network.
   \label{fig:undirectedanked}
 \end{figure}
 
+The PageRank is the stationary distribution of the process when we use unbiased
+restart\textemdash A restart is equally likely from any vertex.
+But we want more. We want to find out what happens when we restart, for example,
+always from one single vertex $u$. We think of the stationary distribution $p_u$ that 
+results from such process as the heat (or flow) which propagates out of $u$.
+If we take another vertex $v$ we think of $p_u[v]$ as a measure of how close $v$
+is to $u$, or how much heat $u$ sends to $v$.
+Note that this is not symmetric $p_v[u] \neq p_u[v]$ in general.
 
+%(memo: add an illustration about asymmetry)
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.55\linewidth]{diagram_star.png}
+\caption{Stars have hot center because it spreads its heat on many sources,
+while each of the orbiting vertices sends all its heat into the star center.
+}
+\label{fig:hotstar}
+\end{figure}
+
+\begin{lemma}
+\label{lem:AplusP}
+Let $A \geq 0$ be irreducible. Let $B \geq 0$ have a positive row (or column),
+then $A + B$ is primitive.
+\begin{proof}
+Suppose WLG that $B_1 > 0$ (first row). Then $\forall k \gt (B^k)_1 \gt 0$.
+Fix $i,j$.
+Since $A$ represents a strongly connected graph, there is a path from $i
+\curvearrowright 1 \curvearrowright j$ of some length $k$. So $A^k_{i,j}>0$.
+Then $\forall l \geq 0 (A + B)^{k+l} \gt 0$ because we can go along this path,
+then self loop $l$ times in $1$ and keep going to $j$ on that path.
+
+So we have shown that $(A+B)^k_{i,j}$ stays positive once it becomes positive
+and it always turns positive at some point by irreducibility of $A$, so that
+means $A+B$ is primitive.
+\end{proof}
+\end{lemma}
+
+\begin{remark}
+\label{rem:AplusP}
+Lemma \ref{lem:AplusP} proves that we can propagate from any arbitrary restart
+group including a single vertex and the combined transition matrix will be
+primitive if the adjacency matrix $A$ is strongly connected.
+
+Let $q$ be a state column vector for example $e_1$ and let $Q = (q | q | \dots | q)$.
+So $Q$ has a positive row and therefore $(1-\alpha)AD + \alpha Q$ is a primitive
+transition.
+
+Also worth noting that if $x \geq 0$ is any transition, then $Qx = q$.
+\end{remark}
+
+If $A$ is the adjacency matrix of $G$ we defined the transition $T = AD^{-1}$.
+We define the transition matrix with restart parameter $\alpha$ and bias $q$ as
+\[
+T_{\alpha, q} :=
+(1 - \alpha)T + \alpha Q
+\]
+
+This matrix has a unique stationary distribution $p$ so
+And use \ref{rem:AplusP}:
+
+\[
+p = Ip
+= [(1 - \alpha)T + \alpha Q]p =  (1 - \alpha)Tp + q 
+\]
+
+We can rearrange it now
+
+\begin{equation}
+\label{eq:uninvertedstationary}
+(I - (1 - \alpha)T)p = \alpha q
+\end{equation}
+
+We want to invert the matrix in \ref{eq:uninvertedstationary} and use the
+following lemma to justify it (Th proof is easy. See for example
+\textcite{serre2010matrices}):
+
+\begin{lemma}
+\label{lem:invertible}
+Let $X$ be a contracting matrix, Then $(I-X)$ is invertible and the power sum of
+$X$ converges to it:
+\[
+(I - X)^{-1} = \sum_{k=0}^{\infty} X^k
+\]
+\end{lemma}
+
+So now we may apply lemma \ref{lem:invertible} on equation
+\ref{eq:uninvertedstationary} because $(1-\alpha)A$ is contracting, and we have:
+
+\begin{equation}
+\label{eq:diffkernel}
+p = \alpha [I - (1 - \alpha)T]^{-1} q := K q = 
+\alpha \sum_{k=0}^{\infty} (1 - \alpha)^k T^k
+\end{equation}
+
+$K$ is called \textbf{diffusion kernel} of $T$ with parameter $\alpha$
+It turns out that $K$ itself is a transition because it maps the
+arbitrary transition $q$ to the transition $p$. In addition, $K \gt 0$ because
+of \ref{eq:diffkernel}.
+
+What about the eigenvectors and eigenvalues of $K$?
+If a matrix $A$ is invertible then $Av = \lambda v \iff A^{-1}v = \lambda^{-1}$.
+For any matrix $Av = \lambda v \iff (I + A)v = (1+\lambda)v$.
+
+It turns out then that $T$ and $K$ have the same eigenvectors and if $Tv=\lambda
+v$ then $K v = \alpha [1 - (1 - \alpha) \lambda]^{-1} v$. And in particular if it
+turns out that all the eigenvalues are real (spoiler- they are), then they have
+the same order as eigenvalues of $K$ or $T$ for the same eigenvector.
+In particular we see that the choice of $\alpha$, the restart parameter, NEITHER 
+changes the eigenvectors NOR does it change the order of the eigenvalues.
+
+To sum up the important facts that we would need later:
+
+\begin{thm}
+\label{thm:AKTcharacteristics}
+Let $G$ be strongly connected undirected graph. Let $A$ be its adjacency matrix
+and $D$ the diagonal matrix which has the ranks of the vertices on its diagonal.
+Let $T = A D^{-1}$, let $0 \lt \alpha \lt 1$ and 
+$K = \alpha [I - (1 - \alpha)T]^{-1}$. Then the following are all true:
+
+\begin{itemize}
+
+\item{}
+$A \geq 0$ is symmetric therefore its eigenvalues are all real.
+
+\item{}
+$T = AD^{-1} = D^{1/2}[D^{-1/2}AD^{-1/2}]D^{-1/2}$ is similar to $A$. Therefore
+it has the same eigenvalues as $A$, which are all real:
+$\lambda_1 \geq \dots \lambda_n$.
+
+\item{}
+There exists for all $0 \lt \alpha \lt 1$ the invertible matrix: 
+$K := \alpha \sum_{k=0}^{\infty} (1 - \alpha)^k T^k = \alpha [I - (1 -
+\alpha)T]^{-1}$.
+$K \gt 0$ is a transition. It has the same eigenvectors as $T$ and their
+corresponding eigenvalues are all real and they have the same order as the
+corresponding eigenvalues for $T$ have.
+\end{itemize}
+\end{thm}
+
+Finally as a side note the name diffusion kernel originates from the heat
+equation which associated with the graph, considering the graph 
+as perfectly insulated system.
+We won't get deeper into that at this time.
+
+%The Equation looks something like this: Let $L = D - A$, the \textbf{Laplacian
+%Matrix}. Let $\gamma \gt 0,$ and $0 \lt p_0 \in \R^n$ 
+
+\section{A naive yet not useless propagation method for clustering a graph}
+
+\begin{mydef}
+\label{def:influence}
+Let $G$ be a strongly connected graph and $K$ the diffusion kernel as defined in
+\ref{lem:invertible}, end let $u,v \in \{1 \dots n\}$ be two vertices and $e_u,
+e_v \in \R^n$ their corresponding index vectors.
+
+$p_u := K e_u$, the stationary distribution with random restart from $u$,
+is called the \textbf{influence vector} of vertex $u$. We say that $p_u[v]$
+is the \textbf{influence of} $u$ on $v$.
+\end{mydef}
+
+A $p_u$ is a measure of how 'heat' which is pumped into $u$ propagates in the graph.
+When we try to cluster the graph, it is natural to think that If vertex $v$
+is the top receiver from $u$, namely $v = \text{argmax}(p_u)$ then maybe these 2
+belong in the same cluster.
+
+Informally we say that a vertex is 'hot' or 'cold' if it has a high (hot) or low
+(cold) PageRank. Remember that the PageRank is the unbiased stationary distribution
+$p = K \cdot (1/n, \dots, 1/n)^t$.
+
+So when we start clustering a graph, I suggest that it makes sense to pick up a
+cold vertex and associate it with the vertex to which it sends most of its heat.
+If we start from a hot vertex, it usually has many neighbours and it doesn't
+send allot of heat down a single vertex.
+
+The algorithm works as follows:
+
+\begin{lstlisting}
+function coolWarmClustering(G, k)
+  # Input G = (V,E) : a directed strongly connected graph.
+  # Input m : The desired number of clusters
+  K <- diffusion_kernel(G)
+  H <- Disconnected_undirected_graph_on(V) # each vertex starts in its own cluster 
+  p <- pageRank(G)
+  vlist <- arg_sort(p) # vertex-list sorted up by PageRank 
+  While |connected_components(H)| > k do
+    x <- vlist.pop() # take the coldest remaining vertex and remove it from the
+                      # list
+    p_x <-K * e_x # Influence vector of x
+    y <- argmax(p_x)
+    H.add_edge(x,y)
+  return H
+\end{lstlisting}
+
+The algorithm clusters the vertices by constructing a new graph on the same
+vertices, successively joining vertices. It picks the coldest remaining vertex
+and joins it with the vertex to which it propagates the most heat.
+
+In every iteration of the algorithm adds an edge, which either reduces the
+number of connected components by $1$ or keeps it unchanged. Because $G$ is
+strongly connected algorithm will reduce the number of connected
+components in $H$ until it reaches the desired number of components $k$.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.75\linewidth]{Karate_coolwarmclustering.png}
+\caption{
+The Famous 'Zachary's Karate Club' Graph. The labels show the actual division
+between the 'Mr Hi' and 'Officer' groups.
+Vertex size indicates its PageRank.
+The colors encode the result of the coolWarmClustering compared to the actual
+partition. It made 1 mistake:
+It associates wrongly vertex 8 to 'Officer'.  This vertex
+is hard to resolve because it is connected to hubs in both clusters.
+In fact a further check confirms that the total sum of 'heat' it sends to members of
+'Officer' is $0.45$ vs $0.36$ to members of 'Mr Hi' (excluding itself in both
+cases). So in some sense the algorithm is more correct then the actual
+partition in real life. Perhaps this is due to human irrationality?
+On the other hand, $8$ receives more heat units from $17$ members of 'Mr. Hi': $0.485$
+units, compared to $0.345$ units from the $16$ members of 'Officer'. 
+}
+\label{fig:karatecoolwarm}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{example_coolwarm2clusters.png}
+\caption{A 2 cluster partition}
+\label{fig:examplecoolwarm2cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{example_coolwarm3clusters.png}
+\caption{A 3 cluster partition}
+\label{fig:examplecoolwarm3cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\caption{The result of running the algorithm set for finding a 2-partition and
+respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
+to associate with the biggest clique because node 4 of that clique is the one
+which receives the most heat from 12}
+\label{fig:exampleCoolWarmClustering}
+\end{figure}
+
+
+
+\section{Spectral Clustering and other Methods}
+
+\textbf{Spectral Partitioning} \cite{WikipediaGraphPartition, WikipediaSpectralClustering},
+is a common technique for partitioning graphs. The idea is to construct a
+Laplacian type matrix \cite{WikipediaLaplacianMatrix} for the graph $G$ and
+analyze its eigenvalues and eigenvectors and construct a $2$-partition of $G$.
+It is possible to create a hierarchical partitioning of $G$ by repeating the
+process on each subdivision.
+
+Consider the graph $G$ and its adjacency matrix $A$. We create the transition
+matrix by normalizing it: $T = AD^-1$, and finally we choose a restart parameter
+$\alpha$ and create the diffusion
+kernel $K$. Theorem \ref{thm:AKTcharacteristics} assures us that $K$ and $T$
+have the same eigenvectors and the orders of their corresponding eigenvalues are
+the same.
+The eigenvalues are all real and therefore the eigenvectors are real as well.
+And the eigenvalues of $K$ are all non-negative.
+
+The eigenvector which corresponds to the biggest eigenvalue $1$ of $T$ is all
+positive. Any other eigenvector must contain both positive and negative
+components, otherwise its eigenvalue must be $1$ and there is only one and
+unique state which is an eigenvector. Therefore we consider the eigenvector
+which corresponds to the second largest eigenvalue (They are also known as the
+\textbf{Fiedler} eigen-pair).
+
+We say that $x \in \{1,-1\}^n$ is a \textbf{non-trivial 2-partition} of $V = \{1
+\dots n\}$ if $|\sum x_i| \lt n$. If we want to find the partition that
+maximizes $Kx$ 
+
+
+In \textcite{newman2006modularity} there is a particular type of spectral
+partitioning which uses a matrix which the author called the modularity matrix.
+
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{example_spectralT2clustering.png}
+\caption{A T cluster partition}
+%\label{fig:examplecoolwarm2cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{example_spectralKK2clustering.png}
+\caption{A K cluster partition}
+%\label{fig:examplecoolwarm3cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\caption{The result of running the algorithm set for 2-partition and
+respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
+to associate with the biggest clique because node 4 of that clique is the one
+which receives the most heat from 12}
+%\label{fig:exampleCoolWarmClustering}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{Karate_spectralT2clustering.png}
+\caption{A T cluster partition}
+%\label{fig:examplecoolwarm2cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\begin{subfigure}[b]{0.5\textwidth}
+\includegraphics[width=\textwidth]{Karate_spectralKK2clustering.png}
+\caption{A K cluster partition}
+%\label{fig:examplecoolwarm3cluster}
+\end{subfigure}
+%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%(or a blank line to force the subfigure onto a new line)
+\caption{The result of running the algorithm set for 2-partition and
+respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
+to associate with the biggest clique because node 4 of that clique is the one
+which receives the most heat from 12}
+%\label{fig:exampleCoolWarmClustering}
+\end{figure}
 
 
 \section{The Propagation Method}
@@ -736,7 +1068,7 @@ Markov process. On a given time-step, a visitor on a graph node chooses
 his next station at random among the neighbours of the current station (node).
 
 We want to know first, if we repeat this process to infinity will the frequency
-of the visits at each node stabalize 
+of the visits at each node stabilizes.
 
 \section{testing}
 
