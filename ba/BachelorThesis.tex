@@ -19,6 +19,8 @@
 \usepackage{subcaption}
 \usepackage[section]{placeins} %no trans-sectional figures!
 
+\usepackage{lipsum}
+
 % Basic data
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\C}{\mathbb{C}}
@@ -125,15 +127,57 @@ breaklines=true,
 %\everydisplay{\color{blue}} 
 
 \section{Introduction}
-This Thesis deals with the propagation methods for clustering and community
-structure in Graphs. The original motivation is to utilize these methods on
-Protein-Protein Interaction Networks (PPI) specifically for function
-annotations.
+%This Thesis deals with the propagation methods for clustering and community
+%structure in Graphs. The original motivation is to utilize these methods on
+%Protein-Protein Interaction Networks (PPI) specifically for function
+%annotations.
+%
+%We are given an (in my case undirected) connected graph, which represents some sort of
+%network structure, be it a PPI or A social network. Real world networks tend to
+%have some characteristics that are clearly not random, such as the 'small world
+%property' and tendency to forming hubs. 
 
-We are given an (in my case undirected) connected graph, which represents some sort of
-network structure, be it a PPI or A social network. Real world networks tend to
-have some characteristics that are clearly not random, such as the 'small world
-property' and tendency to forming hubs. 
+%\lipsum[1-2]
+
+This Thesis deals with non-negative matrices, propagation methods, clustering
+and community structure in Graphs. In scientific research graphs are often used
+as an abstraction of a complex interaction network. They constitute a simplified
+display of the information which is easier to work with yet hopefully still
+retains the essential properties of the network. When that is the case, then
+insightful information about the subject of research can be gained by analysis
+of the graphs which are constructed out of the row data.
+
+In the case of an unweighted undirected graph, the vertices represent particular
+units that are the subject of research, be they people, proteins or whatever;
+and the edges represent some sort of close proximity or interaction that is
+assumed to exist between the two edges it connects.
+
+The direct inspiration to this thesis is the subject of function prediction 
+of proteins in a protein-protein interaction network (PPI). These are graphs
+where the vertices represent a particular type of protein and an edge connects
+two proteins if they are found in close proximity to each other in a sufficient
+portion of the samples. 
+
+It may be the case that some of the proteins in the network are well researched
+already and their function is known. We are interested to the functionality of
+the unknown proteins in the network based on the known proteins and the network
+structure. We assume that proteins that take place in the same function will
+also cluster together in the graph as they do in practice (form protein
+complexes, bonds or whatever).
+
+We may are be interested in finding the most relevant associate of a certain
+known protein that has lots of neighbors. In the terminology of propagation we
+are going to search for the vertex that receives the most 'heat' from the known
+protein, or in terms of random walk, it is the most frequently visited vertex,
+by a random path starting from the known vertex.
+
+One advantage of propagation methods is that they are relatively fast, in fact
+in linear complexity. The typical graph can be represented as a sparse matrix
+and The power method starting from any starting distribution converges
+exponentially fast to the greatest eigenvector which is the stationary
+distribution. There methods that achieve that in about $O(n + m)$  ($n$
+vertices, $m$ edges) complexity but that is beyond the scope of this thesis.
+
 
 \section{Linear Algebra Primer}
 
@@ -981,58 +1025,89 @@ which receives the most heat from 12}
 
 \section{Spectral Clustering and other Methods}
 
-\textbf{Spectral Partitioning} \cite{WikipediaGraphPartition, WikipediaSpectralClustering},
+\textbf{Spectral Partitioning} 
+\cite{von2007tutorial, naumov2016parallel, WikipediaGraphPartition, WikipediaSpectralClustering},
 is a common technique for partitioning graphs. The idea is to construct a
 Laplacian type matrix \cite{WikipediaLaplacianMatrix} for the graph $G$ and
 analyze its eigenvalues and eigenvectors and construct a $2$-partition of $G$.
 It is possible to create a hierarchical partitioning of $G$ by repeating the
 process on each subdivision.
 
-Consider the graph $G$ and its adjacency matrix $A$. We create the transition
+The problem of finding the best graph partition, also called the minimal cut
+problem is NP-hard. Spectral partitioning methods are heuristics that
+approximate the solution in 'real life' classes of networks.
+
+\begin{mydef}
+\label{def:Laplacian}
+Let $G$ be a bidirectional graph with adjacency matrix $A$ and diagonal degree
+matrix $D$.
+Then the following matrices are its \textbf{graph Laplacian}, and its
+\textbf{symmetric\textemdash
+, row\textendash normalized\textemdash and column\textendash normalized\textemdash Laplacians}:  
+
+\begin{equation}
+\begin{aligned}
+L & = D - A \\
+L_s & = D^{-1/2}LD^{-1/2} = I - D^{-1/2}AD^{-1/2} \\
+L_r & = D^{-1}L = I - D^{-1}A \\
+L_c & = LD^{-1} = I - AD^{-1}
+\end{aligned}
+\end{equation}
+\end{mydef}
+
+Consider the connected graph $G$ and its adjacency matrix $A$. We create the transition
 matrix by normalizing it: $T = AD^-1$, and finally we choose a restart parameter
-$\alpha$ and create the diffusion
-kernel $K$. Theorem \ref{thm:AKTcharacteristics} assures us that $K$ and $T$
-have the same eigenvectors and the orders of their corresponding eigenvalues are
-the same.
-The eigenvalues are all real and therefore the eigenvectors are real as well.
-And the eigenvalues of $K$ are all non-negative.
+$\alpha$ and create the diffusion kernel $K$. Theorem
+\ref{thm:AKTcharacteristics} assures us that $K$ and $T$ have the same
+eigenvectors and the orders of their corresponding eigenvalues are the same. The
+eigenvalues are all real and therefore the eigenvectors are real as well. And
+the eigenvalues of $K$ are all non-negative.
 
-The eigenvector which corresponds to the biggest eigenvalue $1$ of $T$ is all
-positive. Any other eigenvector must contain both positive and negative
-components, otherwise its eigenvalue must be $1$ and there is only one and
-unique state which is an eigenvector. Therefore we consider the eigenvector
-which corresponds to the second largest eigenvalue (They are also known as the
-\textbf{Fiedler} eigen-pair).
+The matrix $K^{-1} = \alpha^{-1} [I - (1- \alpha) AD^{-1}]$ is closely related to the
+and the column-normalized Laplacian $L_c$. The added parameter $0 \lt \alpha \lt 1$
+neither changes the eigenvectors, nor the order of the corresponding eigenvalues.
 
-We say that $x \in \{1,-1\}^n$ is a \textbf{non-trivial 2-partition} of $V = \{1
-\dots n\}$ if $|\sum x_i| \lt n$. If we want to find the partition that
-maximizes $Kx$ 
+The smallest eigenvalue ,$0$ of $L$ and $L_s$
+corresponds to the largest eigenvalue $1$ of and $T$ and its eigenvector is
+(can be chosen as) all positive. 
+Any other eigenvector of $L$ (which corresponds to an eigenvector of $T$) must
+contain both positive and negative components due to \ref{thm:perron1}.
 
+It's the eigenvector of the second smallest
+eigenvalue $L$ or $L_s$ which is commonly used in 
+They are commonly referred to as the \textbf{Fiedler} eigen-pair in the literature.
+for spectral partitioning \cite{naumov2016parallel}. The simplest method is to
+use the sign of the components of
+eigenvector of the second smallest eigenvalue of $L$ or $L_s$.
+This eigen-pair corresponds to the second largest eigenvalue of $T$
 
 In \textcite{newman2006modularity} there is a particular type of spectral
 partitioning which uses a matrix which the author called the modularity matrix.
+It has the advantage over the Laplacian in that its greatest eigenvalue may be
+positive or negative which is used to indicate or suggest the existence of
+community structure in the graph. However the normalized Laplacians $L_r$ and
+$L_c$ are more natural in the context of the random walk or propagation method
+and recommended for example in \cite{von2007tutorial}.
 
 
 \begin{figure}
 \centering
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width=\textwidth]{example_spectralT2clustering.png}
-\caption{A T cluster partition}
-%\label{fig:examplecoolwarm2cluster}
+\caption{A spectral clustering using the sign of the Fiedler eigenvector.}
+\label{fig:toygraphspectralclustering}
 \end{subfigure}
 %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
 %(or a blank line to force the subfigure onto a new line)
 \begin{subfigure}[b]{0.5\textwidth}
-\includegraphics[width=\textwidth]{example_spectralKK2clustering.png}
-\caption{A K cluster partition}
-%\label{fig:examplecoolwarm3cluster}
+\includegraphics[width=\textwidth]{Toygraph_Fiedler.png}
+\caption{Plot of the Fiedler vector's components, showing a clear subdivision
+between the positive and the negative components.}
+\label{fig:toygraphfiedlerplot}
 \end{subfigure}
 %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
 %(or a blank line to force the subfigure onto a new line)
-\caption{The result of running the algorithm set for 2-partition and
-respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
-to associate with the biggest clique because node 4 of that clique is the one
-which receives the most heat from 12}
+\caption{}
 %\label{fig:exampleCoolWarmClustering}
 \end{figure}
 
@@ -1040,36 +1115,70 @@ which receives the most heat from 12}
 \centering
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width=\textwidth]{Karate_spectralT2clustering.png}
-\caption{A T cluster partition}
-%\label{fig:examplecoolwarm2cluster}
+\caption{Spectral clustering of the Karate Club network using the Fiedler
+eigenvector signs. There are $2$ deviations from the actual partition, both are
+borderline nodes which are harder to resolve. The $8$ node mistake is in common
+with the naive algorithm of the previous section.}
+\label{fig:karatespectral}
 \end{subfigure}
 %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
 %(or a blank line to force the subfigure onto a new line)
 \begin{subfigure}[b]{0.5\textwidth}
-\includegraphics[width=\textwidth]{Karate_spectralKK2clustering.png}
-\caption{A K cluster partition}
-%\label{fig:examplecoolwarm3cluster}
+\includegraphics[width=\textwidth]{karate_fiedler_unsorted.png}
+\caption{Plot of the Fiedler Vector of the Karate Club. The split between
+negative and positive values is much less dramatic but nonetheless still visible.}
+\label{fig:karatefiedlerplot}
 \end{subfigure}
 %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
 %(or a blank line to force the subfigure onto a new line)
-\caption{The result of running the algorithm set for 2-partition and
-respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
-to associate with the biggest clique because node 4 of that clique is the one
-which receives the most heat from 12}
+%\caption{}
 %\label{fig:exampleCoolWarmClustering}
 \end{figure}
 
 
-\section{The Propagation Method}
-The normalize adjacency matrix of 
-a connected graph (for simplicity we use here undirected) is a transition matrix
-and represents a
-Markov process. On a given time-step, a visitor on a graph node chooses
-his next station at random among the neighbours of the current station (node).
+\section{The Propagation Method In Bioinformatics}
+%The normalize adjacency matrix of 
+%a connected graph (for simplicity we use here undirected) is a transition matrix
+%and represents a
+%Markov process. On a given time-step, a visitor on a graph node chooses
+%his next station at random among the neighbours of the current station (node).
+%
+%We want to know first, if we repeat this process to infinity will the frequency
+%of the visits at each node stabilizes.
 
-We want to know first, if we repeat this process to infinity will the frequency
-of the visits at each node stabilizes.
+%\lipsum[3-4]
 
+Propagation methods or as they are sometimes called, diffusion methods, have
+been used in Bioinformatic software tools mostly function prediction and
+'disease characterization' \cite{cowen2017network}.
+
+Typically the diffusion method is used to screen for possible 'candidates' (i.e
+a disease causing genes) which is basically pageRanking, or for module detection
+which is essentially clustering/community structure. In a second step these
+candidates are scored by a probabilistic model which may use additional
+information beyond the network structure itself.
+
+The most simple application, which is briefly described in the introduction, is 
+function prediction in a single PPI network. As an example application we bring
+the RIDDLE \cite{wang2012riddle} functional prediction web application
+(\url{www.functionalnet.org/RIDDLE}). 
+
+(usw und sofort \dots they use pagrRank, and then do a statistical test based on
+hypergeometric distribution to score the significance \dots) 
+
+
+
+
+Hotnet \cite{vandin2012discovery} and its successor Hotnet2
+\cite{leiserson2015pan} are an example of a more complex application
+used for module detection \dots
+
+(they have a system to set threshold influence, break the graph to small 
+connected components as module candidates, then use additional information 
+to score the significance)
+
+
+\begin{comment}
 \section{testing}
 
 \subsection{citations}
@@ -1138,7 +1247,14 @@ Refer to it with fig \ref{fig:heatmap} tada.
 \end{center}
 \end{table}
 
+\end{comment}
+
 \section{Reference}
+\nocite{slides_from_lecture}
+\nocite{cowen2017network}
+\nocite{vandin2012discovery}
+\nocite{vandin2012discovery}
+
 \printbibliography
 
 \end{document}

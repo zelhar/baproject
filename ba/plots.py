@@ -229,11 +229,32 @@ clusters2[ccc[0]]=1
 clusters2
 
 eigvals, eigvects = np.linalg.eig(K)
+#eigvals, eigvects = np.linalg.eig(T)
 
 eigvals
 
 x = np.argsort(eigvals)
 x
+y = eigvects[:,1]
+z = y.copy()
+fig = plt.plot(z, '.-')
+plt.title('Karate Club Fiedler Vector - Unsorted')
+plt.grid(True)
+plt.savefig('karate_fiedler_unsorted.png')
+plt.close()
+
+z.sort()
+fig = plt.plot(z, '.-')
+plt.title('Karate Club Fiedler Vector - Sorted')
+plt.grid(True)
+plt.savefig('karate_fiedler_sorted.png')
+plt.close()
+
+
+z0 = eigvects[:,0].copy()
+z0.sort()
+plt.plot(z0, '.-')
+
 
 B = K - R/m
 
@@ -265,8 +286,22 @@ boo
 
 nx.draw_spring(G, with_labels=True, node_color=boo, cmap=plt.cm.coolwarm,
         node_size=8000*p, node_shape='s', labels=clubdict)
+
 plt.savefig("Karate_spectralKK2clustering.png")
 plt.close()
+
+v1 = np.sign(bar[:,1])
+
+np.dot(v1, np.dot(B,v1))
+
+b1 = np.ones_like(v1)
+np.dot(b1, np.dot(B,b1))
+b1[0] = -1
+np.dot(b1, np.dot(B,b1))
+
+BB = np.diag(B.sum(axis=0)) - B
+BB
+looveal,loovects = np.linalg.eig(BB)
 
 # The fiedler eigenvector is the one corresponding to the second largest
 # eigenvalue. We use it to create the partition.
@@ -313,7 +348,56 @@ testvects[:,0] + eigvects[:,0]
 
 testvects[:,1] - eigvects[:,1]
 
+###
 
+D = np.diag(d)
+L = D - A
+
+u,v = np.linalg.eig(L)
+np.argmin(u) 
+np.argsort(u)
+u[7]
+x = v[:,7]
+np.dot(L,x)
+x = v[:,9] #2nd largest
+x = np.sign(x)
+x
+x+colors
+nx.draw_spring(G, with_labels=True, node_color=(x+colors+1), cmap=plt.cm.coolwarm,
+        node_size=8000*p, node_shape='s', labels=clubdict)
+plt.savefig("Karate_spectral_Laplacian2clustering.png")
+plt.close()
+
+KK = np.transpose(K)*K
+
+u,v = np.linalg.eig(KK)
+np.argmin(u) 
+np.argsort(u)
+x = v[:,1]
+x = np.sign(x)
+x
+x = 1-x
+x+colors
+nx.draw_spring(G, with_labels=True, node_color=(x+colors), cmap=plt.cm.coolwarm,
+        node_size=8000*p, node_shape='s', labels=clubdict)
+plt.savefig("Karate_spectral_KK(elementwise)2clustering.png")
+plt.close()
+
+u,v = np.linalg.eig(A)
+
+x = v[:,1]
+x = np.sign(x)
+x = (1-x)*2
+
+nx.draw_spring(G, with_labels=True, node_color=(x+colors), cmap=plt.cm.coolwarm,
+        node_size=8000*p, node_shape='s', labels=clubdict)
+plt.savefig("Karate_spectral_A_(not normalized)_2clustering.png")
+plt.close()
+
+
+M = np.dot(np.transpose(K),K)
+
+ftest = lambda x: np.dot(x, np.dot(M, x))
 
 #### Lets construct a graph with 3 cliques and see how it can be clustered by
 #### fiedler eigenvector of A and of K^tK
@@ -343,6 +427,14 @@ T[:,0].sum()
 eu, ev = np.linalg.eig(T)
 
 eu
+
+y = ev[:,1]
+
+fig = plt.plot(y, '.-')
+plt.grid(True)
+plt.title('Toy Graph Fiedler Vector')
+plt.savefig('Toygraph_Fiedler.png')
+plt.close()
 
 x = ev[:,1]
 x = np.sign(x)
