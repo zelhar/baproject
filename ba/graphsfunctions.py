@@ -194,6 +194,53 @@ def biasedPropagateG(G, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7)
             x = y
     return x.flatten(), W
 
+def biasedPropagateGv2(G, bias, alpha=0.85, beta=1, epsilon=1e-7, maxiter=10 ** 7):
+    """The inputs: G: a networkx type graph.
+    bias: The biased restart distribution. 
+    alpha: the restart parameter, must be between 0 and 1.
+        1-alpha is the restart probability
+    epsilon: convergence accuracy requirement
+    maxiter: additional stop condition for the loop,
+    whichever reached first stops the loop.
+    beta: pseudocount parameter to ensures regularity of the matrix.
+        1-beta is the restart probability. If the graph is known to be
+        connected, than it regular (and only if, see notes doc).
+    So the transitional matrix incorporates both the biased and the uniform
+    distribution.
+    outputs the resulting stationary distribution and nothing else.
+    """
+    A = np.array(nx.adj_matrix(G).todense())
+    A = A.transpose() #we want A[i,j]=1 to mean from j to i
+    n = len(A)
+    # normaliz A column-wise:
+    d = A.sum(axis=0).reshape((1, n))
+    d[d == 0] = 1  # avoid division by 0
+    W = A / d
+    # comnine A with the restart matrix
+    bias = bias / np.sum(bias)
+    B = bias.reshape((n, 1)) + np.zeros_like(A)  # make bias a column vector
+    W = (1 - alpha) * B + alpha * W  # the transition matrix with bias
+    if beta < 1:
+        E = np.ones((n, n)) / n  # the unbiased restart matrix
+        W = (1 - beta) * E + beta * W  # the transition matrix with the unbiased
+    # create a random state vector:
+    # x = np.random.random((n, 1))
+    # x = x / x.sum()
+    # create a uniform state vector:
+    x = np.ones((n, 1)) / n
+    t = np.zeros(maxiter)
+    #for i in tqdm(range(maxiter)):
+    for i in range(maxiter):
+        y = np.dot(W, x)
+        t[i] = np.linalg.norm((x.flatten() - y.flatten()), ord=1)
+        # above, flatten so the norm will be for vectors, I think
+        if t[i] < epsilon:
+            return y.flatten()
+        else:
+            x = y
+    return x.flatten()
+
+
 
 def findKins(G, points=[0], alpha=0.85):
     """This function takes a graph G (assumed to be 
