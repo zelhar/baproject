@@ -125,8 +125,8 @@ def decision_function(v, G, group_membership_list, know_unknown_list):
     output correctness: True or false depending on the correctness of the
     guess_group vs the real group_membership_list[v] value.
     """
-    known_nodes = all_nodes[know_unknown]
-    unkown_nodes = all_nodes[know_unknown == False]
+    known_nodes = all_nodes[know_unknown_list]
+    unkown_nodes = all_nodes[know_unknown_list == False]
     bias = np.zeros_like(G.nodes)
     bias[v] = 1
     bias
@@ -181,3 +181,50 @@ nx.draw_spring(G, node_color=node_colors, with_labels=True, node_shape='s')
 pos = nx.spring_layout(G, k=30)
 
 nx.draw(G, pos=nx.spring_layout(G), node_size=50, node_color=node_colors)
+
+# I need to compare this mechanism to decision by neighbors.
+
+def simple_decision_by_neighbors(v, G, group_membership_list, know_unknown_list):
+    """This decision function assign to v to the biggest group by members among
+    its neighbors with known affiliation.
+    """
+    known_nodes = all_nodes[know_unknown_list]
+    unkown_nodes = all_nodes[know_unknown_list == False]
+    group_names = np.unique(group_membership_list)
+    testscores = np.zeros_like(group_names)
+    for g in range(len(group_names)):
+        l = [x for x in G.neighbors(v) if x in known_nodes and group_membership_list[x] == group_names[g]]
+        testscores[g] = len(l)
+    decide = group_names[np.argmax(testscores)]
+    correctness = decide == group_membership_list[v]
+    return decide, correctness
+
+simple_decision_by_neighbors(3, G, groups, know_unknown)
+
+
+know_unknown3 = know_unknown.copy()
+score3 = 0
+for v in orderedUnkownNodeList:
+    _, test = simple_decision_by_neighbors(v, G, groups, know_unknown3)
+    score3 += test
+    know_unknown2[v] = True
+    print(test)
+
+score3 / len(unkown_nodes) #got 0.79
+
+know_unknown3 = know_unknown.copy()
+score3 = 0
+for v in unkown_nodes:
+    _, test = simple_decision_by_neighbors(v, G, groups, know_unknown3)
+    score3 += test
+    know_unknown2[v] = True
+    print(test)
+
+score3 / len(unkown_nodes) #got 0.76
+
+
+
+
+
+
+
