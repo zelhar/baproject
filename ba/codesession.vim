@@ -9,7 +9,8 @@ endif
 set shortmess=aoO
 badd +398 graphsfunctions.py
 badd +279 plots.py
-badd +0 hubs_and_spokes.py
+badd +1 hubs_and_spokes.py
+badd +85 bioplot.py
 argglobal
 %argdel
 $argadd graphsfunctions.py
@@ -56,13 +57,57 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 259 - ((37 * winheight(0) + 36) / 73)
+let s:l = 154 - ((44 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-259
-normal! 030|
+154
+normal! 0
 lcd ~/my_git_projects/baproject/ba
+tabedit ~/my_git_projects/baproject/ba/bioplot.py
+set splitbelow splitright
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+wincmd =
+argglobal
+if bufexists("~/my_git_projects/baproject/ba/bioplot.py") | buffer ~/my_git_projects/baproject/ba/bioplot.py | else | edit ~/my_git_projects/baproject/ba/bioplot.py | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 82 - ((53 * winheight(0) + 30) / 60)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+82
+normal! 041|
+lcd ~/my_git_projects/baproject/ba
+wincmd w
+argglobal
+enew
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+lcd ~/my_git_projects/baproject/ba
+wincmd w
+wincmd =
 tabedit ~/my_git_projects/baproject/ba/hubs_and_spokes.py
 set splitbelow splitright
 wincmd t
@@ -81,14 +126,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 725 - ((37 * winheight(0) + 36) / 73)
+let s:l = 430 - ((30 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-725
+430
 normal! 0
 lcd ~/my_git_projects/baproject/ba
-tabnext 2
+tabnext 3
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif

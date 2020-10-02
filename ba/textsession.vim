@@ -7,8 +7,8 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +847 BachelorThesis.tex
-badd +0 mybib.bib
+badd +1122 BachelorThesis.tex
+badd +1 mybib.bib
 argglobal
 %argdel
 $argadd BachelorThesis.tex
@@ -29,13 +29,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1010 - ((27 * winheight(0) + 36) / 73)
+let s:l = 1177 - ((55 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1010
-normal! 0
-tabedit mybib.bib
+1177
+normal! 026|
+lcd ~/my_git_projects/baproject/ba
+tabedit ~/my_git_projects/baproject/ba/mybib.bib
 set splitbelow splitright
 wincmd t
 set winminheight=0
@@ -52,12 +53,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 197 - ((11 * winheight(0) + 36) / 73)
+let s:l = 87 - ((46 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-197
-normal! 09|
+87
+normal! 034|
 lcd ~/my_git_projects/baproject/ba
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
