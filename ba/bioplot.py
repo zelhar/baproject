@@ -177,3 +177,7 @@ score / len(unkown_nodes) #got 0.85
 # rounds.
 
 nx.draw_spring(G, node_color=node_colors, with_labels=True, node_shape='s')
+
+pos = nx.spring_layout(G, k=30)
+
+nx.draw(G, pos=nx.spring_layout(G), node_size=50, node_color=node_colors)
