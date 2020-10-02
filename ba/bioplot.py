@@ -171,3 +171,9 @@ for v in orderedUnkownNodeList:
     print(test)
 
 score / len(unkown_nodes) #got 0.85
+
+# the rational: I think determining the hotter unkown nodes first makes sense as
+# their determination is probably easier. Then we use them for the following
+# rounds.
+
+nx.draw_spring(G, node_color=node_colors, with_labels=True, node_shape='s')
