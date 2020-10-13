@@ -1135,6 +1135,154 @@ negative and positive values is much less dramatic but nonetheless still visible
 %\label{fig:exampleCoolWarmClustering}
 \end{figure}
 
+\section{(Trying) Function Prediction Methods}
+
+\subsection{Methodology}
+We use the annotated yeast interactome which is a pure PPI network that comes
+prepackaged with the
+software tool 'Cytoscape'. The nodes represent yeast proteins and the edges
+represent protein-protein interactions.
+
+This network comes with functional annotations in the 'MCs name' field. We
+select nodes in the network whose annotations contain one \textbf{exactly} one
+of the following
+keywords:  'DNA Replication' (blue group), 'Golgi' (red), 'Meiosis' (yellow),
+and 'Stress response' (green). All other nodes are removed from the network.
+The result is shown on figure \ref{fig:yeast_subgraph_4groups}. We are going to
+test various annotation method on the largest connected component of this
+subnetwork.
+
+Nodes whose annotations contain keywords of more then one group were discarded.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{yeastsubgraph_4_groups_colorcode.png}
+\caption{Subgraph of the Yeast Interactome of showing nodes of 4 groups: 'DNA
+replication' (blue), 'Golgi' (red), 'Meiosis' (yellow), 'Stress response'
+(green)}
+\label{fig:yeast_subgraph_4groups}
+\end{figure}
+
+The above subnetwork is exported from cytoscape to graphml file, which we import 
+and convert into a networkx object. 
+We select the largest connected component from the above network.
+
+We set a random seed (a process which we repeat 2 times for 2 different trials).
+Then we select randomly 50\% of the nodes and mark them as 'unknown'. The other
+50\% are 'known'. We are going to try to determine the group affiliation of the
+unknown nodes based on the group affiliations of the known nodes.
+
+We use 5 different prediction methods:
+
+\begin{itemize}
+\item{Method 1} Determines the group affiliation of an unknown node by the group
+that has the maximal volume based on the propagation distribution from the
+unknown node. This meas: we calculate the stationary distribution with restart
+to the unkown node. Among the known nodes, we calculate the weighted sums of
+each of the 4 groups according to the distribution. The group with largest sum
+is the affiliation we assign to the unkown node.
+
+\item{Method 2} This method works like method 1, except that we first order the
+unkown nodes (decreasing order) according to their pagerank. We go over the
+nodes in this order and assign group affiliation according to method 1, but then
+we also update the list of the known nodes to include that node. So this node is
+going to be included in the function prediction of the lower ranked nodes.
+
+The rational here is that the higher ranked nodes are probably going to be
+predicted with high accuracy and therefore be helpful in prediction of lower
+ranked nodes. 
+
+It is probably better to device some simple rule to decide whether it is worth
+to include a node in the prediction of the rest of the nodes. For example, based
+on how many unknown neighbors in has vs known neighbors. But we tried to keep
+things simple at this stage.
+
+\item{Method 3} We assign an unknown node to the group that has plurality among
+its neighbors with known group affiliation. So this method is fast and the
+probably the simplest.
+
+\item{Method 4} Same as method 3, but again we go in the order of pagRanks and
+we update the list of known nodes on the fly, like method 2.
+
+\item{Method 5} Here we take each group of the known nodes and propagate from
+it. So for example we calculate the stationary distribution when we restart in
+the known nodes that belong to group 'DNA Replication', and then for the next
+group and so forth. For each unknown node, we assign it to the group that
+propagates the highest probability to it.
+
+So while in method 1 and 2, we start random walking from an unkown node and see
+what is the probability that we land at a certain group. In Method 5 we start
+walking randomly from one of the members of a group and check what is the
+probability that we visit a certain unknown node.
+
+\end{itemize}
+
+%\begin{figure}
+%\centering
+%\includegraphics[width=\textwidth]{connected component of yeast interactome subgraph with nodes belong to 4 different groups.png}
+%\caption{The largest connected component which was selected for the function
+%prediction experiment. Here the Correct group affiliation of all nodes is color
+%coded.}
+%\label{fig:largest_connected_comp}
+%\end{figure}
+
+\subsection{Results}
+
+\begin{table}[!htb]
+\caption{Prediction Accuracy of the 4 Methods in 2 different random
+trials. Each trial with a different seed, which result in different randomly
+selected known/unknown nodes.} 
+\begin{center}
+\begin{tabular}{ | l | c | c | c | c | c | }
+\hline
+Seed / Method & 1 & 2 & 3 & 4 & 5\\
+\hline
+42 & 0.795 & 0.858 & 0.765 &
+0.784 & 0.701\\
+6382020 & 0.774 & 0.832 & 0.752 & 0.748 & 0.755\\
+\hline
+\end{tabular}
+\label{table:results_5_prediction_methods}
+\end{center}
+\end{table}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[width=\textwidth]{connected component of yeast interactome subgraph with nodes belong to 4 different groups.png}
+\caption{The largest connected component which was selected for the function
+prediction experiment. Here the Correct group affiliation of all nodes is color
+coded.}
+\label{fig:largest_connected_comp}
+\end{subfigure}
+\begin{subfigure}[b]{\textwidth}
+\includegraphics[width=\textwidth]{method2_true_false_clustering_on_4_groups_with_ordering_and_update.png}
+\caption{The result of predictiob method 2, which was the best perfomer. 
+The known groups are color coded by RGBY. The unkown nodes are color
+coded: brown:correct prediction, pink:incorrect.}
+\label{fig:my_prediction}
+\end{subfigure}
+\end{figure}
+
+\subsection{Discussion}
+If we look at figure \ref{fig:largest_connected_comp} which shows the connected
+component that we worked with, the red and blue are pretty nicely clustered. The
+The greens and specially the yellows are sort of spread all over the network and
+not nicely clustered. I don't know if this is a good example of a real world
+scenario.
+
+When we look at figure \ref{fig:my_prediction} it seems that most of the
+incorrect predictions are on nodes that seem 'peripheral' and  are not well
+connected to known nodes. Another source of mistakes seems to bee green nodes
+that are too close to the red cluster.
+
+Method 2 shows somewhat higher accuracy over the other methods but on the flip
+side it is an $O(n^2)$ method when optimized methods are used whereas methods
+3,4,5 are $O(n)$.
+
+It's probably woth while to repeat the experiment a couple of hundred of times
+to estimate the mean accuracies of the methods.
+
 
 \section{The Propagation Method In Bioinformatics}
 %The normalize adjacency matrix of 

@@ -10,7 +10,7 @@ set shortmess=aoO
 badd +398 graphsfunctions.py
 badd +279 plots.py
 badd +1 hubs_and_spokes.py
-badd +85 bioplot.py
+badd +203 bioplot.py
 argglobal
 %argdel
 $argadd graphsfunctions.py
@@ -32,12 +32,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 424 - ((64 * winheight(0) + 36) / 73)
+let s:l = 240 - ((67 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-424
-normal! 015|
+240
+normal! 05|
 lcd ~/my_git_projects/baproject/ba
 tabedit ~/my_git_projects/baproject/ba/plots.py
 set splitbelow splitright
@@ -66,16 +66,11 @@ normal! 0
 lcd ~/my_git_projects/baproject/ba
 tabedit ~/my_git_projects/baproject/ba/bioplot.py
 set splitbelow splitright
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
 wincmd t
 set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-wincmd =
 argglobal
 if bufexists("~/my_git_projects/baproject/ba/bioplot.py") | buffer ~/my_git_projects/baproject/ba/bioplot.py | else | edit ~/my_git_projects/baproject/ba/bioplot.py | endif
 setlocal fdm=manual
@@ -87,27 +82,13 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 82 - ((53 * winheight(0) + 30) / 60)
+let s:l = 89 - ((67 * winheight(0) + 36) / 73)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-82
-normal! 041|
+89
+normal! 0
 lcd ~/my_git_projects/baproject/ba
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-lcd ~/my_git_projects/baproject/ba
-wincmd w
-wincmd =
 tabedit ~/my_git_projects/baproject/ba/hubs_and_spokes.py
 set splitbelow splitright
 wincmd t
