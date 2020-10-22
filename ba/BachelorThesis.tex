@@ -50,7 +50,7 @@
 
 \lstset{
 %basicstyle=\footnotesize,
-basicstyle=\ttfamily\footnotesize,
+%basicstyle=\ttfamily\footnotesize,
 %basicstyle=\ttfamily\small,
 %basicstyle=\ttfamily\scriptsize,
 frame=single,
@@ -175,11 +175,11 @@ One advantage of propagation methods is that they are relatively fast, in fact
 in linear complexity. The typical graph can be represented as a sparse matrix
 and The power method starting from any starting distribution converges
 exponentially fast to the greatest eigenvector which is the stationary
-distribution. There methods that achieve that in about $O(n + m)$  ($n$
+distribution. There are methods that achieve that in about $O(n + m)$  ($n$
 vertices, $m$ edges) complexity but that is beyond the scope of this thesis.
 
 
-\section{Linear Algebra Primer}
+\section{Linear algebra primer}
 
 \begin{mydef}
 \label{def:transition}
@@ -610,7 +610,7 @@ with $\Gamma = \{x | x \geq 0, x \neq 0\}$
 \end{thm}
 
 
-\section{More on Matrices, Graphs and Stochastics}
+\section{More on matrices, graphs and stochastics}
 
 A directed non-weighted graph $G$ can be uniquely represented by its
 \textbf{adjacency matrix},
@@ -1023,7 +1023,7 @@ which receives the most heat from 12}
 
 
 
-\section{Spectral Clustering and other Methods}
+\section{Spectral clustering and other methods}
 
 \textbf{Spectral Partitioning} 
 \cite{von2007tutorial, naumov2016parallel, WikipediaGraphPartition, WikipediaSpectralClustering},
@@ -1135,7 +1135,16 @@ negative and positive values is much less dramatic but nonetheless still visible
 %\label{fig:exampleCoolWarmClustering}
 \end{figure}
 
-\section{(Trying) Function Prediction Methods}
+\section{(Trying) function prediction method}
+In this section we are going to try to apply the accumulated knowledge of the
+previous sections and devise some simple function prediction algorithms for PPI
+networks. We are going to try several methods which use propagation as well as
+methods which just use direct neighbors for the predictions.
+
+The network is going to be composed of around 500 vertices (proteins) which are
+divided into 4 different function groups. We are going to randomly choose half
+the proteins and mark them as unknown and try to predict their function based
+on the remaining known proteins. 
 
 \subsection{Methodology}
 We use the annotated yeast interactome which is a pure PPI network that comes
@@ -1144,7 +1153,7 @@ software tool 'Cytoscape'. The nodes represent yeast proteins and the edges
 represent protein-protein interactions.
 
 This network comes with functional annotations in the 'MCs name' field. We
-select nodes in the network whose annotations contain one \textbf{exactly} one
+select nodes in the network whose annotations contain \textbf{exactly} one
 of the following
 keywords:  'DNA Replication' (blue group), 'Golgi' (red), 'Meiosis' (yellow),
 and 'Stress response' (green). All other nodes are removed from the network.
@@ -1157,13 +1166,13 @@ Nodes whose annotations contain keywords of more then one group were discarded.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{yeastsubgraph_4_groups_colorcode.png}
-\caption{Subgraph of the Yeast Interactome of showing nodes of 4 groups: 'DNA
+\caption{Subgraph of the yeast interactome showing nodes of 4 groups: 'DNA
 replication' (blue), 'Golgi' (red), 'Meiosis' (yellow), 'Stress response'
 (green)}
 \label{fig:yeast_subgraph_4groups}
 \end{figure}
 
-The above subnetwork is exported from cytoscape to graphml file, which we import 
+The above described subnetwork is exported from cytoscape to graphml file, which we import 
 and convert into a networkx object. 
 We select the largest connected component from the above network.
 
@@ -1178,12 +1187,12 @@ We use 5 different prediction methods:
 \item{Method 1} Determines the group affiliation of an unknown node by the group
 that has the maximal volume based on the propagation distribution from the
 unknown node. This meas: we calculate the stationary distribution with restart
-to the unkown node. Among the known nodes, we calculate the weighted sums of
-each of the 4 groups according to the distribution. The group with largest sum
-is the affiliation we assign to the unkown node.
+to the unknown node. Among the known nodes, we calculate the weighted sums of
+each of the 4 groups according to that distribution. The group with largest
+volume is the affiliation we assign to the unknown node.
 
 \item{Method 2} This method works like method 1, except that we first order the
-unkown nodes (decreasing order) according to their pagerank. We go over the
+unknown nodes (decreasing order) according to their pageRank. We go over the
 nodes in this order and assign group affiliation according to method 1, but then
 we also update the list of the known nodes to include that node. So this node is
 going to be included in the function prediction of the lower ranked nodes.
@@ -1210,12 +1219,70 @@ the known nodes that belong to group 'DNA Replication', and then for the next
 group and so forth. For each unknown node, we assign it to the group that
 propagates the highest probability to it.
 
-So while in method 1 and 2, we start random walking from an unkown node and see
+So while in method 1 and 2, we start random walking from an unknown node and see
 what is the probability that we land at a certain group. In Method 5 we start
 walking randomly from one of the members of a group and check what is the
 probability that we visit a certain unknown node.
 
+This method is an order of magnitude faster than method 1 and 2 because we only
+need to calculate the stationary distributions 4 time (pageRank and for each
+group). However we suspect it will perform with less accuracy.
+Because they take into account nodes that are far and not well connected to the
+unknown node whose function we try to predict.
+The function groups, in particular the yellow (meiosis) and green (stress) are not
+well clustered and spread all over the network.
+
 \end{itemize}
+
+\subsection{Somew code snippets}
+\begin{lstlisting}[language=python]
+# The decision function which is used in methods 1 and 2 to predict a single
+# node
+def decision_function(v, G, group_membership_ar, known_unknown_ar):
+    """Input v: an node assumed to be an int and taken from the list of unkown
+    nodes. Input G: The graph. 
+    Input group_membership_ar: Array of strings which specifies for each node 
+    to which group belongs (including the 'unkonw' nodes) this is required for
+    thesting the correctness of the decision.
+    Input known_unknown_ar: boolean 1d array which
+    specifies for each node of the graph whether its membership is known or
+    unkown. 
+    output guess_group: string the group that the function assigns the node to.
+    output correctness: True or false depending on the correctness of the
+    guess_group vs the real group_membership_list[v] value.
+    """
+    all_nodes = np.arange(len(G.nodes))
+    known_nodes = all_nodes[known_unknown_ar]
+    unkown_nodes = all_nodes[known_unknown_ar == False]
+    bias = np.zeros_like(G.nodes)
+    bias[v] = 1
+    bias
+    p = biasedPropagateGv2(G, bias=bias)
+    group_names = np.unique(group_membership_ar)
+    q = p * known_unknown_ar #0 on all unkown nodes
+    testscores = np.zeros_like(group_names)
+    for g in range(len(group_names)):
+        x = q[group_membership_ar == group_names[g]] 
+        testscores[g] = x.sum()
+    decide = group_names[np.argmax(testscores)]
+    correctness = decide == group_membership_ar[v]
+    return decide, correctness
+
+# Main part of method 2:
+# Which is actually similar in methods 1-4
+known_unknown2 = known_unknown.copy()
+node_colors2 = node_colors.copy()
+score2 = 0
+for v in orderedUnkownNodeList:
+    _, test = decision_function(v, G, groups, known_unknown2)
+    score2 += test
+    known_unknown2[v] = True #mark v as 'known'
+    G2.nodes[v]['correctness2'] = "Correct"
+    node_colors2[v] = 'brown'
+    if not test: # mark as incorrect and colormark if mistake
+        node_colors2[v] = 'pink'
+        G2.nodes[v]['correctness2'] = "Mistake"
+\end{lstlisting}
 
 %\begin{figure}
 %\centering
