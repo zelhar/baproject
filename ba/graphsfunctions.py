@@ -551,7 +551,7 @@ def diffKernel(T, alpha=0.15):
     """
     Input T: Transition (column-normalized).
     Input alpha: restart probabilty (default=0.15)
-    Output K: K=1/alpha [I - (1-alpha)T]^-1 is the diffusion kernel of the
+    Output K: Kalpha [I - (1-alpha)T]^-1 is the diffusion kernel of the
     process. So if q is some restart distribution (bias) then p=Kq is the
     stationary distribution of the Markov process with restarts to q.
     """
