@@ -1,0 +1,41 @@
+##### Introduction 
+
+This Bachelors Thesis deals with propagation methods, which are derived
+form the theories of random walk and stochastic matrices and tries to
+propose a solution to the problem of 'Partially labeled classification'
+[Jaakola/Szummer] 
+in the context of protein function prection.
+
+We should perhaps begin with an explanation of what type of real world
+data we start with and what we want to do with it. A PPI Network is a
+bidirectional graph where the vertices represent proteins and edges
+represent an 'interaction' between two proteins [Deng] inside the cells
+of a particular organism. In the PPI network some of the proteins may be
+well researched so we know in which preocesses they participate. In this
+case they are given labels which designate their various functions.
+Other proteins may be unresearched and their function is unknown.
+However it is scientifically observed that proteins that share the same
+function tend to form a type closely connected 'community' so the many
+paths which connect the members of that gourp
+appear to be with high likelihood not random.
+
+Now when we talk about community structure and clustering in graphs, we mean to find a
+natural type of clustering or community structrue or lack there of
+within a connected graph. For example see [Newman...]. But still these
+methods can be useful for the purpose of label prediction in a partially
+classified network. The reason is that, in our case, with proteins, it
+is generally believed as we say that proteins of the same function do
+tend to cluster together.
+
+In our cases we have a graph (PPI) but we also have the partial
+labelling of its vertices. This presents some constraints. We don't have
+controll on the labels. It might be that vertices of the same label
+wouldn't belong to the same community if we go by the Newman modularity
+algorithm for example, or that there are more/less labels than the
+natural communities in the graph etc. But 
+we can still use methods of graph clustering/community structure to try
+and apply in this situation.
+
+
+
+
