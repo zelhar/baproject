@@ -54,8 +54,10 @@ G = G.subgraph(largest_cc).copy()
 G = nx.convert_node_labels_to_integers(G)
 
 x, df = predictMethod2_diffkernel(G, tries=50, alpha=0.2)
+np.mean(x)
 
 y, df = predictMethod2_diffkernel(G, tries=50, alpha=0.6)
+np.mean(y)
 
 z, df = predictMethod2_diffkernel(G, tries=50, alpha=0.35)
 z
@@ -66,9 +68,45 @@ z, df = predictMethod2_diffkernel(G, tries=50, alpha=0.31) #
 z
 np.mean(z)
 
+df
 
-x1, df1 = predictMethod2(G, tries=5, alpha=0.2)
 
-x2, df2 = predictMethod2(G, tries=5, alpha=0.2, knownfraction=0.7)
+x1, df1 = predictMethod2_diffkernel(G, tries=5, alpha=0.2)
+np.mean(x1)
 
-x3, df3 = predictMethod2(G, tries=5, alpha=0.2, knownfraction=0.3)
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.0000)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.1)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.2)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.3)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.4)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.5)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.6)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.7)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.8)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=1, alpha=0.3, knownfraction=0.34)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=1, alpha=0.002, knownfraction=0.5)
+np.mean(x)
+
+x, df = predictMethod2_diffkernel(G, tries=1, alpha=0.902, knownfraction=0.5)
+np.mean(x)
+
