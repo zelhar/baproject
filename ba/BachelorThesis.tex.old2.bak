@@ -18,23 +18,6 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage[section]{placeins} %no trans-sectional figures!
-\usepackage{wrapfig, framed, caption}
-
-\usepackage{booktabs} % For \toprule, \midrule and \bottomrule
-\usepackage{siunitx} % Formats the units and values
-\usepackage{pgfplotstable} % Generates table from .csv
-% Setup siunitx:
-\sisetup{
-  round-mode          = places, % Rounds numbers
-  round-precision     = 2, % to 2 places
-}
-
-\usepackage{hyperref}
-\hypersetup{linktocpage,
-            linktoc=all,
-            colorlinks=true,
-            linkcolor=blue,
-            }
 
 \usepackage{lipsum}
 
@@ -105,15 +88,14 @@ breaklines=true,
 %    \title{Bachelorthesis about Network Propagation}
 %    \author{Yiftach Kolb}
 %    \date{\today}
-    {\scshape\LARGE \par Bachelor Thesis about Partially Labeled
-    Classification in Graphs
+    {\scshape\LARGE \par Bachelorthesis about Community Structure in Graphs
     \par Using Network Propagation Methods 
     \par and Applications in Protein Function Annotaions}
     \vfill
   	{\Large Yiftach Kolb \par}
     \vfill
 	  {\Large Instructor\par
-    Prof. Dr. Martin Vingron 
+    Prof. Dr. Matin Vingorn 
     \par}
     {\large \today\par}
 \end{titlepage}
@@ -144,172 +126,64 @@ breaklines=true,
 %\everymath{\color{blue}}
 %\everydisplay{\color{blue}} 
 
-
-\begin{abstract}
-This is an abstract \dots
-\end{abstract}
-
-\tableofcontents
-
 \section{Introduction}
-
-This Thesis deals with applying propagation methods for
-protein function prediction. Our goal is to propose a prediction
-algorithm.  Its input is a
-bidirectional graph and a labeling of a subset of the
-vertices \textemdash that's the partial classification which we wish
-to extend. The algorithm outputs for each unlabeled vertex  a
-suggested suitable label, and the label must be one of the existing
-labels.
-We are going to require just one label for each vertex.
-That is for the sake of simplification, although
-in reality when we deal with protein-protein interaction networks
-(PPI), each vertex (protein) can have multiple labels (functions or
-annotations in the Jargon).
-We call this problem the partially labeled
-classification problem (PLC) as it was named by
-\cite{szummer2002partially}.
-
-Our input network is a PPI network, which is a bidirectional graph
-where vertices represent a protein type in the cells of a certain
-organism and an edge represent some sort of an observed
-'interaction' between them that is unlikely to be observed that
-frequently just by happenstance. However some edges may be
-interactions that don't actually occur in the organism of research,
-yet they are observed in the test tube due to the method that
-produces the PPI data.
-
-Suppose that some of the proteins are well researched and the life science guys
-have provided us with further information about their biological
-functions. This
-information is represented in the network in the form of labels associated with
-some of the vertices. But this information is incomplete and many vertices are
-unlabeled. We want to extend this labeling to all the nodes, by
-guessing for each unlabeled vertex which of labels could fit it
-best.
-
-Estimating the accuracy of the prediction is another issue of
-concern. In
-this paper we use a PPI network where all the proteins are annotated
-with labels. We remove the labels of some of them, try to predict
-their labels, and verify. In the end we know how many labels we got
-right and how many wrong. 
-This gives us an estimation of the total accuracy.
-
-We would also like to eastimate or score the likelihood for each
-specific prediction (perhaps as part of a future paper or in the master
-thesis. We would need for example to come up with a statistical way to quantify
-the posterior probability that a vertex has a certain label. 
-
-We use propagation methods in attempt to find a prediction algorithm
-for the PLC. Specifically we use random walk with restart (RWR)
-approach. Essentially what we do is picking an unlabeled vertex and
-starting randomly walking from it with restarts at a certain
-probability back to the starting vertex. In this walk we sometimes
-visit labeled vertices. We predict that the label that we most
-frequently encounter in this walk is the most likely label of the
-starting vertex.
-
-There are 2 papers that we know of which deal with the PLC.
-\textcite{deng2002prediction} Specifically deals with protein
-function prediction in a PPI network.
-They use a method which is based on "Markov random fields" to
-estimate for each function category separately the likelihood that a
-protein in the network has that function or not. In their
-experiments of predicting the functions of annotated yeast proteins
-they reached specificity and sensitivities of 45-64\%.
-
-The other paper is \textcite{szummer2002partially} and it is purely
-mathematical and from it we took the name partially labeled
-classification (PLC) for this problem. They use time scaled random
-walk without restart to calculate the posterior probability that an
-unlabeled vertex has a certain label. This method may work for the
-purpose of protein function prediction but in the way it is tested
-in the article it is hard to compare it to a PPI network scenario.
-For example they tested the algorithm on a network that fixed
-connectivity of $k=5$ (5 neighbors for each vertex) and they labeled
-just $2$ initial starting vertices. In short the testing scenario
-doesn't resemble a partially annotated PPI network type of situation
-but the method and the definition of the problem do fit.
-
-We dedicate sections 2 and 3 of this Thesis to explain the
-underlying mathematical theories of stochastic matrices and random
-walk in graphs. We think that this theoretical introduction is
-required in order to develop an understanding of how RWR actually
-works, the relationship between graphs and stochastic matrices and
-spectral theory, what is the diffusion kernel, and for which type of
-graphs we can use these methods.
-
-In the following 2 sections (4 and 5) We will deal with the subjects
-of community structure and spectral clustering in graphs. There is
-allot of overlap between the PLC problem and community structure. In
-the later problem there is no initial labeling and we just use the
-graph topology to find a sensible way of dividing it into tightly
-clustered groups, for example by using the modularity method as
-proposed by \textcite{newman2006modularity}. With the PLC problem,
-we are given additional constraints. The labels which we are given
-dictate how many groups there are. We cannot switch labels for the
-labeled vertices even if it looks from a community structure
-perspective that 'these two don't belong together'. However we still
-assume the experimentally substantiated 'dogma' that proteins of the
-same function tend to cluster together in the PPI network.
-
-In section 6 we are going to propose an algorithm using propagation methods
-for the PLC problem and show some initial experiments with it using a subnetwork
-of the yeast interactome.
-
-Finally in section 7 we are going to wrap things up with some nice words and say
-good bye.
+%This Thesis deals with the propagation methods for clustering and community
+%structure in Graphs. The original motivation is to utilize these methods on
+%Protein-Protein Interaction Networks (PPI) specifically for function
+%annotations.
+%
+%We are given an (in my case undirected) connected graph, which represents some sort of
+%network structure, be it a PPI or A social network. Real world networks tend to
+%have some characteristics that are clearly not random, such as the 'small world
+%property' and tendency to forming hubs. 
 
 %\lipsum[1-2]
 
-%This Thesis deals with non-negative matrices, propagation methods, clustering
-%and community structure in Graphs. In scientific research graphs are often used
-%as an abstraction of a complex interaction network. They constitute a simplified
-%display of the information which is easier to work with yet hopefully still
-%retains the essential properties of the network. When that is the case, then
-%insightful information about the subject of research can be gained by analysis
-%of the graphs which are constructed out of the row data.
-%
-%In the case of an unweighted undirected graph, the vertices represent particular
-%units that are the subject of research, be they people, proteins or whatever;
-%and the edges represent some sort of close proximity or interaction that is
-%assumed to exist between the two edges it connects.
-%
-%The direct inspiration to this thesis is the subject of function prediction 
-%of proteins in a protein-protein interaction network (PPI). These are graphs
-%where the vertices represent a particular type of protein and an edge connects
-%two proteins if they are found in close proximity to each other in a sufficient
-%portion of the samples. 
-%
-%It may be the case that some of the proteins in the network are well researched
-%already and their function is known. We are interested to the functionality of
-%the unknown proteins in the network based on the known proteins and the network
-%structure. We assume that proteins that take place in the same function will
-%also cluster together in the graph as they do in practice (form protein
-%complexes, bonds or whatever).
-%
-%We may are be interested in finding the most relevant associate of a certain
-%known protein that has lots of neighbors. In the terminology of propagation we
-%are going to search for the vertex that receives the most 'heat' from the known
-%protein, or in terms of random walk, it is the most frequently visited vertex,
-%by a random path starting from the known vertex.
-%
-%One advantage of propagation methods is that they are relatively fast, in fact
-%in linear complexity. The typical graph can be represented as a sparse matrix
-%and The power method starting from any starting distribution converges
-%exponentially fast to the greatest eigenvector which is the stationary
-%distribution. There are methods that achieve that in about $O(n + m)$  ($n$
-%vertices, $m$ edges) complexity but that is beyond the scope of this thesis.
+This Thesis deals with non-negative matrices, propagation methods, clustering
+and community structure in Graphs. In scientific research graphs are often used
+as an abstraction of a complex interaction network. They constitute a simplified
+display of the information which is easier to work with yet hopefully still
+retains the essential properties of the network. When that is the case, then
+insightful information about the subject of research can be gained by analysis
+of the graphs which are constructed out of the row data.
+
+In the case of an unweighted undirected graph, the vertices represent particular
+units that are the subject of research, be they people, proteins or whatever;
+and the edges represent some sort of close proximity or interaction that is
+assumed to exist between the two edges it connects.
+
+The direct inspiration to this thesis is the subject of function prediction 
+of proteins in a protein-protein interaction network (PPI). These are graphs
+where the vertices represent a particular type of protein and an edge connects
+two proteins if they are found in close proximity to each other in a sufficient
+portion of the samples. 
+
+It may be the case that some of the proteins in the network are well researched
+already and their function is known. We are interested to the functionality of
+the unknown proteins in the network based on the known proteins and the network
+structure. We assume that proteins that take place in the same function will
+also cluster together in the graph as they do in practice (form protein
+complexes, bonds or whatever).
+
+We may are be interested in finding the most relevant associate of a certain
+known protein that has lots of neighbors. In the terminology of propagation we
+are going to search for the vertex that receives the most 'heat' from the known
+protein, or in terms of random walk, it is the most frequently visited vertex,
+by a random path starting from the known vertex.
+
+One advantage of propagation methods is that they are relatively fast, in fact
+in linear complexity. The typical graph can be represented as a sparse matrix
+and The power method starting from any starting distribution converges
+exponentially fast to the greatest eigenvector which is the stationary
+distribution. There are methods that achieve that in about $O(n + m)$  ($n$
+vertices, $m$ edges) complexity but that is beyond the scope of this thesis.
 
 
 \section{Linear algebra primer}
 
 \begin{mydef}
 \label{def:transition}
-A \textbf{Transition Matrix}, sometimes also called
-a \textbf{stochastic matrix}, is a real valued non negative square
-($n^2$) matrix $A$ such that each of its
+A \textbf{Transition Matrix} is a real valued non negative square ($n^2$) matrix $A$ s.t. each of its
 columns sums up to one: $$A \geq 0,\ \forall j \sum_i A_{i,j} = 1$$
 $A$ acts from the left as a linear mapping:
 $A:v \to A \cdot v$. In the following script we treat matrices by default
@@ -831,7 +705,6 @@ $\beta(A) := \text{sgn}(A)$ where $\text{sgn}$ is applied element-wise.
 The following trivial lemmas would help as to construct primitive transitions:
 
 \begin{lemma}
-\label{lemma:SplusT}
 $A$ is positive/primitive/irreducibly if
 and only if $\beta(A)$ is.
 
@@ -845,96 +718,21 @@ If one of $S,T$ is positive/primitive/irreducible so is $W$
 
 Let $G$ be any weighted graph and $A$ its adjacency transition matrix. Some vertices may
 be unreachable from other vertices and there might not exist a single and
-unique stationary distribution.
-A random walk on this graph is generally
-dependent on the initial starting distribution $p_0$ and has the
-form $p_{k+1} = Ap_k = \dots = A^k p_0$, where $p_k$ is the
-distribution after $k$ steps.
-
+unique stationary distribution. A random walk on this graph is generally
+dependent on the initial state.
 However if we allow the possibility of 'random restart' from any state, this
 graph becomes totally connected it is guarantied to have a unique stationary
 distribution to which any random walk converges regardless of the initial state.
 
-When we talk about \textbf{random walk with restart (RWR)} we set a restart
-state $q$ and a restart parameter $\alpha \in [0,1]$. At each step, we
-either restart over to the state $q$, with probability of
-$alpha$, or continue to walk using the normalized adjacency matrix
-$A$. The state sequence is therefore
-\begin{equation}
-\label{eq:RWR}
-p_{k+1} = \alpha q + (1 -
-\alpha) A \cdot p_k
-\end{equation}
-
-It turns out that this random walk with restart is actually a normal
-random walk but with an adjusted matrix (and respectively, an
-adjusted weighted directional graph). 
-
-\begin{lemma}
-\label{lemma:Qq}
-Let $q$ be any state, let $\alpha \in [0,1]$ and let  
-$ Q = (q|q|\dots|q)$ (The square matrix whose every column equals $q$).
-Then $Q$ is a transition and for any state $p$ we have $Qp = Q$.
-
-In addition if $T$ is any transition then $W = \alpha Q + (1-\alpha)
-T$ is also a transition, And we can rewrite the RWR from
-\ref{eq:RWR} as
-
-$p_{k+1} = \alpha q + (1 - \alpha) Ap_k = 
-[\alpha Q + (1 - \alpha) A] p_k = W p_k$
-
-\begin{proof}
-Trivial and uses \ref{lemma:SplusT}
-\end{proof}
-\end{lemma}
-
-The matrix $W$ represents a graph $G'$ where each edge of the
-original graph $G$ is rescaled by a factor $1 - \alpha$ (and if $G$ is
-undirected we treat each undirected edge as $2$ directed edges in
-$G'$. In addition from each vertex $v$ we add edges to every other
-vertex and the weight of the additional edge is $\alpha q[u]$.
-
-If we pick the restart state $q$ in a way that makes $W$ primitive,
-then \ref{thm:perron1} assures us that the RWR will converge,
-$\lim_{k \to \infty} p_k =\lim_{k \to \infty} W^k p_0 = p$, where
-$p$ is the unique stationary distribution of $W$. This means in
-particualr that we can use the power method to find out the
-distribution $p$ by calulated $p_k$ until it sufficiently converges,
-and it will converge to $p$ from any intial state $p_0$ which we
-choose. 
-
-Also we have
-\begin{equation}
-\label{eq:RWR2}
-\begin{aligned}
-p = Wp = \alpha q + (1 - alpha) A \\
-[I - (1 - \alpha)A] p = \alpha q
-\end{aligned}
-\end{equation}
-
-We will see later that we can invert the matrix in the second
-equation of \ref{RWR2} and use a direct solution for $p$ instead of
-the power method. The power method has the advantage that we can use
-the matrix $A$ implictly, because we only need to know $A \cdot p_k$
-to compute $p_{k+1}$. $A$ is usually a sparse matrix because each
-vertex usually only has few neighbors and so we can use matrix free
-methods efficiently to calculate $p$ but that is beyong the scope of
-this thesis.
-
-In the particular case of pageRank, we choose a uniform restart
-state $q = \mathbf{\frac{1}{n}}$. The corresponding matrix $Q =
-(q|\dots|q) \gt 0$ is strictly positive, and therefore 
-$W = \alpha Q + (1 - \alpha)A > 0$ is positive and therefore
-primitive.
-
-The stationary distribution which corresponds to this uniform
-restart state $q$ is called the \textbf{PageRnak} for $G$ with
-restart parameter $\alpha$. It is used to order the vertices
-according to their 'relevance' in the network.
+In terms of matrices, we create a positive transition matrix $W = (1-\alpha)A +
+\alpha \mathbf{\frac{1}{n}} \gt 0$. Where $\mathbf{\frac{1}{n}}$ is the $n
+\times n$ matrix whose entries are all $\frac{1}{n}$. The stationary
+distribution is called the \textbf{PageRnak} for $G$ with restart parameter
+$\alpha$. It is used to order the vertices according to their 'relevance' in the
+network.
 
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.55\linewidth]{directed_graph_example_unranked.png}
   \caption{This is an example of a weakly connected graph. If we start walking
@@ -943,11 +741,9 @@ according to their 'relevance' in the network.
   connected to more vertices, $5$ may get more 'flow' through it since every
   path of length $2$ or more passes though it.}
   \label{fig:weaklyconnected}
-\end{framed}
 \end{figure}
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.55\linewidth]{directed_graph_example.png}
   \caption{The same graph with vertex size and color indicating its PageRank
@@ -955,11 +751,9 @@ according to their 'relevance' in the network.
   $0$. The smaller the restart parameter, the more important $5$ will get
   because we allow for longer paths with fewer restarts.}
   \label{fig:weaklyconnectedpagedranked}
-\end{framed}
 \end{figure}
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.55\linewidth]{directed_graph_example_tinyalpha.png}
   \caption{When the restart parameter is too large, the rank becomes almost
@@ -968,11 +762,9 @@ according to their 'relevance' in the network.
   also shows that for high restart values $0$ becomes hotter than $5$. That is
   because paths of length $\gt 2$ (before restart) become very unlikely in this random walk.}
   \label{fig:weaklyconnectedpagedrankedbadly}
-\end{framed}
 \end{figure}
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.55\linewidth]{undirected_graph_example.png}
   \caption{When we treat the graph as undirected and calculate the PageRanks
@@ -980,7 +772,6 @@ according to their 'relevance' in the network.
   Vertex $0$ comes this time on top. It is more central than $5$ and
   more random paths intersect it than any other vertex.}
   \label{fig:undirectedanked}
-\end{framed}
 \end{figure}
 
 The PageRank is the stationary distribution of the process when we use unbiased
@@ -995,14 +786,12 @@ Note that this is not symmetric $p_v[u] \neq p_u[v]$ in general.
 %(memo: add an illustration about asymmetry)
 
 \begin{figure}[!htb]
-\begin{framed}
 \centering
 \includegraphics[width=0.55\linewidth]{diagram_star.png}
 \caption{Stars have hot center because it spreads its heat on many sources,
 while each of the orbiting vertices sends all its heat into the star center.
 }
 \label{fig:hotstar}
-\end{framed}
 \end{figure}
 
 \begin{lemma}
@@ -1025,40 +814,25 @@ means $A+B$ is primitive.
 
 \begin{remark}
 \label{rem:AplusP}
-Lemma \ref{lem:AplusP} proves that we can propagate (namely do RWR) from any arbitrary restart
-state $q$, including a single vertex and the combined transition matrix will be
-primitive if the adjacency matrix $A$ is irreducible, or
-equivalently, the corresponding graph $G$ is strongly connected.
+Lemma \ref{lem:AplusP} proves that we can propagate from any arbitrary restart
+group including a single vertex and the combined transition matrix will be
+primitive if the adjacency matrix $A$ is strongly connected.
 
+Let $q$ be a state column vector for example $e_1$ and let $Q = (q | q | \dots | q)$.
+So $Q$ has a positive row and therefore $(1-\alpha)AD + \alpha Q$ is a primitive
+transition.
 
-Assume that $A$ is a normalized adjacency transition of a strongly
-connected graph $G$.
-Let $q$ be any state column vector, for example $e_1$ if we restart
-from a single vertex, and let $Q = (q | q | \dots | q)$.
-So $Q$ has a positive row and therefore $(1-\alpha)A + \alpha Q$ is a primitive
-transition according to \ref{lem:AplusP}.
-
-%Also worth noting that if $x \geq 0$ is any transition, then $Qx = q$.
+Also worth noting that if $x \geq 0$ is any transition, then $Qx = q$.
 \end{remark}
 
-\begin{mydef}
-\label{def:Transitionbiased}
-Let $G$ be a graph with adjacency matrix $A$, and let $D$ be the
-diagonal matrix of the out ranks of the vertices of $G$. Then we can
-column normalize $A$ and create the transition $T = AD^{-1}$.
-We define \textbf{the transition matrix with restart parameter}
-$\alpha$ \textbf{and bias} $q$ as
+If $A$ is the adjacency matrix of $G$ we defined the transition $T = AD^{-1}$.
+We define the transition matrix with restart parameter $\alpha$ and bias $q$ as
 \[
 T_{\alpha, q} :=
 (1 - \alpha)T + \alpha Q
 \]
-\end{mydef}
 
-In general, 
-the matrix $T_{\alpha,q}$ may have more than one unique stationary distribution $p$ 
-(I think there is one for each strongly connected
-component of its corresponding graph), so lets require that $G$ be
-strongly connected (which means $A$ is irreducible),
+This matrix has a unique stationary distribution $p$ so
 And use \ref{rem:AplusP}:
 
 \[
@@ -1074,7 +848,7 @@ We can rearrange it now
 \end{equation}
 
 We want to invert the matrix in \ref{eq:uninvertedstationary} and use the
-following lemma to justify it (The proof is easy. See for example
+following lemma to justify it (Th proof is easy. See for example
 \textcite{serre2010matrices}):
 
 \begin{lemma}
@@ -1098,7 +872,7 @@ p = \alpha [I - (1 - \alpha)T]^{-1} q := K q =
 $K$ is called \textbf{diffusion kernel} of $T$ with parameter $\alpha$
 It turns out that $K$ itself is a transition because it maps the
 arbitrary transition $q$ to the transition $p$. In addition, $K \gt 0$ because
-of \ref{eq:diffkernel} and since $T$ is irreducible.
+of \ref{eq:diffkernel}.
 
 What about the eigenvectors and eigenvalues of $K$?
 If a matrix $A$ is invertible then $Av = \lambda v \iff A^{-1}v = \lambda^{-1}$.
@@ -1106,8 +880,8 @@ For any matrix $Av = \lambda v \iff (I + A)v = (1+\lambda)v$.
 
 It turns out then that $T$ and $K$ have the same eigenvectors and if $Tv=\lambda
 v$ then $K v = \alpha [1 - (1 - \alpha) \lambda]^{-1} v$. And in particular if it
-turns out that if all the eigenvalues are real (spoiler- they are), then they have
-the same linear order as eigenvalues of $K$ or $T$ for the same eigenvector.
+turns out that all the eigenvalues are real (spoiler- they are), then they have
+the same order as eigenvalues of $K$ or $T$ for the same eigenvector.
 In particular we see that the choice of $\alpha$, the restart parameter, NEITHER 
 changes the eigenvectors NOR does it change the order of the eigenvalues.
 
@@ -1150,11 +924,6 @@ We won't get deeper into that at this time.
 
 \section{A naive yet not useless propagation method for clustering a graph}
 
-In this section we come up with a very simple simple clustering
-algorithm which usese RWR to divide the well known Zachary's Karate
-Club graph. The results can be verified by the actual division of
-the subjects of the research into 2 clubs.
-
 \begin{mydef}
 \label{def:influence}
 Let $G$ be a strongly connected graph and $K$ the diffusion kernel as defined in
@@ -1166,13 +935,6 @@ is called the \textbf{influence vector} of vertex $u$. We say that $p_u[v]$
 is the \textbf{influence of} $u$ on $v$.
 \end{mydef}
 
-\begin{remark}
-\label{rem:influence}
-We use the definition of influence as presented in the Hotnet and
-Hotnet2 artticles \cite{vandin2012discovery} and
-\cite{leiserson2015pan}.
-\end{remark}
-
 A $p_u$ is a measure of how 'heat' which is pumped into $u$ propagates in the graph.
 When we try to cluster the graph, it is natural to think that If vertex $v$
 is the top receiver from $u$, namely $v = \text{argmax}(p_u)$ then maybe these 2
@@ -1182,7 +944,7 @@ Informally we say that a vertex is 'hot' or 'cold' if it has a high (hot) or low
 (cold) PageRank. Remember that the PageRank is the unbiased stationary distribution
 $p = K \cdot (1/n, \dots, 1/n)^t$.
 
-We suggest that it makes sense to pick up a
+So when we start clustering a graph, I suggest that it makes sense to pick up a
 cold vertex and associate it with the vertex to which it sends most of its heat.
 If we start from a hot vertex, it usually has many neighbours and it doesn't
 send allot of heat down a single vertex.
@@ -1201,32 +963,21 @@ function coolWarmClustering(G, k)
     x <- vlist.pop() # take the coldest remaining vertex and remove it from the
                       # list
     p_x <-K * e_x # Influence vector of x
-    y <- argmax(p_x[i : i in vlist]) # exclude the already visited
-                                      # nodes
+    y <- argmax(p_x)
     H.add_edge(x,y)
   return H
 \end{lstlisting}
 
 The algorithm clusters the vertices by constructing a new graph on the same
 vertices, successively joining vertices. It picks the coldest remaining vertex
-and joins it with the vertex to which it propagates the most heat, among
-the yet unvisited vertices.
+and joins it with the vertex to which it propagates the most heat.
 
-In every iteration of the algorithm adds an edge from the currently
-selected vertex to one of the remaining vertices which haven't been
-selected yet.The
-number of connected components by $1$. Because $G$ is
-strongly connected the algorithm will reduce the number of connected
-components in $H$ until it reaches the desired number of components
-$k$.
-
-It is essential to run the algorith in the order from lower pageranked
-vertices upwards. If we start for example the other way around, from
-the warmest node downwards, the list of remaining nodes contains the
-coldest and least 'relevant' nodes.
+In every iteration of the algorithm adds an edge, which either reduces the
+number of connected components by $1$ or keeps it unchanged. Because $G$ is
+strongly connected algorithm will reduce the number of connected
+components in $H$ until it reaches the desired number of components $k$.
 
 \begin{figure}[!htb]
-\begin{framed}
 \centering
 \includegraphics[width=0.75\linewidth]{Karate_coolwarmclustering.png}
 \caption{
@@ -1245,11 +996,9 @@ On the other hand, $8$ receives more heat units from $17$ members of 'Mr. Hi': $
 units, compared to $0.345$ units from the $16$ members of 'Officer'. 
 }
 \label{fig:karatecoolwarm}
-\end{framed}
 \end{figure}
 
 \begin{figure}
-\begin{framed}
 \centering
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width=\textwidth]{example_coolwarm2clusters.png}
@@ -1270,7 +1019,6 @@ respectively a 3-partition. The interesting node is 12. In both runs 12 chooses
 to associate with the biggest clique because node 4 of that clique is the one
 which receives the most heat from 12}
 \label{fig:exampleCoolWarmClustering}
-\end{framed}
 \end{figure}
 
 
@@ -1280,8 +1028,7 @@ which receives the most heat from 12}
 \textbf{Spectral Partitioning} 
 \cite{von2007tutorial, naumov2016parallel, WikipediaGraphPartition, WikipediaSpectralClustering},
 is a common technique for partitioning graphs. The idea is to construct a
-Laplacian type matrix \cite{WikipediaLaplacianMatrix} for the graph
-$G$,
+Laplacian type matrix \cite{WikipediaLaplacianMatrix} for the graph $G$ and
 analyze its eigenvalues and eigenvectors and construct a $2$-partition of $G$.
 It is possible to create a hierarchical partitioning of $G$ by repeating the
 process on each subdivision.
@@ -1310,15 +1057,14 @@ L_c & = LD^{-1} = I - AD^{-1}
 
 Consider the connected graph $G$ and its adjacency matrix $A$. We create the transition
 matrix by normalizing it: $T = AD^-1$, and finally we choose a restart parameter
-$\alpha$ and create the diffusion kernel $K = \alpha[I - (1 -
-\alpha) T]^{-1}$. Theorem
+$\alpha$ and create the diffusion kernel $K$. Theorem
 \ref{thm:AKTcharacteristics} assures us that $K$ and $T$ have the same
 eigenvectors and the orders of their corresponding eigenvalues are the same. The
 eigenvalues are all real and therefore the eigenvectors are real as well. And
 the eigenvalues of $K$ are all non-negative.
 
-The matrix $K^{-1} = \alpha^{-1} [I - (1- \alpha) T]$ is closely related to the
-symmetric Laplacian $L_s$ and thecolumn-normalized Laplacian $L_c$. The added parameter $0 \lt \alpha \lt 1$
+The matrix $K^{-1} = \alpha^{-1} [I - (1- \alpha) AD^{-1}]$ is closely related to the
+and the column-normalized Laplacian $L_c$. The added parameter $0 \lt \alpha \lt 1$
 neither changes the eigenvectors, nor the order of the corresponding eigenvalues.
 
 The smallest eigenvalue ,$0$ of $L$ and $L_s$
@@ -1345,7 +1091,6 @@ and recommended for example in \cite{von2007tutorial}.
 
 
 \begin{figure}
-\begin{framed}
 \centering
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width=\textwidth]{example_spectralT2clustering.png}
@@ -1364,11 +1109,9 @@ between the positive and the negative components.}
 %(or a blank line to force the subfigure onto a new line)
 \caption{}
 %\label{fig:exampleCoolWarmClustering}
-\end{framed}
 \end{figure}
 
 \begin{figure}
-\begin{framed}
 \centering
 \begin{subfigure}[b]{0.5\textwidth}
 \includegraphics[width=\textwidth]{Karate_spectralT2clustering.png}
@@ -1390,7 +1133,6 @@ negative and positive values is much less dramatic but nonetheless still visible
 %(or a blank line to force the subfigure onto a new line)
 %\caption{}
 %\label{fig:exampleCoolWarmClustering}
-\end{framed}
 \end{figure}
 
 \section{(Trying) function prediction method}
@@ -1404,68 +1146,42 @@ divided into 4 different function groups. We are going to randomly choose half
 the proteins and mark them as unknown and try to predict their function based
 on the remaining known proteins. 
 
-\subsection{Tools and Source Data}
-
-We sourced our data from \textcite{cytoscape}, an open source
-java software for network analysis and visualisation. 
-The software package contains as one of its built in examples a
-fully annotated yeast interactome. This is a PPI network of
-thousands of proteins and it contains among many other types of
-edge and node annotations information about protein function and
-location in the 'MCs name' field.
-
-We preferred to work within the familiar Python 3 programming
-language and its rich world of extension packages.
-Therefore we exported the yeast interactome into a graphml format
-which was later imported by our network analysis tool of choice,
-\textcite{networkx}. It is a python based open sourced network analysis 
-package which integrates extremely well with other essential Python
-packages. Networkx is not as versatile or powerful as Cytoscape and
-especially rudimentary in its visualisation functionality, but it
-runs smoothly and easy to work with, unlike Cytoscape.
-We used the \textcite{numpy} package for vector, matrix and other
-types mathematical
-calculations, and \textcite{pandas} for some database operations. 
-
 \subsection{Methodology}
-As mentioned, we 
-used the annotated yeast interactome which is a pure PPI network that comes
+We use the annotated yeast interactome which is a pure PPI network that comes
 prepackaged with the
 software tool 'Cytoscape'. The nodes represent yeast proteins and the edges
 represent protein-protein interactions.
 
 This network comes with functional annotations in the 'MCs name' field. We
-selected nodes in the network whose annotations contain \textbf{exactly} one
+select nodes in the network whose annotations contain \textbf{exactly} one
 of the following
 keywords:  'DNA Replication' (blue group), 'Golgi' (red), 'Meiosis' (yellow),
 and 'Stress response' (green). All other nodes are removed from the network.
-The result is shown on figure \ref{fig:yeast_subgraph_4groups}.
+The result is shown on figure \ref{fig:yeast_subgraph_4groups}. We are going to
+test various annotation method on the largest connected component of this
+subnetwork.
 
-The resulting subnetwork is not a connected graph, which is the type
-of input data that we wanted to run our test algorithm on. Therefore
-we selected the biggest connected component of that subnetwork, and
-that is the graph on which we tested and compared various prediction
-algorithms.
+Nodes whose annotations contain keywords of more then one group were discarded.
 
 \begin{figure}
-\begin{framed}
 \centering
 \includegraphics[width=\textwidth]{yeastsubgraph_4_groups_colorcode.png}
 \caption{Subgraph of the yeast interactome showing nodes of 4 groups: 'DNA
 replication' (blue), 'Golgi' (red), 'Meiosis' (yellow), 'Stress response'
 (green)}
 \label{fig:yeast_subgraph_4groups}
-\end{framed}
 \end{figure}
 
-For the first set of comparative tests of different prediction
-methods 
-we set a random seed (a process which we repeat 2 times for 2 different trials).
-Then we selected randomly 50\% of the nodes and marked them as 'unknown'. The other
-50\% are 'known'. We would then try to determine the group affiliation of the
+The above described subnetwork is exported from cytoscape to graphml file, which we import 
+and convert into a networkx object. 
+We select the largest connected component from the above network.
+
+We set a random seed (a process which we repeat 2 times for 2 different trials).
+Then we select randomly 50\% of the nodes and mark them as 'unknown'. The other
+50\% are 'known'. We are going to try to determine the group affiliation of the
 unknown nodes based on the group affiliations of the known nodes.
 
-We tried 5 different prediction methods:
+We use 5 different prediction methods:
 
 \begin{itemize}
 \item{Method 1} Determines the group affiliation of an unknown node by the group
@@ -1518,99 +1234,54 @@ well clustered and spread all over the network.
 
 \end{itemize}
 
-\subsection{Some code snippets}
+\subsection{Somew code snippets}
 \begin{lstlisting}[language=python]
 # The decision function which is used in methods 1 and 2 to predict a single
 # node
-# This version uses a stored diffusion kernel to calculate the
-# propagation, rather than using the power method multiple times.
-def decision_function_diffkernel(v, G, K, group_membership_ar, known_unknown_ar):
-    """
-    This function uses the given diffusion kernel of the graph to
-    calculate the propagation, rather than using the power method.
-    Input v: an node assumed to be an int and taken from the list of unkown
-    nodes. Input G: The graph.
-    Input K: the diffusion kernel of the graph.
-    Input group_membership_ar: Array of strings which specifies for each node
+def decision_function(v, G, group_membership_ar, known_unknown_ar):
+    """Input v: an node assumed to be an int and taken from the list of unkown
+    nodes. Input G: The graph. 
+    Input group_membership_ar: Array of strings which specifies for each node 
     to which group belongs (including the 'unkonw' nodes) this is required for
     thesting the correctness of the decision.
     Input known_unknown_ar: boolean 1d array which
     specifies for each node of the graph whether its membership is known or
-    unkown.
-    output prediction: A string which is the predicted group affiliation.
+    unkown. 
+    output guess_group: string the group that the function assigns the node to.
     output correctness: True or false depending on the correctness of the
-    prediction vs the real group_membership_list[v] value.
+    guess_group vs the real group_membership_list[v] value.
     """
     all_nodes = np.arange(len(G.nodes))
     known_nodes = all_nodes[known_unknown_ar]
-    unknown_nodes = all_nodes[known_unknown_ar == False]
+    unkown_nodes = all_nodes[known_unknown_ar == False]
     bias = np.zeros_like(G.nodes)
     bias[v] = 1
     bias
-    p = np.dot(K, bias)
+    p = biasedPropagateGv2(G, bias=bias)
     group_names = np.unique(group_membership_ar)
-    q = p * known_unknown_ar  # 0 on all unkown nodes
+    q = p * known_unknown_ar #0 on all unkown nodes
     testscores = np.zeros_like(group_names)
     for g in range(len(group_names)):
-        x = q[group_membership_ar == group_names[g]]
+        x = q[group_membership_ar == group_names[g]] 
         testscores[g] = x.sum()
     decide = group_names[np.argmax(testscores)]
     correctness = decide == group_membership_ar[v]
     return decide, correctness
 
-def predictMethod2_diffkernel(G, tries=1, knownfraction=0.5, seed=42, alpha=0.2):
-    """
-    Like predictMethod2 but uses diffusion kernel rather than power
-    method.
-    Input G: a graph.
-    Input tries: how many repetitions to perform, each witha
-    different randomly selected 'known' group.
-    Input knownfraction: portion of the known nodes out all the
-    nodes.
-    Input seed: random seed.
-    Input alpha: restart parameter.
-    """
-    groups = [G.nodes[x]["Group"] for x in G.nodes()]
-    groups = np.array(groups)  # array is better than a simple list ...
-    group_labeling = np.unique(groups)
-    df = pd.DataFrame()
-    df["Group (ground truth)"] = groups
-    scores = np.zeros(tries)
-    # determine the pageRanks
-    K = diffKernelG(G, alpha=alpha)
-    pageRank = biasedPropagateGA(G, bias=np.ones_like(G.nodes), alpha=0.2)
-    orderedNodeList = np.argsort(pageRank)
-    # set the random seed
-    np.random.seed(seed=seed)
-    for t in range(tries):
-        groups_predict = groups.copy()
-        known_unknown = np.random.random(len(G.nodes)) < knownfraction  # known=1
-        all_nodes = np.arange(len(G.nodes))
-        known_nodes = all_nodes[known_unknown]
-        unknown_nodes = all_nodes[known_unknown == False]
-        orderedUnkownNodeList = orderedNodeList[known_unknown == False]
-        known_unknown2 = known_unknown.copy()
-        score2 = 0
-        df["Rep " + str(t)] = "known"
-        df["Rep " + str(t) + "_predict"] = groups_predict
-        for v in orderedUnkownNodeList:
-            # predict, test = decision_function(v, G, groups, known_unknown2, alpha=alpha)
-            #predict, test = decision_function_diffkernel(
-            #    v, G, K, groups, known_unknown2
-            #)
-            predict, test = decision_function_diffkernel(
-                v, G, K, groups_predict, known_unknown2
-            )
-            groups_predict[v] = predict
-            score2 += test
-            known_unknown2[v] = True  # mark v as 'known'
-            df["Rep " + str(t)][v] = "correct"
-            df["Rep " + str(t) + "_predict"][v] = predict
-            if not test:  # mark as incorrect and colormark if mistake
-                df["Rep " + str(t)][v] = "mistake"
-        score2 = score2 / len(unknown_nodes)  # got 0.85
-        scores[t] = score2
-    return scores, df
+# Main part of method 2:
+# Which is actually similar in methods 1-4
+known_unknown2 = known_unknown.copy()
+node_colors2 = node_colors.copy()
+score2 = 0
+for v in orderedUnkownNodeList:
+    _, test = decision_function(v, G, groups, known_unknown2)
+    score2 += test
+    known_unknown2[v] = True #mark v as 'known'
+    G2.nodes[v]['correctness2'] = "Correct"
+    node_colors2[v] = 'brown'
+    if not test: # mark as incorrect and colormark if mistake
+        node_colors2[v] = 'pink'
+        G2.nodes[v]['correctness2'] = "Mistake"
 \end{lstlisting}
 
 %\begin{figure}
@@ -1633,29 +1304,16 @@ selected known/unknown nodes.}
 \hline
 Seed / Method & 1 & 2 & 3 & 4 & 5\\
 \hline
-42 & 0.795 & 0.854 & 0.765 &
-0.791 & 0.701\\
-6382020 & 0.774 & 0.832 & 0.751 & 0.751 & 0.755\\
+42 & 0.795 & 0.858 & 0.765 &
+0.784 & 0.701\\
+6382020 & 0.774 & 0.832 & 0.752 & 0.748 & 0.755\\
 \hline
 \end{tabular}
 \label{table:results_5_prediction_methods}
 \end{center}
 \end{table}
 
-We have additionally performed $50$ repeats for different parameters
-with method 2.
-The best mean result, of $0.8926$ mean accuracy was obtained with a
-restart probability of $0.31$. Restart parameters ($\alpha$) of $0.2-0.35$, lets
-call it mid-lower range produce the best results, while with higher
-alphas accuracy falls towards $0.5$ which is of course the accuracy of
-just randomly guessing. 
-
-Accuracy was about 0.8 when we start with only 10\% labeled and it
-gradually increases with increased labeled proportions (0.85 accuracy at
-0.3 label coverage).
-
 \begin{figure}
-\begin{framed}
 \centering
 \begin{subfigure}[b]{\textwidth}
 \includegraphics[width=\textwidth]{connected component of yeast interactome subgraph with nodes belong to 4 different groups.png}
@@ -1671,37 +1329,7 @@ The known groups are color coded by RGBY. The unkown nodes are color
 coded: brown:correct prediction, pink:incorrect.}
 \label{fig:my_prediction}
 \end{subfigure}
-\end{framed}
 \end{figure}
-
-
-We have conducted another test of method 2, with parameters $\alpha = 0.31$, and $0.35$ label coverage.
-This time we calculated the sensitivity, specificity, accuracy and precision
-for each label as well as the total.
-The results are the following:
-\begin{lstlisting}[basicstyle=\footnotesize]
-      Label      P     TP    FP        N       TN    FN Sens Spec  Acc  PPV
-0     golgi    165    149    25      209      184    16 0.90 0.88 0.89 0.86
-1  DNA_repl    133    129    22      241      219     4 0.97 0.91 0.93 0.85
-2   meiosis     30     17     4      344      340    13 0.57 0.99 0.95 0.81
-3    stress     46     25     3      328      325    21 0.54 0.99 0.94 0.89
-4     Total 374.00 320.00 54.00 1,122.00 1,068.00 54.00 0.86 0.95 0.93 0.86
-\end{lstlisting}
-
-We can see that the problem lies with the two small and spread out groups,
-'meiosis' and 'stress'. It is hard to predict that an unlabeled vertex belong to these groups 
-
-\begin{figure}
-\begin{framed}
-\centering
-\includegraphics[width=\textwidth]{alpha_fraq_graph.png}
-\caption{The accuracy as function of the resart parameter alpha,
-with fixed label coverage of 0.5, and of the label coverage with
-fixed alpha=0.2}
-\label{fig:alpha_fracs}
-\end{framed}
-\end{figure}
-
 
 \subsection{Discussion}
 If we look at figure \ref{fig:largest_connected_comp} which shows the connected
@@ -1723,7 +1351,7 @@ It's probably woth while to repeat the experiment a couple of hundred of times
 to estimate the mean accuracies of the methods.
 
 
-\section{Further Discussion and Remarks}
+\section{The Propagation Method In Bioinformatics}
 %The normalize adjacency matrix of 
 %a connected graph (for simplicity we use here undirected) is a transition matrix
 %and represents a
@@ -1733,33 +1361,36 @@ to estimate the mean accuracies of the methods.
 %We want to know first, if we repeat this process to infinity will the frequency
 %of the visits at each node stabilizes.
 
-\lipsum[3-4]
+%\lipsum[3-4]
 
-%Propagation methods or as they are sometimes called, diffusion methods, have
-%been used in Bioinformatic software tools mostly function prediction and
-%'disease characterization' \cite{cowen2017network}.
-%
-%Typically the diffusion method is used to screen for possible 'candidates' (i.e
-%a disease causing genes) which is basically pageRanking, or for module detection
-%which is essentially clustering/community structure. In a second step these
-%candidates are scored by a probabilistic model which may use additional
-%information beyond the network structure itself.
-%
-%The most simple application, which is briefly described in the introduction, is 
-%function prediction in a single PPI network. As an example application we bring
-%the RIDDLE \cite{wang2012riddle} functional prediction web application
-%(\url{www.functionalnet.org/RIDDLE}). 
-%
-%(usw und sofort \dots they use pagrRank, and then do a statistical test based on
-%hypergeometric distribution to score the significance \dots) 
-%
-%Hotnet \cite{vandin2012discovery} and its successor Hotnet2
-%\cite{leiserson2015pan} are an example of a more complex application
-%used for module detection \dots
-%
-%(they have a system to set threshold influence, break the graph to small 
-%connected components as module candidates, then use additional information 
-%to score the significance)
+Propagation methods or as they are sometimes called, diffusion methods, have
+been used in Bioinformatic software tools mostly function prediction and
+'disease characterization' \cite{cowen2017network}.
+
+Typically the diffusion method is used to screen for possible 'candidates' (i.e
+a disease causing genes) which is basically pageRanking, or for module detection
+which is essentially clustering/community structure. In a second step these
+candidates are scored by a probabilistic model which may use additional
+information beyond the network structure itself.
+
+The most simple application, which is briefly described in the introduction, is 
+function prediction in a single PPI network. As an example application we bring
+the RIDDLE \cite{wang2012riddle} functional prediction web application
+(\url{www.functionalnet.org/RIDDLE}). 
+
+(usw und sofort \dots they use pagrRank, and then do a statistical test based on
+hypergeometric distribution to score the significance \dots) 
+
+
+
+
+Hotnet \cite{vandin2012discovery} and its successor Hotnet2
+\cite{leiserson2015pan} are an example of a more complex application
+used for module detection \dots
+
+(they have a system to set threshold influence, break the graph to small 
+connected components as module candidates, then use additional information 
+to score the significance)
 
 
 \begin{comment}
@@ -1789,19 +1420,16 @@ Here is an image
 %\includegraphics{BA20-1.png}
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.65\linewidth]{Heatmap BA20-1 alpha=0.10.png}
   \caption{Heatmap. Alpha=0.1}
   \label{fig:heatmap}
-\end{framed}
 \end{figure}
 
 Refer to it with fig \ref{fig:heatmap} tada.
 
 
 \begin{figure}[!htb]
-\begin{framed}
   \centering
     \includegraphics[width=0.65\linewidth]{test2.png}
   \caption{The apparatus used in the experiment. The forward right
@@ -1810,13 +1438,11 @@ Refer to it with fig \ref{fig:heatmap} tada.
   are positioned to touch the exposed meso N1 at the root of the
   wing}
   \label{fig:apparatus}
-\end{framed}
 \end{figure}
 
 \subsection{Tables}
 
 \begin{table}[!htb]
-\begin{framed}
   \caption{Nernstsche Gleichgewichtspotenziale und das resultierende
   Membranpotenzial nach Goldmann Gleichung} 
 \begin{center}
@@ -1834,7 +1460,6 @@ Refer to it with fig \ref{fig:heatmap} tada.
   \end{tabular}
   \label{table:amp/dauer}
 \end{center}
-\end{framed}
 \end{table}
 
 \end{comment}
@@ -1847,9 +1472,5 @@ Refer to it with fig \ref{fig:heatmap} tada.
 \nocite{leiserson2015pan}
 
 \printbibliography
-
-\listoffigures
-\listoftables
-
 
 \end{document}

@@ -228,10 +228,12 @@ for v in G2.nodes():
     G2.nodes[v]['correctness2'] = "Known"
 
 known_unknown2 = known_unknown.copy()
+groups_predict = groups.copy()
 node_colors2 = node_colors.copy()
 score2 = 0
 for v in orderedUnkownNodeList:
-    _, test = decision_function(v, G, groups, known_unknown2)
+    predict, test = decision_function(v, G, groups_predict, known_unknown2)
+    groups_predict[v] = predict
     score2 += test
     known_unknown2[v] = True #mark v as 'known'
     G2.nodes[v]['correctness2'] = "Correct"
@@ -296,7 +298,7 @@ def simple_decision_by_neighbors(v, G, group_membership_ar, known_unknown_ar):
     correctness = decide == group_membership_ar[v]
     return decide, correctness
 
-simple_decision_by_neighbors(3, G, group, known_unknown)
+#simple_decision_by_neighbors(3, G, group, known_unknown)
 
 
 known_unknown3 = known_unknown.copy()
@@ -315,11 +317,13 @@ scores[0][2] = score3 #seed=42
 scores[1][2] = score3 #seed=6382020
 
 known_unknown4 = known_unknown.copy()
+groups_predict = groups.copy()
 score4 = 0
 for v in orderedUnkownNodeList:
-    _, test = simple_decision_by_neighbors(v, G, groups, known_unknown4)
+    predict, test = simple_decision_by_neighbors(v, G, groups_predict, known_unknown4)
     score4 += test
     known_unknown4[v] = True
+    groups_predict[v] = predict
     #print(test)
 
 score4 = score4 / len(unkown_nodes) #got 0.76
