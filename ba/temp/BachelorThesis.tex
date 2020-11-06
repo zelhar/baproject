@@ -3,9 +3,8 @@
 %\usepackage[utf8]{inputenc} 
 %\usepackage[square,sort,comma,numbers]{natbib}
 %\usepackage[backend=biber,autocite=inline,style=authoryear]{biblatex}
-%\usepackage[backend=biber,autocite=inline]{biblatex}
-\usepackage[autocite=inline]{biblatex}
-%\addbibresource{mybib.bib}
+\usepackage[backend=biber,autocite=inline]{biblatex}
+\addbibresource{mybib.bib}
 \usepackage{a4wide}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -20,6 +19,15 @@
 \usepackage{subcaption}
 \usepackage[section]{placeins} %no trans-sectional figures!
 \usepackage{wrapfig, framed, caption}
+
+\usepackage{booktabs} % For \toprule, \midrule and \bottomrule
+\usepackage{siunitx} % Formats the units and values
+\usepackage{pgfplotstable} % Generates table from .csv
+% Setup siunitx:
+\sisetup{
+  round-mode          = places, % Rounds numbers
+  round-precision     = 2, % to 2 places
+}
 
 \usepackage{hyperref}
 \hypersetup{linktocpage,
@@ -63,7 +71,7 @@
 %basicstyle=\ttfamily\small,
 %basicstyle=\ttfamily\scriptsize,
 frame=single,
-numbers=left,
+%numbers=none,
 %numbersep=5pt,
 numberstyle=\tiny,
 showspaces=false,
@@ -105,7 +113,7 @@ breaklines=true,
   	{\Large Yiftach Kolb \par}
     \vfill
 	  {\Large Instructor\par
-    Prof. Dr. Matin Vingron 
+    Prof. Dr. Martin Vingron 
     \par}
     {\large \today\par}
 \end{titlepage}
@@ -145,54 +153,65 @@ This is an abstract \dots
 
 \section{Introduction}
 
-This Thesis deals with applying propagation methods for
+This Thesis deals with applircations of propagation methods for
 protein function prediction. Our goal is to propose a prediction
-algorithm.  We give it as input a
+algorithm.  Its input is a
 bidirectional graph and a labeling of a subset of the
-vertices. The algorithm outputs for each unlabeled vertex  a
-suggested suitable label.
-We are going to require just one label for each vertex
-and the algorithm can only use labels that are present in the
-labeled subset. That is meant to keep the problem simple, although
+vertices \textemdash that's the partial classification which we wish
+to extend. The algorithm outputs for each unlabeled vertex  a
+suggested suitable label, and the label must be one of the existing
+labels.
+We are going to require just one label for each vertex.
+That is for the sake of simplification, although
 in reality when we deal with protein-protein interaction networks
-(PPI), each vertex (protein) can have multiple labels (functions).
-We are going to call this problem the partially labeled
+(PPI), each vertex (protein) can have multiple labels (functions or
+annotations in the Jargon).
+We call this problem the partially labeled
 classification problem (PLC) as it was named by
-\cite{szummer2002partially}.
+\textcite{szummer2002partially}.
 
-Our starting point is a PPI network, which is a bidirectional graph
-where vertices represent a protein type in the cells of a certain
-organism and an edge represent some sort of an observed
-'interaction' between them that is unlikely to be observed that
+Our input network is a PPI network, which is a bidirectional graph
+where each vertex represents a protein type in the cells of a certain
+organism and each edge represent some sort of an observed
+'interaction' between two proteins that is unlikely to be taking place
 frequently just by happenstance. However some edges may be
 interactions that don't actually occur in the organism of research,
-but they are observed in the test tube due to the method that
+yet they are observed in the test tube due to the method that
 produces the PPI data.
 
-Suppose that some of the proteins are well researched so the life science guys
-have provided us with further information about their biological function. This
+Suppose that some of the proteins are well researched and the life science guys
+have provided us with further information about their biological
+functions. This
 information is represented in the network in the form of labels associated with
 some of the vertices. But this information is incomplete and many vertices are
-unlabeled. We want to guess which labels could fit best the
-unlabeled vertices.
+unlabeled. We want to extend this labeling to all the nodes, by
+guessing for each unlabeled vertex which label could fit it
+best.
 
-Estimating the accuracy of the prediction is another problem. In
+Estimating the accuracy of the prediction is another issue of
+concern. In
 this paper we use a PPI network where all the proteins are annotated
 with labels. We remove the labels of some of them, try to predict
 their labels, and verify. In the end we know how many labels we got
-right and how many wrong. In the future (perhaps in the masters
-Thesis) we would need to come up with a statistical way to quantify
-the posterior probability that a vertex has a certain label, so we
-would have an estimation of the quality of the prediction for each
-protein.
+right and how many wrong. 
+This gives us an estimation of the total accuracy.
+We also measured the sensitivity, specificity, and precision of our
+proposed method for each functional group.
 
-We use propagation methods in attempt to find an algorithm for the
-PLC. Specifically we use random walk with restart (RWR) approach.
-Essentially what we do is pick an unlabeled vertex and start
-randomly walking from it (with restarts to the starting vertex). In
-this walk we sometimes visit labeled vertices. We predict that the
-label that we most frequently encounter in this walk is the most
-likely label of the starting vertex.
+We would also like to estimate or score the likelihood for each
+specific prediction (perhaps as part of a future paper or in the master
+thesis). We would need for example to come up with a statistical way to quantify
+the posterior probability that a vertex has a certain label
+\cite{szummer2002partially}. 
+
+We use propagation methods in attempt to find a prediction algorithm
+for the PLC. Specifically we use random walk with restart (RWR)
+approach. Essentially what we do is picking an unlabeled vertex and
+starting randomly walking from it with restarts at a certain
+probability back to the starting vertex. In this walk we sometimes
+visit labeled vertices. We predict that the label that we most
+frequently encounter in this walk is the most likely label of the
+starting vertex.
 
 There are 2 papers that we know of which deal with the PLC.
 \textcite{deng2002prediction} Specifically deals with protein
@@ -201,11 +220,12 @@ They use a method which is based on "Markov random fields" to
 estimate for each function category separately the likelihood that a
 protein in the network has that function or not. In their
 experiments of predicting the functions of annotated yeast proteins
-they reached specificity and sensitivities of 45-64\%.
+they reached specificity and sensitivities of 45-64\% but this is not
+apples to apples comparison with our proposed method.
 
 The other paper is \textcite{szummer2002partially} and it is purely
-mathematical and from it we took the name partially labeled
-classification (PLC) for this problem. They use time scaled random
+mathematical and from it we adapted the name \textbf{'partially labeled
+classification' (PLC)} for this problem. They use time scaled random
 walk without restart to calculate the posterior probability that an
 unlabeled vertex has a certain label. This method may work for the
 purpose of protein function prediction but in the way it is tested
@@ -218,15 +238,15 @@ but the method and the definition of the problem do fit.
 
 We dedicate sections 2 and 3 of this Thesis to explain the
 underlying mathematical theories of stochastic matrices and random
-walk in graphs. We think that this theoretical introduction is
+walk with restart  in graphs. We think that this theoretical introduction is
 required in order to develop an understanding of how RWR actually
 works, the relationship between graphs and stochastic matrices and
 spectral theory, what is the diffusion kernel, and for which type of
 graphs we can use these methods.
 
-In the following 2 sections (4 and 5) We will deal with the subjects
+In the following 2 sections (4 and 5) We deal with the subjects
 of community structure and spectral clustering in graphs. There is
-allot of overlap between the PLC problem and community structure. In
+a great deal of overlap between the PLC problem and community structure. In
 the later problem there is no initial labeling and we just use the
 graph topology to find a sensible way of dividing it into tightly
 clustered groups, for example by using the modularity method as
@@ -237,6 +257,8 @@ labeled vertices even if it looks from a community structure
 perspective that 'these two don't belong together'. However we still
 assume the experimentally substantiated 'dogma' that proteins of the
 same function tend to cluster together in the PPI network.
+If the labels don't have characteristics of clusterings or community formation
+then these RWR methods is basically useless.
 
 In section 6 we are going to propose an algorithm using propagation methods
 for the PLC problem and show some initial experiments with it using a subnetwork
@@ -1386,24 +1408,51 @@ methods which just use direct neighbors for the predictions.
 The network is going to be composed of around 500 vertices (proteins) which are
 divided into 4 different function groups. We are going to randomly choose half
 the proteins and mark them as unknown and try to predict their function based
-on the remaining known proteins. 
+on the remaining known proteins. Then we can verify the results with the
+actual annotations.
+
+\subsection{Tools and Source Data}
+
+We sourced our data from \textcite{cytoscape}, an open source
+java software for network analysis and visualisation. 
+The software as one of its built in examples a
+fully annotated yeast interactome. This is a PPI network of
+thousands of proteins and it contains among many other types of
+edge and node annotations information about protein function and
+location in the 'MCs name' field.
+
+We preferred to work within the familiar Python 3 programming
+language and its rich world of extension libraries and packages.
+Therefore we exported the yeast interactome into a graphml format
+which was later imported into our network analysis tool of choice,
+\textcite{networkx}. This is a python based open sourced network analysis 
+package which integrates extremely well with other essential Python
+packages. Networkx is neither as versatile nor as powerful as Cytoscape and
+especially rudimentary in its visualisation functionality, but it
+runs smoothly and is easy to work with, unlike Cytoscape.
+We used the \textcite{numpy} package for vector, matrix and other
+types mathematical
+calculations, and \textcite{pandas} for some database operations. 
 
 \subsection{Methodology}
-We use the annotated yeast interactome which is a pure PPI network that comes
+As mentioned, we 
+used the annotated yeast interactome which is a pure PPI network that comes
 prepackaged with the
 software tool 'Cytoscape'. The nodes represent yeast proteins and the edges
 represent protein-protein interactions.
 
-This network comes with functional annotations in the 'MCs name' field. We
-select nodes in the network whose annotations contain \textbf{exactly} one
-of the following
-keywords:  'DNA Replication' (blue group), 'Golgi' (red), 'Meiosis' (yellow),
-and 'Stress response' (green). All other nodes are removed from the network.
-The result is shown on figure \ref{fig:yeast_subgraph_4groups}. We are going to
-test various annotation method on the largest connected component of this
-subnetwork.
+This network comes with functional annotations in the 'MCs name' field.
+We selected nodes in the network whose annotations contain
+\textbf{exactly} one of the following keywords:  'DNA Replication' (blue
+group), 'Golgi' (red), 'Meiosis' (yellow), and 'Stress response'
+(green). All other nodes are removed from the network.  The result is
+shown in figure \ref{fig:yeast_subgraph_4groups}.
 
-Nodes whose annotations contain keywords of more then one group were discarded.
+The resulting subnetwork is not a connected graph, which is the type
+of input data that we wanted to run our test algorithm on. Therefore
+we selected the biggest connected component of that subnetwork, and
+that is the graph on which we tested and compared various prediction
+algorithms.
 
 \begin{figure}
 \begin{framed}
@@ -1416,16 +1465,14 @@ replication' (blue), 'Golgi' (red), 'Meiosis' (yellow), 'Stress response'
 \end{framed}
 \end{figure}
 
-The above described subnetwork is exported from cytoscape to graphml file, which we import 
-and convert into a networkx object. 
-We select the largest connected component from the above network.
-
-We set a random seed (a process which we repeat 2 times for 2 different trials).
-Then we select randomly 50\% of the nodes and mark them as 'unknown'. The other
-50\% are 'known'. We are going to try to determine the group affiliation of the
+For the first set of comparative tests of different prediction
+methods 
+we set a random seed (a process which we repeat 2 times for 2 different trials).
+Then we selected randomly 50\% of the nodes and marked them as 'unknown'. The other
+50\% are 'known'. We would then try to determine the group affiliation of the
 unknown nodes based on the group affiliations of the known nodes.
 
-We use 5 different prediction methods:
+We tried 5 different prediction methods:
 
 \begin{itemize}
 \item{Method 1} Determines the group affiliation of an unknown node by the group
@@ -1451,7 +1498,7 @@ on how many unknown neighbors in has vs known neighbors. But we tried to keep
 things simple at this stage.
 
 \item{Method 3} We assign an unknown node to the group that has plurality among
-its neighbors with known group affiliation. So this method is fast and the
+its neighbors with known group affiliation. So this method is fast and
 probably the simplest.
 
 \item{Method 4} Same as method 3, but again we go in the order of pagRanks and
@@ -1463,18 +1510,19 @@ the known nodes that belong to group 'DNA Replication', and then for the next
 group and so forth. For each unknown node, we assign it to the group that
 propagates the highest probability to it.
 
-So while in method 1 and 2, we start random walking from an unknown node and see
-what is the probability that we land at a certain group. In Method 5 we start
+While in method 1 and 2 we start random walking from an unknown node and see
+what is the probability that we land at a certain group, In Method 5 we start
 walking randomly from one of the members of a group and check what is the
 probability that we visit a certain unknown node.
 
 This method is an order of magnitude faster than method 1 and 2 because we only
 need to calculate the stationary distributions 4 time (pageRank and for each
 group). However we suspect it will perform with less accuracy.
-Because they take into account nodes that are far and not well connected to the
+The reason for that is that method 5 takes into account nodes that are far and not well connected to the
 unknown node whose function we try to predict.
 The function groups, in particular the yellow (meiosis) and green (stress) are not
-well clustered and spread all over the network.
+well clustered and spread all over the network but we can see that
+some subsets of these labels form clusters.
 
 \end{itemize}
 
@@ -1593,26 +1641,32 @@ selected known/unknown nodes.}
 \hline
 Seed / Method & 1 & 2 & 3 & 4 & 5\\
 \hline
-42 & 0.795 & 0.858 & 0.765 &
-0.784 & 0.701\\
-6382020 & 0.774 & 0.832 & 0.752 & 0.748 & 0.755\\
+42 & 0.795 & 0.854 & 0.765 &
+0.791 & 0.701\\
+6382020 & 0.774 & 0.832 & 0.751 & 0.751 & 0.755\\
 \hline
 \end{tabular}
 \label{table:results_5_prediction_methods}
 \end{center}
 \end{table}
 
-We have additionally performed $50$ repeats for different parameters
-with method 2.
-The best mean result, of $0.8926$ mean accuracy was obtained with a
-restart probability of $0.31$. Restart parameters ($\alpha$) of $0.2-0.35$, lets
-call it mid-lower range produce the best results, while with higher
+We decided to further experiment with method 2.
+We tested it with different parameters, repeating each settings 50 times
+with 50 different sets of known labels. The parameters we tested were
+the restart probability ($\alpha$) and what we called the labeled
+coverage, which is the portion of the nodes that start with a known
+label.
+The best mean result (for coverage of 0.5), was $0.8926$ mean accuracy.
+It was obtained with a
+restart probability of $0.31$. Restart parameters $\alpha \in [0.2-0.3]5$, lets
+call it mid-lower range, produce the best results, while with higher
 alphas accuracy falls towards $0.5$ which is of course the accuracy of
 just randomly guessing. 
 
 Accuracy was about 0.8 when we start with only 10\% labeled and it
 gradually increases with increased labeled proportions (0.85 accuracy at
-0.3 label coverage).
+0.3 label coverage). We plotted the relationship between accuracy and
+the parameters in figure \ref{fig:alpha_fracs}.
 
 \begin{figure}
 \begin{framed}
@@ -1634,10 +1688,41 @@ coded: brown:correct prediction, pink:incorrect.}
 \end{framed}
 \end{figure}
 
+We have conducted another test of method 2, with parameters $\alpha =
+0.31$, and label coverage of $0.35$.
+This time we calculated the sensitivity, specificity, accuracy and
+precision (PPV) 
+for each label as well as the total.
+The results are the following:
+\begin{lstlisting}[basicstyle=\footnotesize]
+      Label      P     TP    FP        N       TN    FN Sens Spec  Acc  PPV
+0     golgi    165    149    25      209      184    16 0.90 0.88 0.89 0.86
+1  DNA_repl    133    129    22      241      219     4 0.97 0.91 0.93 0.85
+2   meiosis     30     17     4      344      340    13 0.57 0.99 0.95 0.81
+3    stress     46     25     3      328      325    21 0.54 0.99 0.94 0.89
+4     Total 374.00 320.00 54.00 1,122.00 1,068.00 54.00 0.86 0.95 0.93 0.86
+\end{lstlisting}
+\label{tab:senspec}
+
+We can see that the problem lies with the two small and spread out groups,
+'meiosis' and 'stress'. It is hard to predict that an unlabeled vertex belong to these groups 
+
+\begin{figure}
+\begin{framed}
+\centering
+\includegraphics[width=\textwidth]{alpha_fraq_graph.png}
+\caption{The accuracy as function of the resart parameter alpha,
+with fixed label coverage of 0.5, and of the label coverage with
+fixed alpha=0.2}
+\label{fig:alpha_fracs}
+\end{framed}
+\end{figure}
+
+
 \subsection{Discussion}
 If we look at figure \ref{fig:largest_connected_comp} which shows the connected
 component that we worked with, the red and blue are pretty nicely clustered. The
-The greens and specially the yellows are sort of spread all over the network and
+greens and specially the yellows are sort of spread all over the network and
 not nicely clustered. I don't know if this is a good example of a real world
 scenario.
 
@@ -1650,11 +1735,8 @@ Method 2 shows somewhat higher accuracy over the other methods but on the flip
 side it is an $O(n^2)$ method when optimized methods are used whereas methods
 3,4,5 are $O(n)$.
 
-It's probably woth while to repeat the experiment a couple of hundred of times
-to estimate the mean accuracies of the methods.
 
-
-\section{The Propagation Method In Bioinformatics}
+\section{Further Discussion and Remarks}
 %The normalize adjacency matrix of 
 %a connected graph (for simplicity we use here undirected) is a transition matrix
 %and represents a
@@ -1664,36 +1746,33 @@ to estimate the mean accuracies of the methods.
 %We want to know first, if we repeat this process to infinity will the frequency
 %of the visits at each node stabilizes.
 
-%\lipsum[3-4]
+\lipsum[3-4]
 
-Propagation methods or as they are sometimes called, diffusion methods, have
-been used in Bioinformatic software tools mostly function prediction and
-'disease characterization' \cite{cowen2017network}.
-
-Typically the diffusion method is used to screen for possible 'candidates' (i.e
-a disease causing genes) which is basically pageRanking, or for module detection
-which is essentially clustering/community structure. In a second step these
-candidates are scored by a probabilistic model which may use additional
-information beyond the network structure itself.
-
-The most simple application, which is briefly described in the introduction, is 
-function prediction in a single PPI network. As an example application we bring
-the RIDDLE \cite{wang2012riddle} functional prediction web application
-(\url{www.functionalnet.org/RIDDLE}). 
-
-(usw und sofort \dots they use pagrRank, and then do a statistical test based on
-hypergeometric distribution to score the significance \dots) 
-
-
-
-
-Hotnet \cite{vandin2012discovery} and its successor Hotnet2
-\cite{leiserson2015pan} are an example of a more complex application
-used for module detection \dots
-
-(they have a system to set threshold influence, break the graph to small 
-connected components as module candidates, then use additional information 
-to score the significance)
+%Propagation methods or as they are sometimes called, diffusion methods, have
+%been used in Bioinformatic software tools mostly function prediction and
+%'disease characterization' \cite{cowen2017network}.
+%
+%Typically the diffusion method is used to screen for possible 'candidates' (i.e
+%a disease causing genes) which is basically pageRanking, or for module detection
+%which is essentially clustering/community structure. In a second step these
+%candidates are scored by a probabilistic model which may use additional
+%information beyond the network structure itself.
+%
+%The most simple application, which is briefly described in the introduction, is 
+%function prediction in a single PPI network. As an example application we bring
+%the RIDDLE \cite{wang2012riddle} functional prediction web application
+%(\url{www.functionalnet.org/RIDDLE}). 
+%
+%(usw und sofort \dots they use pagrRank, and then do a statistical test based on
+%hypergeometric distribution to score the significance \dots) 
+%
+%Hotnet \cite{vandin2012discovery} and its successor Hotnet2
+%\cite{leiserson2015pan} are an example of a more complex application
+%used for module detection \dots
+%
+%(they have a system to set threshold influence, break the graph to small 
+%connected components as module candidates, then use additional information 
+%to score the significance)
 
 
 \begin{comment}
