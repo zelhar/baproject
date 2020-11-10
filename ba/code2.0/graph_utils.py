@@ -185,3 +185,52 @@ def predictMethod2_diffkernel(G, tries=1, knownfraction=0.5, seed=42, alpha=0.2)
         score2 = score2 / len(unknown_nodes)  # got 0.85
         scores[t] = score2
     return scores, df
+
+
+def method6(G, group_membership_ar, known_unknown_ar):
+    """
+    """
+    # Initialization
+    df = pd.DataFrame()
+    df["Group (ground truth)"] = group_membership_ar
+    df["known"] = known_unknown_ar
+    df["predict"] = "unknown"
+    #groups_real = [G.nodes[x]["Group"] for x in G.nodes()]
+    K = diffKernelG(G, alpha=0.2)
+    T = np.transpose(K) # I rather work with rows here
+    T = T - np.identity(len(T)) # not intereseted in self loops
+    Pwns = np.identity(len(K)).astype('int64') # initially each  i pwns itself only
+    Grps = np.zeros(len(K)).astype('int64') - 1 #-1 means no affiliation yet
+    group_names = np.unique(group_membership_ar)
+    group_to_num_dict = dict(zip(group_names, range(len(group_names))))
+    group_to_num_dict["unknown"] = -1 
+    group_num_to_name_dict = dict(enumerate(group_names))
+    group_num_to_name_dict[-1] = "unknown"
+    print(group_to_num_dict, group_num_to_name_dict)
+    for i in range(len(K)):
+        if known_unknown_ar[i] == True:
+            Grps[i] = group_to_num_dict[group_membership_ar[i]]
+    pageR = np.dot(K, np.ones(len(K))/len(K))
+    orderedNodes = np.argsort(pageR)
+    for i in orderedNodes:
+        j = np.argmax(T[i]) #heaviest neighbor of i
+        if Grps[i] == -1: #i unaffiliated
+            Pwns[j][i] = 1 # j pwns i
+            Grps[Pwns[j] == 1] = Grps[j] # the belong in the same group
+        else: # i already affiliated
+            if Grps[j] == -1: # j unaffiliated
+                Pwns[j][i] = 1 # j pwns i
+                Grps[Pwns[j] == 1] = Grps[i] # the belong in the same group
+    df["predict_num"] = Grps
+    for i in range(len(K)):
+        df["predict"][i] = group_num_to_name_dict[Grps[i]]
+    return df, Grps, Pwns
+
+
+            
+            
+
+    
+
+
+

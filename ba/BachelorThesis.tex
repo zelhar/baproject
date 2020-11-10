@@ -71,7 +71,7 @@
 %basicstyle=\ttfamily\small,
 %basicstyle=\ttfamily\scriptsize,
 frame=single,
-numbers=left,
+%numbers=none,
 %numbersep=5pt,
 numberstyle=\tiny,
 showspaces=false,
@@ -153,7 +153,7 @@ This is an abstract \dots
 
 \section{Introduction}
 
-This Thesis deals with applying propagation methods for
+This Thesis deals with applircations of propagation methods for
 protein function prediction. Our goal is to propose a prediction
 algorithm.  Its input is a
 bidirectional graph and a labeling of a subset of the
@@ -168,12 +168,12 @@ in reality when we deal with protein-protein interaction networks
 annotations in the Jargon).
 We call this problem the partially labeled
 classification problem (PLC) as it was named by
-\cite{szummer2002partially}.
+\textcite{szummer2002partially}.
 
 Our input network is a PPI network, which is a bidirectional graph
-where vertices represent a protein type in the cells of a certain
-organism and an edge represent some sort of an observed
-'interaction' between them that is unlikely to be observed that
+where each vertex represents a protein type in the cells of a certain
+organism and each edge represent some sort of an observed
+'interaction' between two proteins that is unlikely to be taking place
 frequently just by happenstance. However some edges may be
 interactions that don't actually occur in the organism of research,
 yet they are observed in the test tube due to the method that
@@ -185,7 +185,7 @@ functions. This
 information is represented in the network in the form of labels associated with
 some of the vertices. But this information is incomplete and many vertices are
 unlabeled. We want to extend this labeling to all the nodes, by
-guessing for each unlabeled vertex which of labels could fit it
+guessing for each unlabeled vertex which label could fit it
 best.
 
 Estimating the accuracy of the prediction is another issue of
@@ -195,11 +195,14 @@ with labels. We remove the labels of some of them, try to predict
 their labels, and verify. In the end we know how many labels we got
 right and how many wrong. 
 This gives us an estimation of the total accuracy.
+We also measured the sensitivity, specificity, and precision of our
+proposed method for each functional group.
 
-We would also like to eastimate or score the likelihood for each
+We would also like to estimate or score the likelihood for each
 specific prediction (perhaps as part of a future paper or in the master
-thesis. We would need for example to come up with a statistical way to quantify
-the posterior probability that a vertex has a certain label. 
+thesis). We would need for example to come up with a statistical way to quantify
+the posterior probability that a vertex has a certain label
+\cite{szummer2002partially}. 
 
 We use propagation methods in attempt to find a prediction algorithm
 for the PLC. Specifically we use random walk with restart (RWR)
@@ -217,11 +220,12 @@ They use a method which is based on "Markov random fields" to
 estimate for each function category separately the likelihood that a
 protein in the network has that function or not. In their
 experiments of predicting the functions of annotated yeast proteins
-they reached specificity and sensitivities of 45-64\%.
+they reached specificity and sensitivities of 45-64\% but this is not
+apples to apples comparison with our proposed method.
 
 The other paper is \textcite{szummer2002partially} and it is purely
-mathematical and from it we took the name partially labeled
-classification (PLC) for this problem. They use time scaled random
+mathematical and from it we adapted the name \textbf{'partially labeled
+classification' (PLC)} for this problem. They use time scaled random
 walk without restart to calculate the posterior probability that an
 unlabeled vertex has a certain label. This method may work for the
 purpose of protein function prediction but in the way it is tested
@@ -234,15 +238,15 @@ but the method and the definition of the problem do fit.
 
 We dedicate sections 2 and 3 of this Thesis to explain the
 underlying mathematical theories of stochastic matrices and random
-walk in graphs. We think that this theoretical introduction is
+walk with restart  in graphs. We think that this theoretical introduction is
 required in order to develop an understanding of how RWR actually
 works, the relationship between graphs and stochastic matrices and
 spectral theory, what is the diffusion kernel, and for which type of
 graphs we can use these methods.
 
-In the following 2 sections (4 and 5) We will deal with the subjects
+In the following 2 sections (4 and 5) We deal with the subjects
 of community structure and spectral clustering in graphs. There is
-allot of overlap between the PLC problem and community structure. In
+a great deal of overlap between the PLC problem and community structure. In
 the later problem there is no initial labeling and we just use the
 graph topology to find a sensible way of dividing it into tightly
 clustered groups, for example by using the modularity method as
@@ -253,6 +257,8 @@ labeled vertices even if it looks from a community structure
 perspective that 'these two don't belong together'. However we still
 assume the experimentally substantiated 'dogma' that proteins of the
 same function tend to cluster together in the PPI network.
+If the labels don't have characteristics of clusterings or community formation
+then these RWR methods is basically useless.
 
 In section 6 we are going to propose an algorithm using propagation methods
 for the PLC problem and show some initial experiments with it using a subnetwork
@@ -1402,27 +1408,28 @@ methods which just use direct neighbors for the predictions.
 The network is going to be composed of around 500 vertices (proteins) which are
 divided into 4 different function groups. We are going to randomly choose half
 the proteins and mark them as unknown and try to predict their function based
-on the remaining known proteins. 
+on the remaining known proteins. Then we can verify the results with the
+actual annotations.
 
 \subsection{Tools and Source Data}
 
 We sourced our data from \textcite{cytoscape}, an open source
 java software for network analysis and visualisation. 
-The software package contains as one of its built in examples a
+The software as one of its built in examples a
 fully annotated yeast interactome. This is a PPI network of
 thousands of proteins and it contains among many other types of
 edge and node annotations information about protein function and
 location in the 'MCs name' field.
 
 We preferred to work within the familiar Python 3 programming
-language and its rich world of extension packages.
+language and its rich world of extension libraries and packages.
 Therefore we exported the yeast interactome into a graphml format
-which was later imported by our network analysis tool of choice,
-\textcite{networkx}. It is a python based open sourced network analysis 
+which was later imported into our network analysis tool of choice,
+\textcite{networkx}. This is a python based open sourced network analysis 
 package which integrates extremely well with other essential Python
-packages. Networkx is not as versatile or powerful as Cytoscape and
+packages. Networkx is neither as versatile nor as powerful as Cytoscape and
 especially rudimentary in its visualisation functionality, but it
-runs smoothly and easy to work with, unlike Cytoscape.
+runs smoothly and is easy to work with, unlike Cytoscape.
 We used the \textcite{numpy} package for vector, matrix and other
 types mathematical
 calculations, and \textcite{pandas} for some database operations. 
@@ -1434,12 +1441,12 @@ prepackaged with the
 software tool 'Cytoscape'. The nodes represent yeast proteins and the edges
 represent protein-protein interactions.
 
-This network comes with functional annotations in the 'MCs name' field. We
-selected nodes in the network whose annotations contain \textbf{exactly} one
-of the following
-keywords:  'DNA Replication' (blue group), 'Golgi' (red), 'Meiosis' (yellow),
-and 'Stress response' (green). All other nodes are removed from the network.
-The result is shown on figure \ref{fig:yeast_subgraph_4groups}.
+This network comes with functional annotations in the 'MCs name' field.
+We selected nodes in the network whose annotations contain
+\textbf{exactly} one of the following keywords:  'DNA Replication' (blue
+group), 'Golgi' (red), 'Meiosis' (yellow), and 'Stress response'
+(green). All other nodes are removed from the network.  The result is
+shown in figure \ref{fig:yeast_subgraph_4groups}.
 
 The resulting subnetwork is not a connected graph, which is the type
 of input data that we wanted to run our test algorithm on. Therefore
@@ -1491,7 +1498,7 @@ on how many unknown neighbors in has vs known neighbors. But we tried to keep
 things simple at this stage.
 
 \item{Method 3} We assign an unknown node to the group that has plurality among
-its neighbors with known group affiliation. So this method is fast and the
+its neighbors with known group affiliation. So this method is fast and
 probably the simplest.
 
 \item{Method 4} Same as method 3, but again we go in the order of pagRanks and
@@ -1503,18 +1510,19 @@ the known nodes that belong to group 'DNA Replication', and then for the next
 group and so forth. For each unknown node, we assign it to the group that
 propagates the highest probability to it.
 
-So while in method 1 and 2, we start random walking from an unknown node and see
-what is the probability that we land at a certain group. In Method 5 we start
+While in method 1 and 2 we start random walking from an unknown node and see
+what is the probability that we land at a certain group, In Method 5 we start
 walking randomly from one of the members of a group and check what is the
 probability that we visit a certain unknown node.
 
 This method is an order of magnitude faster than method 1 and 2 because we only
 need to calculate the stationary distributions 4 time (pageRank and for each
 group). However we suspect it will perform with less accuracy.
-Because they take into account nodes that are far and not well connected to the
+The reason for that is that method 5 takes into account nodes that are far and not well connected to the
 unknown node whose function we try to predict.
 The function groups, in particular the yellow (meiosis) and green (stress) are not
-well clustered and spread all over the network.
+well clustered and spread all over the network but we can see that
+some subsets of these labels form clusters.
 
 \end{itemize}
 
@@ -1642,17 +1650,23 @@ Seed / Method & 1 & 2 & 3 & 4 & 5\\
 \end{center}
 \end{table}
 
-We have additionally performed $50$ repeats for different parameters
-with method 2.
-The best mean result, of $0.8926$ mean accuracy was obtained with a
-restart probability of $0.31$. Restart parameters ($\alpha$) of $0.2-0.35$, lets
-call it mid-lower range produce the best results, while with higher
+We decided to further experiment with method 2.
+We tested it with different parameters, repeating each settings 50 times
+with 50 different sets of known labels. The parameters we tested were
+the restart probability ($\alpha$) and what we called the labeled
+coverage, which is the portion of the nodes that start with a known
+label.
+The best mean result (for coverage of 0.5), was $0.8926$ mean accuracy.
+It was obtained with a
+restart probability of $0.31$. Restart parameters $\alpha \in [0.2-0.3]5$, lets
+call it mid-lower range, produce the best results, while with higher
 alphas accuracy falls towards $0.5$ which is of course the accuracy of
 just randomly guessing. 
 
 Accuracy was about 0.8 when we start with only 10\% labeled and it
 gradually increases with increased labeled proportions (0.85 accuracy at
-0.3 label coverage).
+0.3 label coverage). We plotted the relationship between accuracy and
+the parameters in figure \ref{fig:alpha_fracs}.
 
 \begin{figure}
 \begin{framed}
@@ -1674,9 +1688,10 @@ coded: brown:correct prediction, pink:incorrect.}
 \end{framed}
 \end{figure}
 
-
-We have conducted another test of method 2, with parameters $\alpha = 0.31$, and $0.35$ label coverage.
-This time we calculated the sensitivity, specificity, accuracy and precision
+We have conducted another test of method 2, with parameters $\alpha =
+0.31$, and label coverage of $0.35$.
+This time we calculated the sensitivity, specificity, accuracy and
+precision (PPV) 
 for each label as well as the total.
 The results are the following:
 \begin{lstlisting}[basicstyle=\footnotesize]
@@ -1687,6 +1702,7 @@ The results are the following:
 3    stress     46     25     3      328      325    21 0.54 0.99 0.94 0.89
 4     Total 374.00 320.00 54.00 1,122.00 1,068.00 54.00 0.86 0.95 0.93 0.86
 \end{lstlisting}
+\label{tab:senspec}
 
 We can see that the problem lies with the two small and spread out groups,
 'meiosis' and 'stress'. It is hard to predict that an unlabeled vertex belong to these groups 
@@ -1706,7 +1722,7 @@ fixed alpha=0.2}
 \subsection{Discussion}
 If we look at figure \ref{fig:largest_connected_comp} which shows the connected
 component that we worked with, the red and blue are pretty nicely clustered. The
-The greens and specially the yellows are sort of spread all over the network and
+greens and specially the yellows are sort of spread all over the network and
 not nicely clustered. I don't know if this is a good example of a real world
 scenario.
 
@@ -1718,9 +1734,6 @@ that are too close to the red cluster.
 Method 2 shows somewhat higher accuracy over the other methods but on the flip
 side it is an $O(n^2)$ method when optimized methods are used whereas methods
 3,4,5 are $O(n)$.
-
-It's probably woth while to repeat the experiment a couple of hundred of times
-to estimate the mean accuracies of the methods.
 
 
 \section{Further Discussion and Remarks}

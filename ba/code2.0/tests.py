@@ -39,6 +39,14 @@ r = np.dot(H, p0)
 
 (p - r).sum()
 
+I = np.identity(len(H))
+
+I[1]
+
+np.dot(H, I[1])
+
+H[:,1] #same thing of course
+
 np.linalg.norm((p - q), 1)
 np.linalg.norm((p - r), 1)
 np.linalg.norm((q - r), 1)
