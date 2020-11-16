@@ -1,0 +1,11 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces a weakly connected graph.\relax }}{10}{figure.caption.7}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Pageranked graph.\relax }}{10}{figure.caption.8}%
+\contentsline {figure}{\numberline {3}{\ignorespaces again the same graph, with node color and size indicating their PageRank, with a restart probability approaching $1$.\relax }}{11}{figure.caption.9}%
+\contentsline {figure}{\numberline {4}{\ignorespaces same graph, but undirected.\relax }}{11}{figure.caption.10}%
+\contentsline {figure}{\numberline {5}{\ignorespaces a star graph. \relax }}{12}{figure.caption.11}%
+\contentsline {figure}{\numberline {6}{\ignorespaces 'toy graph' used for testing the algorithm\relax }}{15}{figure.caption.14}%
+\contentsline {figure}{\numberline {7}{\ignorespaces 'Zachary's Karate Club'. 'Mr Hi' (Yellow) and 'Officer' (Green) groups. The Cyan colored node indicates a mismatch between the clustering and the actual division. \relax }}{16}{figure.caption.16}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Subgraph of the yeast interactome showing nodes of 4 groups: 'DNA replication' (blue), 'Golgi' (red), 'Meiosis' (yellow), 'Stress response' (green)\relax }}{18}{figure.caption.18}%
+\contentsline {figure}{\numberline {10}{\ignorespaces The accuracy as function of the resart parameter alpha, with fixed label coverage of 0.5, and of the label coverage with fixed alpha=0.2\relax }}{24}{figure.caption.21}%
+\contentsline {figure}{\numberline {11}{\ignorespaces \relax }}{37}{figure.caption.28}%

@@ -1,0 +1,192 @@
+\documentclass[a4paper,10pt]{article}
+
+%\usepackage[utf8]{inputenc} 
+%\usepackage[square,sort,comma,numbers]{natbib}
+%\usepackage[backend=biber,autocite=inline,style=authoryear]{biblatex}
+\usepackage[backend=biber,autocite=inline]{biblatex}
+\addbibresource{mybib.bib}
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{enumerate}
+%\usepackage{IEEEtrantools}
+%\usepackage[redeflists]{IEEEtrantools}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[section]{placeins} %no trans-sectional figures!
+\usepackage{wrapfig, framed, caption}
+
+\usepackage{booktabs} % For \toprule, \midrule and \bottomrule
+\usepackage{siunitx} % Formats the units and values
+\usepackage{pgfplotstable} % Generates table from .csv
+% Setup siunitx:
+\sisetup{
+  round-mode          = places, % Rounds numbers
+  round-precision     = 2, % to 2 places
+}
+
+\usepackage{hyperref}
+\hypersetup{linktocpage,
+            linktoc=all,
+            colorlinks=true,
+            linkcolor=blue,
+            }
+
+\usepackage{lipsum}
+%\usepackage[onehalfspace]{setspace}
+\usepackage{setspace}
+
+% Basic data
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\ASSIGNMENT}{2}
+\newcommand{\B}{\{-1,1\}}
+\newcommand{\E}{\mathbf{E}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Inf}{\textbf{Inf}}
+\newcommand{\I}{\mathbf{I}}
+\newcommand{\NS}{\textbf{NS}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\aufgabe}[1]{\item{\bf #1}}
+\newcommand{\bvec}[1]{\mathbf{#1}}
+\newcommand{\bv}[1]{\mathbf{#1}}
+\newcommand{\ceil}[1]{\lceil{#1}\rceil}
+\newcommand{\floor}[1]{\lfloor{#1}\rfloor}
+\newcommand{\gt}{>}
+\newcommand{\half}[1]{\frac{#1}{2}}
+\newcommand{\lt}{<}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+
+\newcommand{\suftab}{\text{suftab}}
+
+\setlength{\parskip}{1.0em}
+\setlength{\parindent}{1em}
+
+
+\lstset{
+%basicstyle=\footnotesize,
+%basicstyle=\ttfamily\footnotesize,
+%basicstyle=\ttfamily\small,
+%basicstyle=\ttfamily\scriptsize,
+frame=single,
+%numbers=none,
+%numbersep=5pt,
+numberstyle=\tiny,
+showspaces=false,
+showstringspaces=false,
+tabsize=2,
+breaklines=true,
+%escapeinside={#*}{*#},
+%escapeinside={*\&}{\&*},% if you want to add LaTeX within your code
+%mathescape=true,
+%language=C++
+}
+
+\theoremstyle{definition}
+\newtheorem{mydef}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+%\newtheorem{thm}{Theorem}[mydef]
+\newtheorem{lemma}{Lemma}[section]
+%\newtheorem{lemma}{Lemma}[mydef]
+
+\begin{document}
+\renewcommand{\thesubsection}{\thesection.\alph{subsection}}\renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+
+% Document title
+\newpage\input{titlepage.tex}
+
+%abstract
+\begin{abstract}
+This is an abstract \dots
+\end{abstract}
+
+%toc
+\tableofcontents
+
+%Introduction
+\newpage \input{introduction.tex}
+
+%section
+\newpage \input{minimal_algebra_primer.tex}
+
+%section
+\newpage \input{minimal_graphmarkov.tex}
+
+%section
+\newpage \input{myclustering.tex}
+
+%section
+\newpage \input{mypredictionalgorithm.tex}
+
+
+
+
+
+
+%tests
+%\section{Tests}
+%Here is a lemma with a reference
+%\begin{lemma}
+%\label{lemma:foo}
+%This is Lemma Foo
+%\end{lemma}
+%
+%The proof for lemma \ref{lemma:foo} is in the appendix.
+
+
+
+
+
+
+
+%%%appendices
+\appendix
+%section
+\newpage \input{matrixalgebrachapter.tex}
+
+%section
+\newpage \input{graphmarkov.tex}
+
+%section
+\newpage \input{spectralclustering.tex}
+
+%tests
+%\section{Tests}
+%Here is a lemma with a reference
+%\begin{lemma}
+%\label{lemma:foo}
+%This is Lemma Foo
+%\begin{proof}
+%This is the proof of lemma \ref{lemma:foo}
+%\end{proof}
+%\end{lemma}
+%
+%That was a proof of lemma \ref{lemma:foo} is in the appendix.
+
+% references
+\section{Reference}
+\nocite{slides_from_lecture}
+\nocite{cowen2017network}
+\nocite{vandin2012discovery}
+\nocite{vandin2012discovery}
+\nocite{leiserson2015pan}
+
+\printbibliography
+
+\listoffigures
+\listoftables
+
+
+\end{document}
+

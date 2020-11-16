@@ -1,0 +1,238 @@
+\section{Linear algebra primer}
+
+\subsection*{Prologue}
+This section is mostly based on \cite{meyer2000matrix} and
+\cite{herstein_winter_1989}. We are going to have to use allot of
+definitions anyway and cite big theorems like the Perron-Froebenius
+theorems, so we might as well provide an
+understanding of the important properties of stochastic matrices
+which we need for the RWR methods.
+
+This chapter is accompanied by an appendix chapter, which containes
+more material and presents proofs or sketch of a proof to most
+theorems and lemmas.
+We try to keep the chapter intself short and just mention theorems
+and properties that are strictly necessary for the following
+chapters.
+
+This chapter together with the appendix
+is also meant to intercept likely questions, quite possibly even by
+by the author himself within a few decades from now, such as, 'what if we
+consider complex vectors, maybe there is a complex eigenvalue who is
+greater than 1 ?', no there isn't, read here why.
+
+\subsection*{Theory}
+
+\begin{mydef}
+\label{def:transition} A \textbf{Transition Matrix } (we call
+it a \textbf{Transition} in short), which is sometimes also called a
+\textbf{stochastic matrix}, is a real valued non negative square
+($n \times n$) matrix $A$ such that each of its columns sums up to one: $$A
+\geq 0,\ \forall j \sum_i A_{i,j} = 1$$ $A$ acts from the left as a
+linear mapping: $A:v \to A \cdot v$. In this paper we use left
+multiplication convention ($Av$). There are many other publications
+that deal with random walk and Markov processes, where right
+multiplication is used ($v \cdot A$), and accordingly the rows are
+normalized rather than the columns.
+
+A transition is \textbf{positive}, designated by $A > 0$ if all its entries are positive.
+
+A transition is \textbf{primitive} if for some $k>$ $A^k$ is positive. The same
+property is called \textbf{regular} in some other sources.
+
+A transition is \textbf{irreducible} if for every entry $A_{i,j}$ there is some $k$ such
+that $A^k_{i,j} > 0$.
+
+It can be shown that 
+A matrix $A$ is 
+irreducible by and only if it is NOT
+similar by permutations matrices to a block upper triangular matrix
+which means 
+$
+\nexists P : 
+A =
+P
+\begin{pmatrix}
+B & C \\
+0 & D
+\end{pmatrix}
+P^{-1}
+$
+
+where $P$ is a permutation matrix and $B, C$ are square matrices of size greater than $0$.
+\end{mydef}
+
+\begin{mydef}
+\label{def:state}
+A \textbf{State} is a non-negative vector $v \in R^n$ s.t $\sum_i v_i = 1$.
+\end{mydef}
+
+\begin{remark}
+\label{remark:state}
+If $v$ is a
+state and $A$ is a transition as defined in
+\ref{def:transition}, then
+  $Av$ is also a state because: 
+$$\sum_i(Av)_i = \sum_j v_j(\sum_k A_{j,k}) = \sum_j v_j \cdot 1 = 1$$
+Also its easy to confirm by multiplying with $e_i$, that if $Av$ is a state
+for every state $v$ 
+each column $A e_i$ must sum to $1$.
+Therefore this is an equivalent definition for a transition.
+
+If $A$ is a transition and $x,y$ are two states such that
+$x \leq Ay$ then $x=y$.
+\end{remark}
+
+\begin{mydef}
+\label{def:abs}
+%changed C to R per Martin's request but it holds for C
+Given $A \in \R^{n \times n}$ We let $|A| \in \R^{n \times n}$ be the resulting
+matrix from applying $|\cdot|$ element wise. Given a vector $v \in \C^n$ we let
+$|v| \in \R^n$ the corresponding non-negative vector.
+
+We also let $A \gt 0, v \gt 0$ mean that it holds coordinate wise. 
+\end{mydef}
+
+Here is a very useful lemma for non-negative matrices which we will need later:
+\begin{lemma}
+\label{lem:eqal_by_vector}
+Let $0 \leq A \leq B \in \R^{n \times n}$ 
+and let $0 \lt v \in \R^n$.
+If $Av = Bv$ then $A = B$.
+\begin{proof}
+Trivial.
+\end{proof}
+\end{lemma}
+
+\begin{remark}
+\label{remark:abs}
+If $u \in \C^n$ is on the unit circle and $T$ a transition then
+$|u|$ is a state, meaning $\||u|\|_1=1$, so $T|u|$ is also a state 
+so $\|T|u|\|_1=1$.
+
+We have (component-wise) $|Tu| \leq T|u|$. If $T>0$ and $u$ has negative or
+non-real entries, then this inequality must be strict and
+then $\|Tu\|_1 \lt \|T|u|\|_1 = 1$.
+\end{remark}
+
+\begin{lemma}
+\label{lem:exist1}
+If $T$ is a transition, then
+there is a state $u$ such that $Tu = u$.
+\begin{proof}
+In the appendix
+\end{proof}
+\end{lemma}
+
+
+\begin{lemma}
+\label{lem:uniq1}
+If a transition $A \gt 0$ (or primitive)
+, then it has exactly
+one eigenvector $v$ with eigenvalue $1$ and in addition $v$ can be
+chosen to be strictly positive.
+Furthermore, for any other eigenvalue
+$\lambda$ it holds that $|\lambda| \lt 1$.
+
+If $A$ is just irreducible then then again $v>0$ and is unique but there may be
+additional eigenvalues on the unit circle.
+
+\begin{proof}
+In the appendix
+\end{proof}
+\end{lemma}
+
+\begin{remark}
+\label{remark:rhoisone}
+The lemmas and theorems in this section are phrased in term of transitions. They
+hold true in the more general case of positive/non-negative
+linear transformations and one just replaces $1$ with the \textbf{spectral
+radius} $ \rho = \rho(A)$.
+
+In general a non-negative linear transformation has a \textbf{spectral radius}
+$\rho = \rho(A)$ which is the absolute value of its greatest eigenvalue. In the case of
+positive maps there is a unique single eigenvector with $\rho$ as the unique
+greatest eigenvalue and so forth \dots. When we deal with a transition map,
+lemma \ref{lem:uniq1} guaranties 
+it has a spectral value of $\rho(A) = 1$.
+\end{remark}
+
+\begin{thm}
+\label{thm:transition_ev}
+Let $T$ be a positive (or primitive) transition. Then 
+
+1. $1$ is the greatest eigenvalue
+of $T$ and it has one unique eigenvector which is also positive,
+so there exists a unique stationary state.
+
+2. All the other eigenvalues have absolute value strictly less than $1$.
+
+3. For every state $u$, $T^ku$ converges to the stationary state $\pi$.
+In particular the columns of $T^k$ converge to $\pi$.
+
+\begin{proof}
+In the appendix
+\end{proof}
+\end{thm}
+
+\begin{thm}
+\label{thm:transition_irr_ev}
+Let $T$ be an irreducible positive (or primitive) transition. 
+Then:
+
+1. Then $1$ is the greatest eigenvalue
+of $T$ and it has one unique eigenvector which is also positive,
+so there exists a unique stationary state.
+
+2. If there are other other eigenvalues on the unit circle then their algebaic
+multiplicity is equal their geometric multiplicity.
+
+3. For every state $u$, the \textbf{Cesaro sums} 
+$\frac{1}{n}\sum_{k=1}^n T^ku$ converge to the stationary state $\pi$.
+
+\begin{proof}
+In the appendix
+\end{proof}
+\end{thm}
+
+What differs irreducible non-primitive matrices from primitive is
+that they are periodical on their eigenvectors with complex eigenvalues
+on the unit cycle. There is, in fact a wonderful theorem from Wielandt which
+characterizes these Matrices, which is stated with a sketch of proof
+in the appendix.
+
+Now we will just present the Perron-Frobenius theorems. The main parts that are
+important to our work have appeared in the previous theorems.
+
+\begin{thm}[Perron-Frobenius \cite{meyer2000matrix}]
+\label{thm:perron1}
+
+Let $0 \lt A \in \R^{n \times n}$ with spectral radius $\rho := \rho(A)$, then the following are all true:
+\begin{itemize}
+\item{} $\rho \gt 0$
+\item{} $\rho$ is a simple root of the characteristic polynomial of $A$,
+in other words its algebraic multiplicity is $1$.
+\item{} $(\exists v > 0) Av=\rho v$
+\item{} If $Au = \lambda u$ and $\|u\|= \rho$ then $\lambda = \rho$
+namely, $\rho$ is the unique eigenvalue on the spectral circle.
+\item{(Collatz-Wielandt Formula)} $\rho = \max_{x \in \Gamma} \min_{i : x_i \neq 0} [Ax]_i / x_i$
+with $\Gamma = \{x | x \geq 0, x \neq 0\}$
+\end{itemize}
+\end{thm}
+
+\begin{thm}[Perron-Frobenius for irreducible matrices \autocite{meyer2000matrix}]
+\label{thm:perron2}
+
+Let $0 \leq A \in \R^{n \times n}$ be irreducible with spectral radius $\rho := \rho(A)$,
+then the following are all true:
+\begin{itemize}
+\item{} $\rho \gt 0$
+\item{} $\rho$ is a simple root of the characteristic polynomial of $A$,
+in other words its algebraic multiplicity is $1$.
+\item{} $(\exists v > 0) Av=\rho v$
+\item{} There are no additional non-negative unit eigenvectors of $A$ other than
+$v$. 
+\item{(Collatz-Wielandt Formula)} $\rho = \max_{x \in \Gamma} \min_{i : x_i \neq 0} [Ax]_i / x_i$
+with $\Gamma = \{x | x \geq 0, x \neq 0\}$
+\end{itemize}
+\end{thm}

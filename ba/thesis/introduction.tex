@@ -1,0 +1,53 @@
+%Introduction
+\section{Introduction}
+
+In this paper we propose a protein function prediction algorithm,
+which in essence works similarly to the adage ''Tell me who your
+friend are, and I will tell you who you are''. Imagine that we can
+accurately predict the function of a protein in the cells of an
+organism bases on its biochemical interactions with the other
+proteins, and the interactions of the other proteins between
+themselves. This has in fact demonstrated to be true by
+\textcite{schwikowski2000network}. But we are trying to improve on
+it. In the formulation of the adage above, We want to tell you who
+you are based on information on some friends of your friends. 
+We want that because in the world of protein research, there are
+still many that are unresearched or mostly unresearched.
+
+The specific problem we are dealing here, from the perspective of
+bioinformaticians, is of protein function prediction in a
+protein-protein interaction network (PPIN), yet the actual algorithm
+is more general and applies to any network really. For this reason
+why we call the problem 'Partially labeled classification' (PLC) as it was
+named by \textcite{szummer2002partially}.
+
+Our proposed algorithm uses the network propagation method of random
+walk with restart (RWR). These methods has been used most famously
+by Google for their search algorithm but also in bioinformatics  for
+example for 'disease module identification' by
+\cite{vandin2012discovery, barel2020netcore}.
+
+We dedicate sections 2 and 3 of this Thesis to explain the
+underlying mathematical theories of stochastic matrices and random
+walk with restart in graphs, largely going according to textbooks
+from \textcite{meyer2000matrix} and \textcite{herstein_winter_1989}.
+The purpose is to make this work somewhat self standing with the
+mathematical foundations it is based on, to give a 'feel' for how
+RWR actually work, as well as presenting some
+lemmas that prove why we can use it in the networks we are dealing
+with.
+
+In the following 2 sections (4 and 5) We deal with the subjects
+of community structure and spectral clustering in graphs. There is
+a great deal of overlap between the PLC problem and community structure. 
+Essentially the function prediction algorithm is based on the
+paradigm that proteins of the same functional classification do tend
+to form 'communities' within the PPI.
+In section 6 we are propose an algorithm for protein function
+prediction (or more generally for the partially labeled
+classification problem), and we test it and compare it with some
+other methods. 
+
+Finally in section 7 we draw some conclusions, , discuss other
+methods and approaches, and consider possible ways to carry with
+this research forward.

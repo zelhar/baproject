@@ -1,0 +1,633 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{barel2020netcore}{article}{}
+      \name{author}{2}{}{%
+        {{hash=6eca0f185ea48dac2f6f37e34d206193}{%
+           family={Barel},
+           familyi={B\bibinitperiod},
+           given={Gal},
+           giveni={G\bibinitperiod}}}%
+        {{hash=fcea1330e464a7013d9869cee54b85c5}{%
+           family={Herwig},
+           familyi={H\bibinitperiod},
+           given={Ralf},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Oxford University Press}%
+      }
+      \strng{namehash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \strng{fullhash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \strng{bibnamehash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \strng{authorbibnamehash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \strng{authornamehash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \strng{authorfullhash}{6b56184b6c4a8e6212ae4bf338c724bf}
+      \field{sortinit}{B}
+      \field{sortinithash}{8de16967003c7207dae369d874f1456e}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nucleic Acids Research}
+      \field{number}{17}
+      \field{title}{NetCore: a network propagation approach using node coreness}
+      \field{volume}{48}
+      \field{year}{2020}
+      \field{pages}{e98\bibrangedash e98}
+      \range{pages}{-1}
+    \endentry
+    \entry{cowen2017network}{article}{}
+      \name{author}{4}{}{%
+        {{hash=30bd02f74f37e7fc11c601c1e3e1dc79}{%
+           family={Cowen},
+           familyi={C\bibinitperiod},
+           given={Lenore},
+           giveni={L\bibinitperiod}}}%
+        {{hash=a254a95c2343f55d44f87bb01073e5fa}{%
+           family={Ideker},
+           familyi={I\bibinitperiod},
+           given={Trey},
+           giveni={T\bibinitperiod}}}%
+        {{hash=f3f44f9397fc4e17459c602916a209bc}{%
+           family={Raphael},
+           familyi={R\bibinitperiod},
+           given={Benjamin\bibnamedelima J},
+           giveni={B\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=6096e8d9f8648f4277e4233811dac13b}{%
+           family={Sharan},
+           familyi={S\bibinitperiod},
+           given={Roded},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{cf224d9a4cf89360a6942952bbee4b5c}
+      \strng{fullhash}{98038e7ad9eecb593cabdf8c81ed306e}
+      \strng{bibnamehash}{cf224d9a4cf89360a6942952bbee4b5c}
+      \strng{authorbibnamehash}{cf224d9a4cf89360a6942952bbee4b5c}
+      \strng{authornamehash}{cf224d9a4cf89360a6942952bbee4b5c}
+      \strng{authorfullhash}{98038e7ad9eecb593cabdf8c81ed306e}
+      \field{sortinit}{C}
+      \field{sortinithash}{4c244ceae61406cdc0cc2ce1cb1ff703}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature Reviews Genetics}
+      \field{number}{9}
+      \field{title}{Network propagation: a universal amplifier of genetic associations}
+      \field{volume}{18}
+      \field{year}{2017}
+      \true{nocite}
+      \field{pages}{551}
+      \range{pages}{1}
+    \endentry
+    \entry{cytoscape}{online}{}
+      \list{organization}{1}{%
+        {Cytoscape Consortium}%
+      }
+      \field{sortinit}{C}
+      \field{sortinithash}{4c244ceae61406cdc0cc2ce1cb1ff703}
+      \field{labeltitlesource}{title}
+      \field{title}{Cytoscape}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://cytoscape.org
+      \endverb
+      \verb{url}
+      \verb https://cytoscape.org
+      \endverb
+    \endentry
+    \entry{WikipediaGraphPartition}{online}{}
+      \list{organization}{1}{%
+        {Wikipedia}%
+      }
+      \field{sortinit}{G}
+      \field{sortinithash}{62eb2aa29549e4fdbd3cb154ec5711cb}
+      \field{labeltitlesource}{title}
+      \field{title}{Graph Partition}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://en.wikipedia.org/wiki/Graph_partition
+      \endverb
+      \verb{url}
+      \verb https://en.wikipedia.org/wiki/Graph_partition
+      \endverb
+      \keyw{untrusted}
+    \endentry
+    \entry{herstein_winter_1989}{book}{}
+      \name{author}{2}{}{%
+        {{hash=6b0335822b9a9afb68bd86102830ee7d}{%
+           family={Herstein},
+           familyi={H\bibinitperiod},
+           given={Israel\bibnamedelima Nathan},
+           giveni={I\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+        {{hash=4fcb19eabe83f87ccd66c91762deaef3}{%
+           family={Winter},
+           familyi={W\bibinitperiod},
+           given={David\bibnamedelima J},
+           giveni={D\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Macmillan Publishing Company}%
+      }
+      \strng{namehash}{ccb1e209300ef6738481902e452c939b}
+      \strng{fullhash}{ccb1e209300ef6738481902e452c939b}
+      \strng{bibnamehash}{ccb1e209300ef6738481902e452c939b}
+      \strng{authorbibnamehash}{ccb1e209300ef6738481902e452c939b}
+      \strng{authornamehash}{ccb1e209300ef6738481902e452c939b}
+      \strng{authorfullhash}{ccb1e209300ef6738481902e452c939b}
+      \field{sortinit}{H}
+      \field{sortinithash}{6db6145dae8dc9e1271a8d556090b50a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Matrix theory and linear algebra}
+      \field{year}{1989}
+    \endentry
+    \entry{WikipediaLaplacianMatrix}{online}{}
+      \list{organization}{1}{%
+        {Wikipedia}%
+      }
+      \field{sortinit}{L}
+      \field{sortinithash}{dad3efd0836470093a7b4a7bb756eb8c}
+      \field{labeltitlesource}{title}
+      \field{title}{Laplacian Matrix}
+      \field{urlday}{12}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://en.wikipedia.org/wiki/Laplacian_matrix
+      \endverb
+      \verb{url}
+      \verb https://en.wikipedia.org/wiki/Laplacian_matrix
+      \endverb
+      \keyw{untrusted}
+    \endentry
+    \entry{leiserson2015pan}{article}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=0c4c1425a9223844560fdd7fc4ddfd73}{%
+           family={Leiserson},
+           familyi={L\bibinitperiod},
+           given={Mark\bibnamedelima DM},
+           giveni={M\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=8c5be7770d8cbddf5c4f8d4f08b31b99}{%
+           family={Vandin},
+           familyi={V\bibinitperiod},
+           given={Fabio},
+           giveni={F\bibinitperiod}}}%
+        {{hash=33d83ee24afce72bdca12fb7aa06c21c}{%
+           family={Wu},
+           familyi={W\bibinitperiod},
+           given={Hsin-Ta},
+           giveni={H\bibinithyphendelim T\bibinitperiod}}}%
+        {{hash=a423e772aa3c32766ef452428d999692}{%
+           family={Dobson},
+           familyi={D\bibinitperiod},
+           given={Jason\bibnamedelima R},
+           giveni={J\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
+        {{hash=1b0ad5656d0a16a25312b7d1ea0c9625}{%
+           family={Eldridge},
+           familyi={E\bibinitperiod},
+           given={Jonathan\bibnamedelima V},
+           giveni={J\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=2cbe32154cb5c16faed1d157de3fb344}{%
+           family={Thomas},
+           familyi={T\bibinitperiod},
+           given={Jacob\bibnamedelima L},
+           giveni={J\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=bbe2f09b26238be11430f093f18b66ec}{%
+           family={Papoutsaki},
+           familyi={P\bibinitperiod},
+           given={Alexandra},
+           giveni={A\bibinitperiod}}}%
+        {{hash=148025daf76c0f758e9fe94f586f03e3}{%
+           family={Kim},
+           familyi={K\bibinitperiod},
+           given={Younhun},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=0faac7aa05a3084c155c61fbd09827b4}{%
+           family={Niu},
+           familyi={N\bibinitperiod},
+           given={Beifang},
+           giveni={B\bibinitperiod}}}%
+        {{hash=29b229b7c471a9d4e0721247c260f19a}{%
+           family={McLellan},
+           familyi={M\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{c79685f420ebb4a16c2cf3ecf312f1ac}
+      \strng{fullhash}{632d5731f0be4801540740cbb2e9ee63}
+      \strng{bibnamehash}{c79685f420ebb4a16c2cf3ecf312f1ac}
+      \strng{authorbibnamehash}{c79685f420ebb4a16c2cf3ecf312f1ac}
+      \strng{authornamehash}{c79685f420ebb4a16c2cf3ecf312f1ac}
+      \strng{authorfullhash}{632d5731f0be4801540740cbb2e9ee63}
+      \field{sortinit}{L}
+      \field{sortinithash}{dad3efd0836470093a7b4a7bb756eb8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature genetics}
+      \field{number}{2}
+      \field{title}{Pan-cancer network analysis identifies combinations of rare somatic mutations across pathways and protein complexes}
+      \field{volume}{47}
+      \field{year}{2015}
+      \field{pages}{106\bibrangedash 114}
+      \range{pages}{9}
+    \endentry
+    \entry{meyer2000matrix}{book}{}
+      \name{author}{1}{}{%
+        {{hash=4c69e3607c3315a1262f92ab7e95985b}{%
+           family={Meyer},
+           familyi={M\bibinitperiod},
+           given={Carl\bibnamedelima D},
+           giveni={C\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Siam}%
+      }
+      \strng{namehash}{4c69e3607c3315a1262f92ab7e95985b}
+      \strng{fullhash}{4c69e3607c3315a1262f92ab7e95985b}
+      \strng{bibnamehash}{4c69e3607c3315a1262f92ab7e95985b}
+      \strng{authorbibnamehash}{4c69e3607c3315a1262f92ab7e95985b}
+      \strng{authornamehash}{4c69e3607c3315a1262f92ab7e95985b}
+      \strng{authorfullhash}{4c69e3607c3315a1262f92ab7e95985b}
+      \field{sortinit}{M}
+      \field{sortinithash}{2e5c2f51f7fa2d957f3206819bf86dc3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Matrix analysis and applied linear algebra}
+      \field{volume}{71}
+      \field{year}{2000}
+    \endentry
+    \entry{naumov2016parallel}{report}{}
+      \name{author}{2}{}{%
+        {{hash=c1805b2dbda273718fab95ee7582f4bf}{%
+           family={Naumov},
+           familyi={N\bibinitperiod},
+           given={Maxim},
+           giveni={M\bibinitperiod}}}%
+        {{hash=88bf91e896bbf318e02a8852daa9d61f}{%
+           family={Moon},
+           familyi={M\bibinitperiod},
+           given={Timothy},
+           giveni={T\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {NVIDIA Technical Report, NVR-2016-001}%
+      }
+      \strng{namehash}{3fd1b9afe7de88da370681d8972e89fb}
+      \strng{fullhash}{3fd1b9afe7de88da370681d8972e89fb}
+      \strng{bibnamehash}{3fd1b9afe7de88da370681d8972e89fb}
+      \strng{authorbibnamehash}{3fd1b9afe7de88da370681d8972e89fb}
+      \strng{authornamehash}{3fd1b9afe7de88da370681d8972e89fb}
+      \strng{authorfullhash}{3fd1b9afe7de88da370681d8972e89fb}
+      \field{sortinit}{N}
+      \field{sortinithash}{98cf339a479c0454fe09153a08675a15}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Parallel spectral graph partitioning}
+      \field{type}{techreport}
+      \field{year}{2016}
+    \endentry
+    \entry{networkx}{online}{}
+      \list{organization}{1}{%
+        {NetworkX developers}%
+      }
+      \field{sortinit}{N}
+      \field{sortinithash}{98cf339a479c0454fe09153a08675a15}
+      \field{labeltitlesource}{title}
+      \field{title}{Networkx}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://networkx.org
+      \endverb
+      \verb{url}
+      \verb https://networkx.org
+      \endverb
+    \endentry
+    \entry{newman2006modularity}{article}{}
+      \name{author}{1}{}{%
+        {{hash=214f45e2823b5430ca6f11c0fb3b6552}{%
+           family={Newman},
+           familyi={N\bibinitperiod},
+           given={Mark\bibnamedelima EJ},
+           giveni={M\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {National Acad Sciences}%
+      }
+      \strng{namehash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \strng{fullhash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \strng{bibnamehash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \strng{authorbibnamehash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \strng{authornamehash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \strng{authorfullhash}{214f45e2823b5430ca6f11c0fb3b6552}
+      \field{sortinit}{N}
+      \field{sortinithash}{98cf339a479c0454fe09153a08675a15}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the national academy of sciences}
+      \field{number}{23}
+      \field{title}{Modularity and community structure in networks}
+      \field{volume}{103}
+      \field{year}{2006}
+      \field{pages}{8577\bibrangedash 8582}
+      \range{pages}{6}
+    \endentry
+    \entry{numpy}{online}{}
+      \list{organization}{1}{%
+        {The NumPy project}%
+      }
+      \field{sortinit}{N}
+      \field{sortinithash}{98cf339a479c0454fe09153a08675a15}
+      \field{labeltitlesource}{title}
+      \field{title}{Numpy}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://numpy.org
+      \endverb
+      \verb{url}
+      \verb https://numpy.org
+      \endverb
+    \endentry
+    \entry{pandas}{online}{}
+      \list{organization}{1}{%
+        {Numfocus}%
+      }
+      \field{sortinit}{P}
+      \field{sortinithash}{bb5b15f2db90f7aef79bb9e83defefcb}
+      \field{labeltitlesource}{title}
+      \field{title}{Pandas}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://pandas.pydata.org
+      \endverb
+      \verb{url}
+      \verb https://pandas.pydata.org
+      \endverb
+    \endentry
+    \entry{schwikowski2000network}{article}{}
+      \name{author}{3}{}{%
+        {{hash=94b9990773c9d109e63156d79525ac23}{%
+           family={Schwikowski},
+           familyi={S\bibinitperiod},
+           given={Benno},
+           giveni={B\bibinitperiod}}}%
+        {{hash=a2856e77697fe56c8848192a6381e47d}{%
+           family={Uetz},
+           familyi={U\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod}}}%
+        {{hash=7f22931e94dc496c13d95737974148ce}{%
+           family={Fields},
+           familyi={F\bibinitperiod},
+           given={Stanley},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{af1306d1d2e9b7b25209ef44591212ec}
+      \strng{fullhash}{af1306d1d2e9b7b25209ef44591212ec}
+      \strng{bibnamehash}{af1306d1d2e9b7b25209ef44591212ec}
+      \strng{authorbibnamehash}{af1306d1d2e9b7b25209ef44591212ec}
+      \strng{authornamehash}{af1306d1d2e9b7b25209ef44591212ec}
+      \strng{authorfullhash}{af1306d1d2e9b7b25209ef44591212ec}
+      \field{sortinit}{S}
+      \field{sortinithash}{c319cff79d99c853d775f88277d4e45f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature biotechnology}
+      \field{number}{12}
+      \field{title}{A network of protein--protein interactions in yeast}
+      \field{volume}{18}
+      \field{year}{2000}
+      \field{pages}{1257\bibrangedash 1261}
+      \range{pages}{5}
+    \endentry
+    \entry{serre2010matrices}{article}{}
+      \name{author}{1}{}{%
+        {{hash=c85c301f39711ef9e6fdd8300db25770}{%
+           family={Serre},
+           familyi={S\bibinitperiod},
+           given={D},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{2}{%
+        {Springer Science}%
+        {Media}%
+      }
+      \strng{namehash}{c85c301f39711ef9e6fdd8300db25770}
+      \strng{fullhash}{c85c301f39711ef9e6fdd8300db25770}
+      \strng{bibnamehash}{c85c301f39711ef9e6fdd8300db25770}
+      \strng{authorbibnamehash}{c85c301f39711ef9e6fdd8300db25770}
+      \strng{authornamehash}{c85c301f39711ef9e6fdd8300db25770}
+      \strng{authorfullhash}{c85c301f39711ef9e6fdd8300db25770}
+      \field{sortinit}{S}
+      \field{sortinithash}{c319cff79d99c853d775f88277d4e45f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Graduate Texts in Mathematics}
+      \field{number}{216}
+      \field{title}{Matrices theory and applications second edition}
+      \field{volume}{1}
+      \field{year}{2010}
+      \field{pages}{ALL\bibrangedash ALL}
+      \range{pages}{-1}
+    \endentry
+    \entry{WikipediaSpectralClustering}{online}{}
+      \list{organization}{1}{%
+        {Wikipedia}%
+      }
+      \field{sortinit}{S}
+      \field{sortinithash}{c319cff79d99c853d775f88277d4e45f}
+      \field{labeltitlesource}{title}
+      \field{title}{Spectral Clustering}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://en.wikipedia.org/wiki/Spectral_clustering
+      \endverb
+      \verb{url}
+      \verb https://en.wikipedia.org/wiki/Spectral_clustering
+      \endverb
+      \keyw{untrusted}
+    \endentry
+    \entry{szummer2002partially}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=93aae72e73c6829ed98b7ed9804237b8}{%
+           family={Szummer},
+           familyi={S\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod}}}%
+        {{hash=521085652a07e67bdff5323e2febc138}{%
+           family={Jaakkola},
+           familyi={J\bibinitperiod},
+           given={Tommi},
+           giveni={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{274a26b9d772e8225230d0065f03adc9}
+      \strng{fullhash}{274a26b9d772e8225230d0065f03adc9}
+      \strng{bibnamehash}{274a26b9d772e8225230d0065f03adc9}
+      \strng{authorbibnamehash}{274a26b9d772e8225230d0065f03adc9}
+      \strng{authornamehash}{274a26b9d772e8225230d0065f03adc9}
+      \strng{authorfullhash}{274a26b9d772e8225230d0065f03adc9}
+      \field{sortinit}{S}
+      \field{sortinithash}{c319cff79d99c853d775f88277d4e45f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in neural information processing systems}
+      \field{title}{Partially labeled classification with Markov random walks}
+      \field{year}{2002}
+      \field{pages}{945\bibrangedash 952}
+      \range{pages}{8}
+    \endentry
+    \entry{vandin2012discovery}{incollection}{}
+      \name{author}{4}{}{%
+        {{hash=8c5be7770d8cbddf5c4f8d4f08b31b99}{%
+           family={Vandin},
+           familyi={V\bibinitperiod},
+           given={Fabio},
+           giveni={F\bibinitperiod}}}%
+        {{hash=7b3418468a578dcce1853f00ef3c4945}{%
+           family={Clay},
+           familyi={C\bibinitperiod},
+           given={Patrick},
+           giveni={P\bibinitperiod}}}%
+        {{hash=bb283362dabfd7d804c298b157e8cb43}{%
+           family={Upfal},
+           familyi={U\bibinitperiod},
+           given={Eli},
+           giveni={E\bibinitperiod}}}%
+        {{hash=f3f44f9397fc4e17459c602916a209bc}{%
+           family={Raphael},
+           familyi={R\bibinitperiod},
+           given={Benjamin\bibnamedelima J},
+           giveni={B\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {World Scientific}%
+      }
+      \strng{namehash}{726b860053bd74ad1a42bcbab023aca2}
+      \strng{fullhash}{3f6a108be4f994ff3faba0961fa0934f}
+      \strng{bibnamehash}{726b860053bd74ad1a42bcbab023aca2}
+      \strng{authorbibnamehash}{726b860053bd74ad1a42bcbab023aca2}
+      \strng{authornamehash}{726b860053bd74ad1a42bcbab023aca2}
+      \strng{authorfullhash}{3f6a108be4f994ff3faba0961fa0934f}
+      \field{sortinit}{V}
+      \field{sortinithash}{02432525618c08e2b03cac47c19764af}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Biocomputing 2012}
+      \field{title}{Discovery of mutated subnetworks associated with clinical data in cancer}
+      \field{year}{2012}
+      \field{pages}{55\bibrangedash 66}
+      \range{pages}{12}
+    \endentry
+    \entry{slides_from_lecture}{unpublished}{}
+      \name{author}{1}{}{%
+        {{hash=0a583636752a35b063533cc1cabe961b}{%
+           family={Vingron},
+           familyi={V\bibinitperiod},
+           given={Martin},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{0a583636752a35b063533cc1cabe961b}
+      \strng{fullhash}{0a583636752a35b063533cc1cabe961b}
+      \strng{bibnamehash}{0a583636752a35b063533cc1cabe961b}
+      \strng{authorbibnamehash}{0a583636752a35b063533cc1cabe961b}
+      \strng{authornamehash}{0a583636752a35b063533cc1cabe961b}
+      \strng{authorfullhash}{0a583636752a35b063533cc1cabe961b}
+      \field{sortinit}{V}
+      \field{sortinithash}{02432525618c08e2b03cac47c19764af}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Propagation methods (Lecture Slides)}
+      \true{nocite}
+    \endentry
+    \entry{von2007tutorial}{article}{}
+      \name{author}{1}{}{%
+        {{hash=04af5501dd8b2397fb996e2f377e5d4a}{%
+           family={Von\bibnamedelima Luxburg},
+           familyi={V\bibinitperiod\bibinitdelim L\bibinitperiod},
+           given={Ulrike},
+           giveni={U\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \strng{fullhash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \strng{bibnamehash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \strng{authorbibnamehash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \strng{authornamehash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \strng{authorfullhash}{04af5501dd8b2397fb996e2f377e5d4a}
+      \field{sortinit}{V}
+      \field{sortinithash}{02432525618c08e2b03cac47c19764af}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Statistics and computing}
+      \field{number}{4}
+      \field{title}{A tutorial on spectral clustering}
+      \field{volume}{17}
+      \field{year}{2007}
+      \field{pages}{395\bibrangedash 416}
+      \range{pages}{22}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
