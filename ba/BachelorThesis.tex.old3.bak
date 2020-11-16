@@ -37,8 +37,6 @@
             }
 
 \usepackage{lipsum}
-%\usepackage[onehalfspace]{setspace}
-\usepackage{setspace}
 
 % Basic data
 \newcommand{\N}{\mathbb{N}}
@@ -66,7 +64,6 @@
 
 \setlength{\parskip}{1.0em}
 \setlength{\parindent}{1em}
-
 
 \lstset{
 %basicstyle=\footnotesize,
@@ -108,22 +105,15 @@ breaklines=true,
 %    \title{Bachelorthesis about Network Propagation}
 %    \author{Yiftach Kolb}
 %    \date{\today}
-%    {\bf\LARGE Freie Universität Berlin and MPIMG}
-    {\bf\large Freie Universität Berlin and
-    Max Planck Institute's MPIMG}
-    \par Department of Bioinformatics
-    {\scshape\LARGE \par Partially Labeled
-    Classification in Graphs}
-    {\scshape\Large\par Using Network Propagation Methods 
+    {\scshape\LARGE \par Bachelor Thesis about Partially Labeled
+    Classification in Graphs
+    \par Using Network Propagation Methods 
     \par and Applications in Protein Function Annotaions}
     \vfill
   	{\Large Yiftach Kolb \par}
-    {yiftach.kolb@fu-berlin.de}
     \vfill
-  	{\Large a Bachelor Thesis\par}
-    \vfill
-	  {\Large Supervisor: \par
-    Prof. Dr. Martin Vingron, \normalsize vingron@molgen.mpg.de 
+	  {\Large Instructor\par
+    Prof. Dr. Martin Vingron 
     \par}
     {\large \today\par}
 \end{titlepage}
@@ -154,7 +144,6 @@ breaklines=true,
 %\everymath{\color{blue}}
 %\everydisplay{\color{blue}} 
 
-%\setstretch{2}
 
 \begin{abstract}
 This is an abstract \dots
@@ -164,208 +153,173 @@ This is an abstract \dots
 
 \section{Introduction}
 
-In this paper we propose a protein function prediction algorithm,
-which in essence works similarly to the adage ''Tell me who your
-friend are, and I will tell you who you are''. Imagine that we can
-accurately predict the function of a protein in the cells of an
-organism bases on its biochemical interactions with the other
-proteins, and the interactions of the other proteins between
-themselves. This has in fact demonstrated to be true by
-\textcite{schwikowski2000network}. But we are trying to improve on
-it. In the formulation of the adage above, We want to tell you who
-you are based on information on some friends of your friends. 
-We want that because in the world of protein research, there are
-still many that are unresearched or mostly unresearched.
+This Thesis deals with applircations of propagation methods for
+protein function prediction. Our goal is to propose a prediction
+algorithm.  Its input is a
+bidirectional graph and a labeling of a subset of the
+vertices \textemdash that's the partial classification which we wish
+to extend. The algorithm outputs for each unlabeled vertex  a
+suggested suitable label, and the label must be one of the existing
+labels.
+We are going to require just one label for each vertex.
+That is for the sake of simplification, although
+in reality when we deal with protein-protein interaction networks
+(PPI), each vertex (protein) can have multiple labels (functions or
+annotations in the Jargon).
+We call this problem the partially labeled
+classification problem (PLC) as it was named by
+\textcite{szummer2002partially}.
 
-The specific problem we are dealing here, from the perspective of
-bioinformaticians, is of protein function prediction in a
-protein-protein interaction network (PPIN), yet the actual algorithm
-is more general and applies to any network really. For this reason
-why we call the problem 'Partially labeled classification' (PLC) as it was
-named by \textcite{szummer2002partially}.
+Our input network is a PPI network, which is a bidirectional graph
+where each vertex represents a protein type in the cells of a certain
+organism and each edge represent some sort of an observed
+'interaction' between two proteins that is unlikely to be taking place
+frequently just by happenstance. However some edges may be
+interactions that don't actually occur in the organism of research,
+yet they are observed in the test tube due to the method that
+produces the PPI data.
 
-Our proposed algorithm uses the network propagation method of random
-walk with restart (RWR). These methods has been used most famously
-by Google for their search algorithm but also in bioinformatics  for
-example for 'disease module identification' by
-\cite{vandin2012discovery, barel2020netcore}.
+Suppose that some of the proteins are well researched and the life science guys
+have provided us with further information about their biological
+functions. This
+information is represented in the network in the form of labels associated with
+some of the vertices. But this information is incomplete and many vertices are
+unlabeled. We want to extend this labeling to all the nodes, by
+guessing for each unlabeled vertex which label could fit it
+best.
+
+Estimating the accuracy of the prediction is another issue of
+concern. In
+this paper we use a PPI network where all the proteins are annotated
+with labels. We remove the labels of some of them, try to predict
+their labels, and verify. In the end we know how many labels we got
+right and how many wrong. 
+This gives us an estimation of the total accuracy.
+We also measured the sensitivity, specificity, and precision of our
+proposed method for each functional group.
+
+We would also like to estimate or score the likelihood for each
+specific prediction (perhaps as part of a future paper or in the master
+thesis). We would need for example to come up with a statistical way to quantify
+the posterior probability that a vertex has a certain label
+\cite{szummer2002partially}. 
+
+We use propagation methods in attempt to find a prediction algorithm
+for the PLC. Specifically we use random walk with restart (RWR)
+approach. Essentially what we do is picking an unlabeled vertex and
+starting randomly walking from it with restarts at a certain
+probability back to the starting vertex. In this walk we sometimes
+visit labeled vertices. We predict that the label that we most
+frequently encounter in this walk is the most likely label of the
+starting vertex.
+
+There are 2 papers that we know of which deal with the PLC.
+\textcite{deng2002prediction} Specifically deals with protein
+function prediction in a PPI network.
+They use a method which is based on "Markov random fields" to
+estimate for each function category separately the likelihood that a
+protein in the network has that function or not. In their
+experiments of predicting the functions of annotated yeast proteins
+they reached specificity and sensitivities of 45-64\% but this is not
+apples to apples comparison with our proposed method.
+
+The other paper is \textcite{szummer2002partially} and it is purely
+mathematical and from it we adapted the name \textbf{'partially labeled
+classification' (PLC)} for this problem. They use time scaled random
+walk without restart to calculate the posterior probability that an
+unlabeled vertex has a certain label. This method may work for the
+purpose of protein function prediction but in the way it is tested
+in the article it is hard to compare it to a PPI network scenario.
+For example they tested the algorithm on a network that fixed
+connectivity of $k=5$ (5 neighbors for each vertex) and they labeled
+just $2$ initial starting vertices. In short the testing scenario
+doesn't resemble a partially annotated PPI network type of situation
+but the method and the definition of the problem do fit.
 
 We dedicate sections 2 and 3 of this Thesis to explain the
 underlying mathematical theories of stochastic matrices and random
-walk with restart in graphs, largely going according to textbooks
-from \textcite{meyer2000matrix} and \textcite{herstein_winter_1989}.
-The purpose is to make this work somewhat self standing with the
-mathematical foundations it is based on, to give a 'feel' for how
-RWR actually work, as well as presenting some
-lemmas that prove why we can use it in the networks we are dealing
-with.
+walk with restart  in graphs. We think that this theoretical introduction is
+required in order to develop an understanding of how RWR actually
+works, the relationship between graphs and stochastic matrices and
+spectral theory, what is the diffusion kernel, and for which type of
+graphs we can use these methods.
 
 In the following 2 sections (4 and 5) We deal with the subjects
 of community structure and spectral clustering in graphs. There is
-a great deal of overlap between the PLC problem and community structure. 
-Essentially the function prediction algorithm is based on the
-paradigm that proteins of the same functional classification do tend
-to form 'communities' within the PPI.
-In section 6 we are propose an algorithm for protein function
-prediction (or more generally for the partially labeled
-classification problem), and we test it and compare it with some
-other methods. 
+a great deal of overlap between the PLC problem and community structure. In
+the later problem there is no initial labeling and we just use the
+graph topology to find a sensible way of dividing it into tightly
+clustered groups, for example by using the modularity method as
+proposed by \textcite{newman2006modularity}. With the PLC problem,
+we are given additional constraints. The labels which we are given
+dictate how many groups there are. We cannot switch labels for the
+labeled vertices even if it looks from a community structure
+perspective that 'these two don't belong together'. However we still
+assume the experimentally substantiated 'dogma' that proteins of the
+same function tend to cluster together in the PPI network.
+If the labels don't have characteristics of clusterings or community formation
+then these RWR methods is basically useless.
 
-Finally in section 7 we draw some conclusions, , discuss other
-methods and approaches, and consider possible ways to carry with
-this research forward.
+In section 6 we are going to propose an algorithm using propagation methods
+for the PLC problem and show some initial experiments with it using a subnetwork
+of the yeast interactome.
 
+Finally in section 7 we are going to wrap things up with some nice words and say
+good bye.
 
+%\lipsum[1-2]
 
-%This Thesis deals with applircations of propagation methods for
-%protein function prediction. Our goal is to propose a prediction
-%algorithm.  Its input is a
-%bidirectional graph and a labeling of a subset of the
-%vertices \textemdash that's the partial classification which we wish
-%to extend. The algorithm outputs for each unlabeled vertex  a
-%suggested suitable label, and the label must be one of the existing
-%labels.
-%We are going to require just one label for each vertex.
-%That is for the sake of simplification, although
-%in reality when we deal with protein-protein interaction networks
-%(PPI), each vertex (protein) can have multiple labels (functions or
-%annotations in the Jargon).
-%We call this problem the partially labeled
-%classification problem (PLC) as it was named by
-%\textcite{szummer2002partially}.
+%This Thesis deals with non-negative matrices, propagation methods, clustering
+%and community structure in Graphs. In scientific research graphs are often used
+%as an abstraction of a complex interaction network. They constitute a simplified
+%display of the information which is easier to work with yet hopefully still
+%retains the essential properties of the network. When that is the case, then
+%insightful information about the subject of research can be gained by analysis
+%of the graphs which are constructed out of the row data.
 %
-%Our input network is a PPI network, which is a bidirectional graph
-%where each vertex represents a protein type in the cells of a certain
-%organism and each edge represent some sort of an observed
-%'interaction' between two proteins that is unlikely to be taking place
-%frequently just by happenstance. However some edges may be
-%interactions that don't actually occur in the organism of research,
-%yet they are observed in the test tube due to the method that
-%produces the PPI data.
+%In the case of an unweighted undirected graph, the vertices represent particular
+%units that are the subject of research, be they people, proteins or whatever;
+%and the edges represent some sort of close proximity or interaction that is
+%assumed to exist between the two edges it connects.
 %
-%Suppose that some of the proteins are well researched and the life science guys
-%have provided us with further information about their biological
-%functions. This
-%information is represented in the network in the form of labels associated with
-%some of the vertices. But this information is incomplete and many vertices are
-%unlabeled. We want to extend this labeling to all the nodes, by
-%guessing for each unlabeled vertex which label could fit it
-%best.
+%The direct inspiration to this thesis is the subject of function prediction 
+%of proteins in a protein-protein interaction network (PPI). These are graphs
+%where the vertices represent a particular type of protein and an edge connects
+%two proteins if they are found in close proximity to each other in a sufficient
+%portion of the samples. 
 %
-%Estimating the accuracy of the prediction is another issue of
-%concern. In
-%this paper we use a PPI network where all the proteins are annotated
-%with labels. We remove the labels of some of them, try to predict
-%their labels, and verify. In the end we know how many labels we got
-%right and how many wrong. 
-%This gives us an estimation of the total accuracy.
-%We also measured the sensitivity, specificity, and precision of our
-%proposed method for each functional group.
+%It may be the case that some of the proteins in the network are well researched
+%already and their function is known. We are interested to the functionality of
+%the unknown proteins in the network based on the known proteins and the network
+%structure. We assume that proteins that take place in the same function will
+%also cluster together in the graph as they do in practice (form protein
+%complexes, bonds or whatever).
 %
-%We would also like to estimate or score the likelihood for each
-%specific prediction (perhaps as part of a future paper or in the master
-%thesis). We would need for example to come up with a statistical way to quantify
-%the posterior probability that a vertex has a certain label
-%\cite{szummer2002partially}. 
+%We may are be interested in finding the most relevant associate of a certain
+%known protein that has lots of neighbors. In the terminology of propagation we
+%are going to search for the vertex that receives the most 'heat' from the known
+%protein, or in terms of random walk, it is the most frequently visited vertex,
+%by a random path starting from the known vertex.
 %
-%We use propagation methods in attempt to find a prediction algorithm
-%for the PLC. Specifically we use random walk with restart (RWR)
-%approach. Essentially what we do is picking an unlabeled vertex and
-%starting randomly walking from it with restarts at a certain
-%probability back to the starting vertex. In this walk we sometimes
-%visit labeled vertices. We predict that the label that we most
-%frequently encounter in this walk is the most likely label of the
-%starting vertex.
-%
-%There are 2 papers that we know of which deal with the PLC.
-%\textcite{deng2002prediction} Specifically deals with protein
-%function prediction in a PPI network.
-%They use a method which is based on "Markov random fields" to
-%estimate for each function category separately the likelihood that a
-%protein in the network has that function or not. In their
-%experiments of predicting the functions of annotated yeast proteins
-%they reached specificity and sensitivities of 45-64\% but this is not
-%apples to apples comparison with our proposed method.
-%
-%The other paper is \textcite{szummer2002partially} and it is purely
-%mathematical and from it we adapted the name \textbf{'partially labeled
-%classification' (PLC)} for this problem. They use time scaled random
-%walk without restart to calculate the posterior probability that an
-%unlabeled vertex has a certain label. This method may work for the
-%purpose of protein function prediction but in the way it is tested
-%in the article it is hard to compare it to a PPI network scenario.
-%For example they tested the algorithm on a network that fixed
-%connectivity of $k=5$ (5 neighbors for each vertex) and they labeled
-%just $2$ initial starting vertices. In short the testing scenario
-%doesn't resemble a partially annotated PPI network type of situation
-%but the method and the definition of the problem do fit.
-%
-%We dedicate sections 2 and 3 of this Thesis to explain the
-%underlying mathematical theories of stochastic matrices and random
-%walk with restart  in graphs. We think that this theoretical introduction is
-%required in order to develop an understanding of how RWR actually
-%works, the relationship between graphs and stochastic matrices and
-%spectral theory, what is the diffusion kernel, and for which type of
-%graphs we can use these methods.
-%
-%In the following 2 sections (4 and 5) We deal with the subjects
-%of community structure and spectral clustering in graphs. There is
-%a great deal of overlap between the PLC problem and community structure. In
-%the later problem there is no initial labeling and we just use the
-%graph topology to find a sensible way of dividing it into tightly
-%clustered groups, for example by using the modularity method as
-%proposed by \textcite{newman2006modularity}. With the PLC problem,
-%we are given additional constraints. The labels which we are given
-%dictate how many groups there are. We cannot switch labels for the
-%labeled vertices even if it looks from a community structure
-%perspective that 'these two don't belong together'. However we still
-%assume the experimentally substantiated 'dogma' that proteins of the
-%same function tend to cluster together in the PPI network.
-%If the labels don't have characteristics of clusterings or community formation
-%then these RWR methods is basically useless.
-%
-%In section 6 we are going to propose an algorithm using propagation methods
-%for the PLC problem and show some initial experiments with it using a subnetwork
-%of the yeast interactome.
-%
-%Finally in section 7 we are going to wrap things up with some nice words and say
-%good bye.
-
+%One advantage of propagation methods is that they are relatively fast, in fact
+%in linear complexity. The typical graph can be represented as a sparse matrix
+%and The power method starting from any starting distribution converges
+%exponentially fast to the greatest eigenvector which is the stationary
+%distribution. There are methods that achieve that in about $O(n + m)$  ($n$
+%vertices, $m$ edges) complexity but that is beyond the scope of this thesis.
 
 
 \section{Linear algebra primer}
 
-\subsection*{}
-
-This section is mostly based on \cite{meyer2000matrix} and
-\cite{herstein_winter_1989}. We are going to have to use allot of
-definitions anyway and cite big theorems like the Perron-Froebenius
-theorems, so we might as well provide an
-understanding of the important properties of stochastic matrices
-which we need for the RWR methods.
-
-It's also meant to intercept likely questions, quite possibly even by
-by the author himself within a few decades from now, such as, 'what if we
-consider complex vectors, maybe there is a complex eigenvalue who is
-greater than 1 ?', no there isn't, read here why.
-
-% remark: I need to use to complex field C because it is important
-% to understand that 1 is the greatest and unique eigenvalue with a
-% nonnegative eigenvector. 
-
-\subsection*{}
-
 \begin{mydef}
-\label{def:transition} A \textbf{Transition Matrix } (we call
-it a \textbf{Transition} in short), which is sometimes also called a
-\textbf{stochastic matrix}, is a real valued non negative square
-($n \times n$) matrix $A$ such that each of its columns sums up to one: $$A
-\geq 0,\ \forall j \sum_i A_{i,j} = 1$$ $A$ acts from the left as a
-linear mapping: $A:v \to A \cdot v$. In this paper we use left
-multiplication convention ($Av$). There are many other publications
-that deal with random walk and Markov processes, where right
-multiplication is used ($v \cdot A$), and accordingly the rows are
-normalized rather than the columns.
+\label{def:transition}
+A \textbf{Transition Matrix}, sometimes also called
+a \textbf{stochastic matrix}, is a real valued non negative square
+($n^2$) matrix $A$ such that each of its
+columns sums up to one: $$A \geq 0,\ \forall j \sum_i A_{i,j} = 1$$
+$A$ acts from the left as a linear mapping:
+$A:v \to A \cdot v$. In the following script we treat matrices by default
+as acting from the left ($Av$). 
 
 A transition is \textbf{positive}, designated by $A > 0$ if all its entries are positive.
 
@@ -375,9 +329,9 @@ property is called \textbf{regular} in some other sources.
 A transition is \textbf{irreducible} if for every entry $A_{i,j}$ there is some $k$ such
 that $A^k_{i,j} > 0$.
 
-It can be shown that 
+Equivalently it can be shown that 
 A matrix $A$ is 
-irreducible by and only if it is NOT
+irreducible by if and only if it is NOT
 similar by permutations matrices to a block upper triangular matrix
 which means 
 $
@@ -391,7 +345,7 @@ B & C \\
 P^{-1}
 $
 
-where $P$ is a permutation matrix and $B, C$ are square matrices of size greater than $0$.
+Where $P$ is a permutation matrix and $B, C$ are square matrices of size greater than $0$.
 \end{mydef}
 
 \begin{mydef}
@@ -417,10 +371,9 @@ $x \leq Ay$ then $x=y$.
 
 \begin{mydef}
 \label{def:abs}
-%changed C to R per Martin's request but it holds for C
-Given $A \in \R^{n \times n}$ We let $|A| \in \R^{n \times n}$ be the resulting
+Given $A \in \C^{n \times n}$ We let $|A| \in \C^{n \times n}$ be the resulting
 matrix from applying $|\cdot|$ element wise. Given a vector $v \in \C^n$ we let
-$|v| \in \R^n$ the corresponding non-negative vector.
+$|v| \in \C^n$ the corresponding non-negative vector.
 
 We also let $A \gt 0, v \gt 0$ mean that it holds coordinate wise. 
 \end{mydef}
@@ -482,9 +435,8 @@ which is non-zero). If we $l_1$-normalize that eigenvector it becomes a state.
 \label{lem:uniq1}
 If a transition $A \gt 0$ (or primitive)
 , then it has exactly
-one eigenvector $v$ with eigenvalue $1$ and in addition $v$ can be
-chosen to be strictly positive.
-Furthermore, for any other eigenvalue
+one eigenvector $v$ with eigenvalue $1$ and in addition it can be chosen so that $v > 0$
+Any for any other eigenvalue
 $\lambda$ it holds that $|\lambda| \lt 1$.
 
 If $A$ is just irreducible then then again $v>0$ and is unique but there may be
@@ -791,25 +743,10 @@ with $\Gamma = \{x | x \geq 0, x \neq 0\}$
 
 
 \section{More on matrices, graphs and stochastics}
-\subsection*{Prologue}
-
-Here we are starting transition from matrix terminology into that
-of graphs and random walk. We show how to derive the properties of
-RWR from the stochastic matrix theory and provide some examples for
-propagation in graphs and setting the scene for the next section
-where we deal with clustering.One reason why we provided the
-relative expanded mathematical details on the previous section and
-in this one is to explain why the restart is essential to turning a 
-connected graph where a random walk generally doesn't reach a
-steady state, into an acyclic graph (corresponding to a primitive
-adjacency matrix). 
-
-
-\subsection*{Theory}
 
 A directed non-weighted graph $G$ can be uniquely represented by its
 \textbf{adjacency matrix},
-$A_{i,j} := 1$ if and only if there is a directed edge from $j$ to $i$ (if we
+$A_{i,j} := 1$ if and only if there is a directed edge from $i$ to $j$ (if we
 want to use it for transitioning on columns as done above). It's possible to
 assign different edge weights rather than only $1$ and $0$. If the graph is
 undirected each edge would be counted in both directions and the matrix is
@@ -853,26 +790,26 @@ corresponding weighted directed graph.
 
 If the graph $G$ is strongly connected and aperiodic, its corresponding
 adjacency matrix is primitive. We know from \ref{thm:perron1} that there is a
-unique stationary distribution $p$ and that the Markov process converges to $p$ no
+unique stationary distribution $p$ and that the Markov converges to $p$ no
 matter from which distribution it starts. We may calculate $p$ using the
 \textbf{power
 method} which is efficient because it can be done in a matrix-free method. 
-%We don't need to know the matrix itself just the dot product of it with a state
-%vector.
+We don't need to know the matrix itself just the dot product of it with a state
+vector.
 
 If the graph $G$ is strongly connected, then \ref{thm:perron2} assures us the
 existence and uniqueness of a stationary distribution $p$. But if $G$ is not
 aperiodic, the corresponding adjacency matrix is not primitive. We cannot use
 the efficient power method to calculate $p$. Also the process itself doesn't
 stabilize on $p$. It is periodic and cycles between the $h$ eigenvectors on
-the unit circle (see theorem \ref{thm:wielandt2}). 
+the unit circle. 
 
 We are therefore interested to find how to convert an \text{imprimitive}
 matrix (= irreducible but not primitive)
 to a primitive matrix or equivalently to turn a strongly connected but periodic graph
 into an aperiodic graph.
 
-\begin{lemma}\cite{meyer2000matrix}
+\begin{lemma}
 \label{lem:1plusA}
 Let $A \geq 0$ be irreducible. Then $(A + I)^{n-1} \gt 0$, and therefore $A+I$
 is primitive.
@@ -936,8 +873,8 @@ p_{k+1} = \alpha q + (1 -
 \end{equation}
 
 It turns out that this random walk with restart is actually a normal
-random walk but with an modified adjacency matrix (and respectively, an
-modified weighted directional graph). 
+random walk but with an adjusted matrix (and respectively, an
+adjusted weighted directional graph). 
 
 \begin{lemma}
 \label{lemma:Qq}
@@ -967,23 +904,22 @@ If we pick the restart state $q$ in a way that makes $W$ primitive,
 then \ref{thm:perron1} assures us that the RWR will converge,
 $\lim_{k \to \infty} p_k =\lim_{k \to \infty} W^k p_0 = p$, where
 $p$ is the unique stationary distribution of $W$. This means in
-particular that we can use the power method to find out the
-distribution $p$ by sequentially calculating $p_1, p_2, \dots$ until
-it sufficiently converges, and it will converge to $p$ from any
-initial state $p_0$ which we choose. 
+particualr that we can use the power method to find out the
+distribution $p$ by calulated $p_k$ until it sufficiently converges,
+and it will converge to $p$ from any intial state $p_0$ which we
+choose. 
 
-Also we can take the limit $p = \lim_{k \to \infty}p_k$ and rewrite
-\ref{eq:RWR} as:
+Also we have
 \begin{equation}
 \label{eq:RWR2}
 \begin{aligned}
-p = Wp = \alpha q + (1 - \alpha) A \\
+p = Wp = \alpha q + (1 - alpha) A \\
 [I - (1 - \alpha)A] p = \alpha q
 \end{aligned}
 \end{equation}
 
 We will see later that we can invert the matrix in the second
-equation of \ref{eq:RWR2} and use a direct solution for $p$ instead of
+equation of \ref{RWR2} and use a direct solution for $p$ instead of
 the power method. The power method has the advantage that we can use
 the matrix $A$ implictly, because we only need to know $A \cdot p_k$
 to compute $p_{k+1}$. $A$ is usually a sparse matrix because each
@@ -1003,6 +939,55 @@ restart parameter $\alpha$. It is used to order the vertices
 according to their 'relevance' in the network.
 
 
+\begin{figure}[!htb]
+\begin{framed}
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example_unranked.png}
+  \caption{This is an example of a weakly connected graph. If we start walking
+  from $0$, $5$ or $6$ we can never reach vertices $1-4$. It is also not immediately
+  clear which vertex $0$ or $5$ is more 'important'. While $0$ is directly
+  connected to more vertices, $5$ may get more 'flow' through it since every
+  path of length $2$ or more passes though it.}
+  \label{fig:weaklyconnected}
+\end{framed}
+\end{figure}
+
+\begin{figure}[!htb]
+\begin{framed}
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example.png}
+  \caption{The same graph with vertex size and color indicating its PageRank
+  with parameter $\alpha=0.15$. We see that $5$ is ranked first, followed by
+  $0$. The smaller the restart parameter, the more important $5$ will get
+  because we allow for longer paths with fewer restarts.}
+  \label{fig:weaklyconnectedpagedranked}
+\end{framed}
+\end{figure}
+
+\begin{figure}[!htb]
+\begin{framed}
+  \centering
+    \includegraphics[width=0.55\linewidth]{directed_graph_example_tinyalpha.png}
+  \caption{When the restart parameter is too large, the rank becomes almost
+  uniform because the convex combination of the original graph with the
+  $n$-clique graph of the restarts is weighted too heavily on the latter. It
+  also shows that for high restart values $0$ becomes hotter than $5$. That is
+  because paths of length $\gt 2$ (before restart) become very unlikely in this random walk.}
+  \label{fig:weaklyconnectedpagedrankedbadly}
+\end{framed}
+\end{figure}
+
+\begin{figure}[!htb]
+\begin{framed}
+  \centering
+    \includegraphics[width=0.55\linewidth]{undirected_graph_example.png}
+  \caption{When we treat the graph as undirected and calculate the PageRanks
+  ($\alpha=0.15$),
+  Vertex $0$ comes this time on top. It is more central than $5$ and
+  more random paths intersect it than any other vertex.}
+  \label{fig:undirectedanked}
+\end{framed}
+\end{figure}
 
 The PageRank is the stationary distribution of the process when we use unbiased
 restart\textemdash A restart is equally likely from any vertex.
@@ -1014,6 +999,17 @@ is to $u$, or how much heat $u$ sends to $v$.
 Note that this is not symmetric $p_v[u] \neq p_u[v]$ in general.
 
 %(memo: add an illustration about asymmetry)
+
+\begin{figure}[!htb]
+\begin{framed}
+\centering
+\includegraphics[width=0.55\linewidth]{diagram_star.png}
+\caption{Stars have hot center because it spreads its heat on many sources,
+while each of the orbiting vertices sends all its heat into the star center.
+}
+\label{fig:hotstar}
+\end{framed}
+\end{figure}
 
 \begin{lemma}
 \label{lem:AplusP}
@@ -1066,11 +1062,10 @@ T_{\alpha, q} :=
 
 In general, 
 the matrix $T_{\alpha,q}$ may have more than one unique stationary distribution $p$ 
-(there is one for each strongly connected
-component of its corresponding graph). But if we require that $G$ be
+(I think there is one for each strongly connected
+component of its corresponding graph), so lets require that $G$ be
 strongly connected (which means $A$ is irreducible),
-then $T_{\alpha,q}$ is primitive by \ref{lem:AplusP}, and the
-stationary distribution $p$ is unique.
+And use \ref{rem:AplusP}:
 
 \[
 p = Ip
@@ -1106,7 +1101,7 @@ p = \alpha [I - (1 - \alpha)T]^{-1} q := K q =
 \alpha \sum_{k=0}^{\infty} (1 - \alpha)^k T^k
 \end{equation}
 
-$K$ is called \textbf{diffusion matrix}~\cite{leiserson2015pan} of $T$ (or of the graph $G$) with parameter $\alpha$
+$K$ is called \textbf{diffusion kernel} of $T$ with parameter $\alpha$
 It turns out that $K$ itself is a transition because it maps the
 arbitrary transition $q$ to the transition $p$. In addition, $K \gt 0$ because
 of \ref{eq:diffkernel} and since $T$ is irreducible.
@@ -1155,96 +1150,9 @@ Finally as a side note the name diffusion kernel originates from the heat
 equation which associated with the graph, considering the graph 
 as perfectly insulated system.
 We won't get deeper into that at this time.
-There is some confusion whether the diffsusion matrix $K$ can be called
-diffsusion kernel ,which is usually used in the context of
-contituous processes. I use the term diffusion matrix as it was
-defined in \textcite{leiserson2015pan} and in that paper's
-suppliamentary material the matrix
-is also referred to as kernel.
 
 %The Equation looks something like this: Let $L = D - A$, the \textbf{Laplacian
 %Matrix}. Let $\gamma \gt 0,$ and $0 \lt p_0 \in \R^n$ 
-
-\subsection*{Examples}
-
-Figure \ref{fig:weaklyconnected} demonstrates a weakly connected
-directed graph. If we start walking
-from $0$, $5$ or $6$ we would never reach vertices $1-4$. It is also not immediately
-clear which vertex $0$ or $5$ is more 'important'. While $0$ is directly
-connected to more vertices, $5$ may get more 'flow' through it since every
-path of length $2$ or more passes though it. 
-
-\begin{figure}[!htb]
-\begin{framed}
-  \centering
-    \includegraphics[width=0.55\linewidth]{directed_graph_example_unranked.png}
-  \caption{a weakly connected graph.}
-  \label{fig:weaklyconnected}
-\end{framed}
-\end{figure}
-
-In figure \ref{fig:weaklyconnectedpagedranked} we have the same
-graph with vertex size and color indicating its PageRank with
-parameter $\alpha=0.15$. We see that $5$ is ranked first, followed
-by $0$. The smaller the restart parameter, the more important $5$
-will get because we allow for longer paths with fewer restarts.
-
-\begin{figure}[!htb]
-\begin{framed}
-  \centering
-    \includegraphics[width=0.55\linewidth]{directed_graph_example.png}
-  \caption{Pageranked graph.}
-  \label{fig:weaklyconnectedpagedranked}
-\end{framed}
-\end{figure}
-
-If we pick a restart parameter that is too large, which is the case
-shown in figure \ref{fig:weaklyconnectedpagedrankedbadly}, the ranks
-becomes almost uniform because the convex combination of the
-original graph with the $n$-clique graph of the restarts is weighted
-too heavily towards the latter. It also shows that for high restart
-values $0$ becomes hotter than $5$. That is because paths of length
-$\gt 2$ (before restart) become very unlikely in this random walk.
-
-\begin{figure}[!htb]
-\begin{framed}
-  \centering
-    \includegraphics[width=0.55\linewidth]{directed_graph_example_tinyalpha.png}
-  \caption{again the same graph, with node color and size indicating
-  their PageRank, with a restart probability approaching $1$.}
-  \label{fig:weaklyconnectedpagedrankedbadly}
-\end{framed}
-\end{figure}
-
-When we treat the same graph as undirected (figure
-\ref{fig:undirectedanked} and calculate the PageRanks
-($\alpha=0.15$), Vertex $0$ comes this time on top. It is more
-central than $5$ and more random paths intersect it than any other
-vertex.
-
-\begin{figure}[!htb]
-\begin{framed}
-  \centering
-    \includegraphics[width=0.55\linewidth]{undirected_graph_example.png}
-  \caption{same graph, but undirected.}
-  \label{fig:undirectedanked}
-\end{framed}
-\end{figure}
-
-In undirected graph, starts have hot centers and cold periphery.
-a star has a hot center because it spreads its heat on many sources,
-while each of the orbiting vertices sends all its heat into the star center.
-The result is that hear accumulates at the center.
-
-\begin{figure}[!htb]
-\begin{framed}
-\centering
-\includegraphics[width=0.55\linewidth]{diagram_star.png}
-\caption{a star graph.
-}
-\label{fig:hotstar}
-\end{framed}
-\end{figure}
 
 \section{A naive yet not useless propagation method for clustering a graph}
 
@@ -1255,16 +1163,13 @@ the subjects of the research into 2 clubs.
 
 \begin{mydef}
 \label{def:influence}
-Let $G$ be a strongly connected graph and $K$ the diffusion matrix as defined in
+Let $G$ be a strongly connected graph and $K$ the diffusion kernel as defined in
 \ref{lem:invertible}, end let $u,v \in \{1 \dots n\}$ be two vertices and $e_u,
 e_v \in \R^n$ their corresponding index vectors.
 
 $p_u := K e_u$, the stationary distribution with random restart from $u$,
-is called the \textbf{influence vector} of vertex $u$. We say that
-$p_u[v] = K[v,u]$
-is the \textbf{influence of} $u$ on $v$. In terms of random walk,
-$K[v,u]$ is the frequency that we visit $v$, if we do a RWR from
-$u$. 
+is called the \textbf{influence vector} of vertex $u$. We say that $p_u[v]$
+is the \textbf{influence of} $u$ on $v$.
 \end{mydef}
 
 \begin{remark}
@@ -1272,13 +1177,6 @@ $u$.
 We use the definition of influence as presented in the Hotnet and
 Hotnet2 artticles \cite{vandin2012discovery} and
 \cite{leiserson2015pan}.
-
-Remember that we use in this paper $A \cdot v$ scheme while
-because that is the 'normal' way in linear algebra textbooks.
-However often in papers dealing with Markovian processes they use
-the other way. To add to the confusion, they sometime call these conventions
-left (repectively right) multiplication but whose left and whose
-right and why?
 \end{remark}
 
 A $p_u$ is a measure of how 'heat' which is pumped into $u$ propagates in the graph.
@@ -1418,7 +1316,7 @@ L_c & = LD^{-1} = I - AD^{-1}
 
 Consider the connected graph $G$ and its adjacency matrix $A$. We create the transition
 matrix by normalizing it: $T = AD^-1$, and finally we choose a restart parameter
-$\alpha$ and create the diffusion matrix $K = \alpha[I - (1 -
+$\alpha$ and create the diffusion kernel $K = \alpha[I - (1 -
 \alpha) T]^{-1}$. Theorem
 \ref{thm:AKTcharacteristics} assures us that $K$ and $T$ have the same
 eigenvectors and the orders of their corresponding eigenvalues are the same. The
@@ -1954,7 +1852,6 @@ Refer to it with fig \ref{fig:heatmap} tada.
 
 \end{comment}
 
-\appendix
 \section{Reference}
 \nocite{slides_from_lecture}
 \nocite{cowen2017network}
