@@ -1,6 +1,41 @@
 \addbibresource{mybib.bib}
 \section{A function prediction method}
 \subsection*{Prologue}
+As we mentioned in the introduction our main goal was to develop a
+a classification algorithm for the PLC probelm which can be used for the
+purpose of protein function prediction in a partially annotated PPI
+network.
+
+What it means is we are going to take an input a strongly connected
+graph where the vertices represent protein types and the edges represent
+observed interaction between them. The some of the proteins are
+annotated with a label that specifies their function. The rest are
+unannotated.
+
+The prediction algorithm is going to output for each unlabeled protein a
+proposed label. Our paradigm is that protein is that proteins of the
+same label should form, approximately, a community in the sennse of
+graph community structure which we discussed in the earlier sections.
+Since the algorithm is using propagation methods which are closely
+related to the community structure of the graph, if the paradigm doesn't
+hold then the prediction sohould be no better than a coin toss.
+
+It is understood that proteins that interact are more likely than not to
+share the same function~\cite{schwikowski2000network}. It's a weaker
+property than our paradigm because it doesn't speak about communities,
+only about adjacent proteins.
+
+The diffusion matrix provides us with ranking such that for for every
+vertex $i$ we can weigh the other vertices by 'importance' to that
+vertice (namely it's the $i$ row of the diffusion matrix). We use that
+information to predict the label of the protein. We assume that members
+of the same label of the protein will have cummulatively the most
+'influence' on it. We also assume that the distribution of labeled and
+unlabeled is the same across the network so by removing them from
+consideration, still the proteins that share the same label with the
+protein we test will have the most cummulative influence on it.
+
+\subsection*{}
 
 Section 4 gave us a strong indication about the usefulness of the
 diffusion matrix as as a type of quasi-distance with which we
