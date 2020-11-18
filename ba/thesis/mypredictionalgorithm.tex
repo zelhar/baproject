@@ -35,25 +35,35 @@ unlabeled is the same across the network so by removing them from
 consideration, still the proteins that share the same label with the
 protein we test will have the most cummulative influence on it.
 
-\subsection*{}
+We tested and compare 5 different methods, 3 were diffusion based and 2
+were neighbor based whih we used mainly as the reference point.
 
-Section 4 gave us a strong indication about the usefulness of the
-diffusion matrix as as a type of quasi-distance with which we
-measure closeness or 'influence' between nodes in the network.
-Our working paradigm is that connected nodes are more likely to have
-the same functional class than not, a fact which has been shown to
-be true by \textcite{schwikowski2000network}.
 
-In this section we are going to apply the accumulated knowledge of the
-previous sections and devise some simple function prediction algorithms for PPI
-networks. We to try several methods which use propagation as well as
-methods which just use direct neighbors for the predictions.
+\subsection*{The Algorithm}
 
-The network is going to be composed of around 500 vertices (proteins) which are
-divided into 4 different function groups. We are going to randomly choose half
-the proteins and mark them as unknown and try to predict their function based
-on the remaining known proteins. Then we can verify the results with the
-actual annotations.
+\subsection*{Test Setup}
+
+\subsection*{Results}
+
+\subsection*{Remarks and Conclusions}
+
+%Section 4 gave us a strong indication about the usefulness of the
+%diffusion matrix as as a type of quasi-distance with which we
+%measure closeness or 'influence' between nodes in the network.
+%Our working paradigm is that connected nodes are more likely to have
+%the same functional class than not, a fact which has been shown to
+%be true by \textcite{schwikowski2000network}.
+%
+%In this section we are going to apply the accumulated knowledge of the
+%previous sections and devise some simple function prediction algorithms for PPI
+%networks. We to try several methods which use propagation as well as
+%methods which just use direct neighbors for the predictions.
+%
+%The network is going to be composed of around 500 vertices (proteins) which are
+%divided into 4 different function groups. We are going to randomly choose half
+%the proteins and mark them as unknown and try to predict their function based
+%on the remaining known proteins. Then we can verify the results with the
+%actual annotations.
 
 \subsection{Tools and Source Data}
 
