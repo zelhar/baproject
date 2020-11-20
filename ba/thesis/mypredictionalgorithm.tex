@@ -1,4 +1,4 @@
-\addbibresource{mybib.bib}
+%\usepackage{listings}
 \section{A function prediction method}
 \subsection*{Prologue}
 As we mentioned in the introduction our main goal was to develop a
@@ -38,8 +38,107 @@ protein we test will have the most cummulative influence on it.
 We tested and compare 5 different methods, 3 were diffusion based and 2
 were neighbor based whih we used mainly as the reference point.
 
+The source code for all the algorithms and the test can be found at
+the project's git repository~\cite{project_git}.
 
 \subsection*{The Algorithm}
+
+We tried 5 different prediction methods:
+
+\begin{itemize}
+\item{Method 1} Determines the group affiliation of an unknown node
+by the group that has the maximal volume based on the propagation
+distribution from the unknown node. This meas: we calculate the
+stationary distribution with restart to the unknown node. Among the
+known nodes, we calculate the weighted sums of each of the 4 groups
+according to that distribution. The group with largest volume (see
+pseudocode for the decision function below) is the affiliation we
+assign to the unknown node.
+
+
+\item{Method 2} This method works like method 1, except that we first order the
+unknown nodes (decreasing order) according to their pageRank. We go over the
+nodes in this order and assign group affiliation according to method 1, but then
+we also update the list of the known nodes to include that node. So this node is
+going to be included in the function prediction of the lower ranked nodes.
+
+The rational here is that the higher ranked nodes are probably going to be
+predicted with high accuracy and therefore be helpful in prediction of lower
+ranked nodes. 
+%
+%It is probably better to device some simple rule to decide whether it is worth
+%to include a node in the prediction of the rest of the nodes. For example, based
+%on how many unknown neighbors in has vs known neighbors. But we tried to keep
+%things simple at this stage.
+
+\item{Method 3} We assign an unknown node to the group that has plurality among
+its neighbors with known group affiliation. So this method is fast and
+probably the simplest.
+
+\item{Method 4} Same as method 3, but again we go in the order of pagRanks and
+we update the list of known nodes on the fly, like method 2.
+
+\item{Method 5} Here we take each group of the known nodes and propagate from
+it. So for example we calculate the stationary distribution when we restart in
+the known nodes that belong to group 'DNA Replication', and then for the next
+group and so forth. For each unknown node, we assign it to the group that
+propagates the highest probability to it.
+
+While in method 1 and 2 we start random walking from an unknown node and see
+what is the probability that we land at a certain group, In Method 5 we start
+walking randomly from one of the members of a group and check what is the
+probability that we visit a certain unknown node.
+
+This method is an order of magnitude faster than method 1 and 2 because we only
+need to calculate the stationary distributions 4 time (pageRank and for each
+group). However we suspect it will perform with less accuracy.
+The reason for that is that method 5 takes into account nodes that are far and not well connected to the
+unknown node whose function we try to predict.
+The function groups, in particular the yellow (meiosis) and green (stress) are not
+well clustered and spread all over the network but we can see that
+some subsets of these labels form clusters.
+
+\end{itemize}
+
+\begin{lstlisting}[mathescape=true, 
+    caption = {method 2, decision funciton}, label={code:decision_function}]
+# vertices are enumerated 1 to n. labels are enumerated 1 to m.
+# input v: vertex of unknown label, to be predicted
+# input F: the diffusion matrix (so F is column-normalized)
+# input labeledSubset: list of boolean vectors. so
+#    if labeledSubset[l] = (1, 0, ...),
+#    then vertex 1 has label l and vertex 2 doesn't.
+
+def decisionFunction(v, F, labeledSubset):
+  # get p, the influence vector of v, which is column v of F:
+  let $p$ = $F \cdot e_v$
+  let labeledSums = [sum(p[x]) for x in labeledSubset]
+  return argmax(labeledSums)
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape=true, 
+    caption = {method 2, main funciton}, label={code:method2}]
+# vertices are enumerated 1 to n. labels are enumerated 1 to m.
+# Input G: a strongly connected graph
+# input labeledSubset: list of boolean vectors. so 
+#    if labeledSubset[l] = (1, 0, ...),
+#    then vertex 1 has label l and vertex 2 doesn't.
+
+def predictionMethod2(G, labeledSubset):
+  # calculate the diffusion matrix
+  let F = diffusionMatrix(G)
+  # calculate the pageRank order
+  let pr = $F \cdot \bar{1}/n$
+  let unknowOrderedList = [v : v is unlabeled].sort_up_by(pr)
+  for v in unknowOrderedList:
+    predLabel <- decisionFunction(v,F,labeledSubset)
+    # set v's labels to predLabel
+    # it will participate in the subsequent predictions
+    labeledSubset[predLabel][v] <- 1
+  return labeledSubset
+\end{lstlisting}
+
+%this is listing \ref{code:decision_function}.
 
 \subsection*{Test Setup}
 

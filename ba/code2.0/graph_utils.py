@@ -186,6 +186,66 @@ def predictMethod2_diffkernel(G, tries=1, knownfraction=0.5, seed=42, alpha=0.2)
         scores[t] = score2
     return scores, df
 
+def predictMethod25_diffkernel(G, tries=1, knownfraction=0.5, seed=42, alpha=0.2):
+    """
+    Like predictMethod2 but uses diffusion kernel rather than power
+    method.
+    Input G: a graph.
+    Input tries: how many repetitions to perform, each witha
+    different randomly selected 'known' group.
+    Input knownfraction: portion of the known nodes out all the
+    nodes.
+    Input seed: random seed.
+    Input alpha: restart parameter.
+    """
+    groups = [G.nodes[x]["Group"] for x in G.nodes()]
+    groups = np.array(groups)  # array is better than a simple list ...
+    group_labeling = np.unique(groups)
+    df = pd.DataFrame()
+    df["Group (ground truth)"] = groups
+    scores = np.zeros(tries)
+    # determine the pageRanks
+    K = diffKernelG(G, alpha=alpha)
+    pageRank = biasedPropagateGA(G, bias=np.ones_like(G.nodes), alpha=0.2)
+    orderedNodeList = np.argsort(-pageRank)
+    #np.random.shuffle(orderedNodeList)
+    # set the random seed
+    np.random.seed(seed=seed)
+    for t in range(tries):
+        groups_predict = groups.copy()
+        known_unknown = np.random.random(len(G.nodes)) < knownfraction  # known=1
+        all_nodes = np.arange(len(G.nodes))
+        known_nodes = all_nodes[known_unknown]
+        #print(known_nodes.size, "known nodes")
+        unknown_nodes = all_nodes[known_unknown == False]
+        #print(unknown_nodes.size, "unknown nodes")
+        orderedUnkownNodeList = orderedNodeList[known_unknown == False]
+        #print(orderedUnkownNodeList.size, "orderedUnKnown: ")
+        known_unknown2 = known_unknown.copy()
+        #print("known_unknown2 ", known_unknown2.size, known_unknown2.sum())
+        score2 = 0
+        df["Rep " + str(t)] = "known"
+        df["Rep " + str(t) + "_predict"] = groups_predict
+        #print([pageRank[i] for i in orderedNodeList])
+        for v in orderedUnkownNodeList:
+            # predict, test = decision_function(v, G, groups, known_unknown2, alpha=alpha)
+            #predict, test = decision_function_diffkernel(
+            #    v, G, K, groups, known_unknown2
+            #)
+            predict, test = decision_function_diffkernel(
+                v, G, K, groups_predict, known_unknown2
+            )
+            groups_predict[v] = predict
+            #print(test, predict)
+            score2 += test
+            known_unknown2[v] = True  # mark v as 'known'
+            df["Rep " + str(t)][v] = "correct"
+            df["Rep " + str(t) + "_predict"][v] = predict
+            if not test:  # mark as incorrect and colormark if mistake
+                df["Rep " + str(t)][v] = "mistake"
+        score2 = score2 / len(unknown_nodes)  # got 0.85
+        scores[t] = score2
+    return scores, df
 
 def method6(G, group_membership_ar, known_unknown_ar):
     """

@@ -61,10 +61,13 @@ S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
 G = G.subgraph(largest_cc).copy()
 G = nx.convert_node_labels_to_integers(G)
 
+x, df = predictMethod25_diffkernel(G, tries=50, alpha=0.2)
+np.mean(x)
+
 x, df = predictMethod2_diffkernel(G, tries=50, alpha=0.2)
 np.mean(x)
 
-y, df = predictMethod2_diffkernel(G, tries=50, alpha=0.6)
+y, df = predictMethod25_diffkernel(G, tries=50, alpha=0.6)
 np.mean(y)
 
 z, df = predictMethod2_diffkernel(G, tries=50, alpha=0.35)
@@ -72,6 +75,11 @@ z
 np.mean(z)
 
 z, df = predictMethod2_diffkernel(G, tries=50, alpha=0.31) #
+# best result with alpha=0.31 (0.8926)
+z
+np.mean(z)
+
+z, df = predictMethod25_diffkernel(G, tries=50, alpha=0.31) #
 # best result with alpha=0.31 (0.8926)
 z
 np.mean(z)
@@ -126,6 +134,9 @@ x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.2)
 np.mean(x)
 
 x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.3)
+np.mean(x)
+
+x, df = predictMethod25_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.1)
 np.mean(x)
 
 x, df = predictMethod2_diffkernel(G, tries=5, alpha=0.2, knownfraction=0.4)
