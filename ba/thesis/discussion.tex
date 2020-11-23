@@ -1,14 +1,48 @@
-\section{Further Discussion and Remarks}
-%The normalize adjacency matrix of 
-%a connected graph (for simplicity we use here undirected) is a transition matrix
-%and represents a
-%Markov process. On a given time-step, a visitor on a graph node chooses
-%his next station at random among the neighbours of the current station (node).
-%
-%We want to know first, if we repeat this process to infinity will the frequency
-%of the visits at each node stabilizes.
+\section{Discussion}
 
-\lipsum[3-4]
+RWR propagation methods have been successfully used in
+bioinformatics mainly as a component in algorithms for 'disease
+module prediction', for example by ~\cite{leiserson2015pan,
+barel2020netcore}. More generally diffusion based algorithms have
+been used in multiple applications~\cite{cowen2017network}.
+
+The prediction method which was used by
+\textcite{schwikowski2000network} is essentially method 3 but their
+test setup allowed multiple labels per proteins. Their experimental accuracy
+was 72\%.
+
+We adopted the PLC name and definition from
+\textcite{szummer2002partially}. The proposed solution for the PLC
+on that paper was to maximize the posterior probability of the label
+for each unlabeled vertex. Essentially find label $y$ which is the likeliest to
+be the group where the walk had began, considering it ended at vertex $k$ after
+$t$ steps. Their solution uses a fixed time scale but it doesn't have to. We
+think that method 5 is possibly the solution if we use RWR instead of time scale.
+That is because method 5 chooses for vertex the label from the group that if we
+start from it, it would be visited more frequently than if we started from any
+other labeled group. The fact that we deal with stationary distribution saves
+allot of headache inducing calculations but of course we need to justify why do
+we allow restart.
+
+Another paper which deals with protein function prediction is
+\textcite{deng2002prediction}. Like in \cite{schwikowski2000network}
+they allowed multiple labels per protein. They measured
+sensitivities and specificities which were 'rougly the same' and depending
+on the setting were 45\% to 65\%. But we don't think those results
+are comparably with the experiment that we presented here.
+
+An idea of improving method2 would be to assess the likelihood of
+the correctness of the prediction for a vertex on the fly, and only
+include the preicted labeling in the prediction of the follow up
+prediction if the likelihood is high enough. In this case we might
+alsop try to run it many times in different random orders rather
+than in a particular order.
+
+Assessment of the likelihood of the prediction is very important in
+the cases where we don't want or need to predict the labels of all
+the unknown proteins, but rather need to select specific unlabeled
+proteins which are very likely to have a specific label we are
+interested in. Essentially this is what disease module prediction is about.
 
 %Propagation methods or as they are sometimes called, diffusion methods, have
 %been used in Bioinformatic software tools mostly function prediction and

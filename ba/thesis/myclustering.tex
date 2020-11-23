@@ -1,10 +1,13 @@
-\section{A simple propagation based heuristic for graph clustering}
+\section{A propagation based heuristic for graph clustering}
 
 \subsection*{Prologue}
 In this section we come up with a very simple simple clustering
-algorithm which uses RWR to divide the well known Zachary's Karate
-Club graph. The results can be compared to the actual division of
-the subjects of the research into 2 clubs.
+heuristic algorithm which uses RWR to divide the well known Zachary's Karate
+Club graph into 2 communities.
+The original work tracks the splitting of a students karate club into 2 rivaling
+clubs based on political and social affiliations.
+The results of the algorithm are compared to the actual
+social structure.
 
 \subsection*{Theory}
 
@@ -131,7 +134,7 @@ heat from 12
 \begin{figure}[!htb]
 \begin{framed}
 \centering
-\includegraphics[width=0.75\linewidth]{figures/Karate_coolwarmclustering.png}
+\includegraphics[width=0.97\linewidth]{figures/Karate_coolwarmclustering.png}
 \caption{
 'Zachary's Karate Club'.
 'Mr Hi' (Yellow) and 'Officer' (Green) groups.

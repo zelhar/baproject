@@ -270,7 +270,7 @@ stationary distribution $p$ is unique.
 
 \[
 p = Ip
-= [(1 - \alpha)T + \alpha Q]p =  (1 - \alpha)Tp + q 
+= [(1 - \alpha)T + \alpha Q]p =  (1 - \alpha)Tp + \alpha q 
 \]
 
 We can rearrange it now
@@ -302,7 +302,13 @@ p = \alpha [I - (1 - \alpha)T]^{-1} q := K q =
 \alpha \sum_{k=0}^{\infty} (1 - \alpha)^k T^k
 \end{equation}
 
-$K$ is called \textbf{diffusion matrix}~\cite{leiserson2015pan} of $T$ (or of the graph $G$) with parameter $\alpha$
+\begin{mydef}
+\label{Ax:def:diffusionmatrix}
+$K = \alpha [I - (1 - \alpha)T]^{-1}$ is called \textbf{diffusion
+matrix}~\cite{leiserson2015pan} of $T$ (or of the graph $G$) with parameter
+$\alpha$.
+\end{mydef}
+
 It turns out that $K$ itself is a transition because it maps the
 arbitrary transition $q$ to the transition $p$. In addition, $K \gt 0$ because
 of \ref{Ax:eq:diffkernel} and since $T$ is irreducible.

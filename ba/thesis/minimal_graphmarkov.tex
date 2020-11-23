@@ -235,7 +235,7 @@ stationary distribution $p$ is unique.
 
 \[
 p = Ip
-= [(1 - \alpha)T + \alpha Q]p =  (1 - \alpha)Tp + q 
+= [(1 - \alpha)T + \alpha Q]p =  (1 - \alpha)Tp + \alpha q 
 \]
 
 We can rearrange it now
@@ -267,7 +267,13 @@ p = \alpha [I - (1 - \alpha)T]^{-1} q := K q =
 \alpha \sum_{k=0}^{\infty} (1 - \alpha)^k T^k
 \end{equation}
 
-$K$ is called \textbf{diffusion matrix}~\cite{leiserson2015pan} of $T$ (or of the graph $G$) with parameter $\alpha$
+\begin{mydef}
+\label{def:diffusionmatrix}
+$K = \alpha [I - (1 - \alpha)T]^{-1}$ is called \textbf{diffusion
+matrix}~\cite{leiserson2015pan} of $T$ (or of the graph $G$) with parameter
+$\alpha$.
+\end{mydef}
+
 It turns out that $K$ itself is a transition because it maps the
 arbitrary transition $q$ to the transition $p$. In addition, $K \gt 0$ because
 of \ref{eq:diffkernel} and since $T$ is irreducible.
@@ -312,16 +318,14 @@ corresponding eigenvalues for $T$ have.
 \end{itemize}
 \end{thm}
 
-The diffusion matrix is the key for the next sections.
-What we saw here is that we can take any strongly connected
-graph $G$, set a restart value $\alpha$ and we generate the 
-diffusion matrix $K$ which is itself a stochastic matrix and it
-shows us how any restart distribution will propagate itself in the
-in the graph in a RWR process. In particular, the column $K[:,i] = K
-\cdot e_i$ gives us the stationary distribution which we will get if
-we do a RWR from node $i$. We interpret this as an indication that
-vertices which rank higher $K_i$ are closer or more important to 
-vertex $i$.
+The diffusion matrix is the key for the next sections. What we saw here is that
+we can take any strongly connected graph $G$, set a restart value $\alpha$ and
+we generate the diffusion matrix $K$ which is itself a stochastic matrix and it
+shows us how any restart distribution will propagate itself in the in the graph
+in a RWR process. In particular, the column $K[:,i] = K \cdot e_i$ gives us the
+stationary distribution which we will get if we do a RWR from node $i$. We
+interpret this as an indication that vertices which are ranked higher according
+to the distribution $K_i$ are closer or more important to vertex $i$.
 
 Finally as a side note the name diffusion kernel originates from the heat
 equation which associated with the graph, considering the graph 

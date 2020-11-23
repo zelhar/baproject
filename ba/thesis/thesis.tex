@@ -107,9 +107,22 @@ escapeinside={$}{$},
 % Document title
 \newpage\input{titlepage.tex}
 
+
+\doublespacing
+% or:
+%\onehalfspacing
+% or :
+%\setstretch{1.6}
+
 %abstract
 \begin{abstract}
-This is an abstract \dots
+We use a RWR propagation to propose a prediction algorithm for a partially
+labeled protein-protein-interaction network.
+The methods seems to improve the prediction accuracy when compared
+to the neighbor counting method. Further experiment indicate that
+the strength or weakness of the prediction method relies on how
+the closely the labeling adheres to the inherent community structure
+of the network.
 \end{abstract}
 
 %toc
@@ -130,6 +143,8 @@ This is an abstract \dots
 %section
 \newpage \input{mypredictionalgorithm.tex}
 
+%section discussion
+\newpage \input{discussion.tex}
 
 
 
@@ -180,8 +195,11 @@ This is an abstract \dots
 \nocite{slides_from_lecture}
 \nocite{cowen2017network}
 \nocite{vandin2012discovery}
-\nocite{vandin2012discovery}
 \nocite{leiserson2015pan}
+\nocite{newman2006modularity}
+\nocite{serre2010matrices}
+\nocite{choobdar2019assessment}
+
 
 \printbibliography
 
